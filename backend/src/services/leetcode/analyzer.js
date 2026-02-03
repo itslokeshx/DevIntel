@@ -1,4 +1,4 @@
-const { generateContent } = require('../ai/gemini');
+const { generateContent } = require('../ai/openrouter');
 
 exports.analyzeLeetCodeProfile = async (data) => {
     try {

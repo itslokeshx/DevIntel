@@ -3,7 +3,7 @@ const GitHubData = require('../models/GitHubData');
 const ComparisonCache = require('../models/ComparisonCache');
 const { analyzeGitHubUser } = require('../services/github/analyzer');
 const { generateGitHubInsights } = require('../services/ai/insights');
-const { generateContent } = require('../services/ai/gemini');
+const { generateContent } = require('../services/ai/openrouter');
 
 // Helper to get or analyze user data
 async function ensureUserData(username) {
