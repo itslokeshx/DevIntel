@@ -38,8 +38,11 @@ export function Home() {
             {/* Hero Section */}
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
                 <div className="text-center space-y-6">
-                    <h1 className="text-hero font-bold text-light-text-primary dark:text-dark-text-primary">
-                        Understand developers through their actual work
+                    <h1 className="text-5xl md:text-6xl font-black text-light-text-primary dark:text-dark-text-primary tracking-tight leading-tight">
+                        Understand developers<br />
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 to-violet-600">
+                            through their actual work
+                        </span>
                     </h1>
 
                     <p className="text-h3 text-light-text-secondary dark:text-dark-text-secondary max-w-2xl mx-auto">
@@ -65,7 +68,7 @@ export function Home() {
                         <Button
                             variant="primary"
                             size="lg"
-                            className="w-full"
+                            className="w-full h-12 text-lg shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/30 transition-all transform hover:-translate-y-0.5"
                             onClick={handleAnalyze}
                             loading={loading}
                             disabled={!githubUsername.trim()}
@@ -77,7 +80,7 @@ export function Home() {
                         <Button
                             variant="secondary"
                             size="md"
-                            className="w-full"
+                            className="w-full h-12 text-lg border-2 border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600"
                             onClick={handleCompare}
                         >
                             <GitCompare className="mr-2 h-5 w-5" />
@@ -85,11 +88,7 @@ export function Home() {
                         </Button>
                     </div>
 
-                    <div className="mt-6 text-center">
-                        <p className="text-small text-light-text-secondary dark:text-dark-text-secondary">
-                            🔒 Public data only • No login needed
-                        </p>
-                    </div>
+
                 </Card>
 
                 {/* Feature Highlights */}

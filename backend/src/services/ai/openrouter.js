@@ -41,7 +41,7 @@ async function generateContent(prompt, modelIndex = 0) {
                     }
                 ],
                 temperature: 0.7,
-                max_tokens: 2500
+                max_tokens: 4096
             },
             {
                 headers: {

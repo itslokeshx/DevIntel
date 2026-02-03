@@ -34,7 +34,7 @@ Contribution Pattern:
 - Current Streak: ${analyzedData.contributions.currentStreak} days
 - Busiest Month: ${analyzedData.contributions.busiestMonth}
 
-Respond with ONLY valid JSON (no markdown, no code blocks):
+Respond with ONLY valid JSON (no markdown, no code blocks). Keep text concise (under 30 words per field):
 {
   "oneLineInsight": "A single compelling sentence describing this developer",
   "activityNarrative": "2-3 sentences about their coding rhythm and patterns",
@@ -57,8 +57,17 @@ Respond with ONLY valid JSON (no markdown, no code blocks):
             };
         } else {
             try {
-                // Remove markdown code blocks if present
-                const cleanJson = developerInsightsRaw.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+                // Remove markdown code blocks and any text before/after JSON
+                let cleanJson = developerInsightsRaw.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+
+                // Try to find the first { and last }
+                const firstBrace = cleanJson.indexOf('{');
+                const lastBrace = cleanJson.lastIndexOf('}');
+
+                if (firstBrace !== -1 && lastBrace !== -1) {
+                    cleanJson = cleanJson.substring(firstBrace, lastBrace + 1);
+                }
+
                 developerInsights = JSON.parse(cleanJson);
             } catch (e) {
                 console.error('Failed to parse developer insights JSON:', e);

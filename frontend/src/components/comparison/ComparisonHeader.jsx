@@ -39,7 +39,7 @@ export function ComparisonHeader({ onCompare, loading }) {
                             Developer A
                         </label>
                         <Input
-                            placeholder="e.g. facebook"
+                            placeholder="e.g. torvalds"
                             value={userA}
                             onChange={(e) => setUserA(e.target.value)}
                             className="bg-indigo-50/50 dark:bg-indigo-900/10 border-indigo-200 dark:border-indigo-800 focus:ring-indigo-500 w-full h-12 text-lg"
@@ -57,7 +57,7 @@ export function ComparisonHeader({ onCompare, loading }) {
                             Developer B
                         </label>
                         <Input
-                            placeholder="e.g. google"
+                            placeholder="e.g. gaearon"
                             value={userB}
                             onChange={(e) => setUserB(e.target.value)}
                             className="bg-violet-50/50 dark:bg-violet-900/10 border-violet-200 dark:border-violet-800 focus:ring-violet-500 w-full h-12 text-lg"
