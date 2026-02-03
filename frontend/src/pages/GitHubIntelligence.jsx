@@ -4,8 +4,13 @@ import { ArrowLeft, RefreshCw, ChevronDown, ChevronUp } from 'lucide-react';
 import { githubAPI } from '../services/api';
 import DeveloperOverview from '../components/github/DeveloperOverview';
 import ProjectCard from '../components/github/ProjectCard';
+import { ContributionHeatmap } from '../components/github/ContributionHeatmap';
+import { ActivityTimeline } from '../components/github/ActivityTimeline';
+import { SkillRadar } from '../components/github/SkillRadar';
+import { RepoFilters } from '../components/github/RepoFilters';
 import { Button } from '../components/common/Button';
 import { Loading } from '../components/common/Loading';
+import { Card } from '../components/common/Card';
 
 export default function GitHubIntelligence() {
     const { username } = useParams();
@@ -14,6 +19,11 @@ export default function GitHubIntelligence() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [showAllRepos, setShowAllRepos] = useState(false);
+
+    // Filter and sort state
+    const [filter, setFilter] = useState('all');
+    const [sortBy, setSortBy] = useState('updated');
+    const [searchQuery, setSearchQuery] = useState('');
 
     useEffect(() => {
         fetchGitHubData();
@@ -90,23 +100,48 @@ export default function GitHubIntelligence() {
         return null;
     }
 
-    // Sort repositories: active first, then by quality score
-    const sortedRepos = [...(data.repositories || [])].sort((a, b) => {
-        // Active repos first
-        if (a.maturityStage === 'active' && b.maturityStage !== 'active') return -1;
-        if (a.maturityStage !== 'active' && b.maturityStage === 'active') return 1;
+    // Filter repositories
+    let filteredRepos = [...(data.repositories || [])];
 
-        // Then by health score
-        return (b.healthScore || 0) - (a.healthScore || 0);
+    // Apply filter
+    if (filter === 'active') {
+        filteredRepos = filteredRepos.filter(r => r.maturityStage === 'active');
+    } else if (filter === 'stable') {
+        filteredRepos = filteredRepos.filter(r => r.maturityStage === 'stable');
+    } else if (filter === 'archived') {
+        filteredRepos = filteredRepos.filter(r => r.isArchived);
+    }
+
+    // Apply search
+    if (searchQuery) {
+        filteredRepos = filteredRepos.filter(r =>
+            r.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            r.description?.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+    }
+
+    // Apply sorting
+    filteredRepos.sort((a, b) => {
+        switch (sortBy) {
+            case 'updated':
+                return new Date(b.updatedAt) - new Date(a.updatedAt);
+            case 'created':
+                return new Date(b.createdAt) - new Date(a.createdAt);
+            case 'stars':
+                return (b.stars || 0) - (a.stars || 0);
+            case 'commits':
+                return (b.commitCount || 0) - (a.commitCount || 0);
+            case 'quality':
+                return (b.healthScore || 0) - (a.healthScore || 0);
+            default:
+                return 0;
+        }
     });
 
-    // Get top 5 repos (excluding abandoned ones for initial view)
-    const topRepos = sortedRepos
-        .filter(r => r.maturityStage !== 'abandoned')
-        .slice(0, 5);
-
-    const displayedRepos = showAllRepos ? sortedRepos : topRepos;
-    const hiddenReposCount = sortedRepos.length - topRepos.length;
+    // Get top 5 repos for initial view
+    const topRepos = filteredRepos.slice(0, 5);
+    const displayedRepos = showAllRepos ? filteredRepos : topRepos;
+    const hiddenReposCount = filteredRepos.length - topRepos.length;
 
     return (
         <div className="min-h-screen bg-background-light dark:bg-background-dark py-8">
@@ -135,12 +170,46 @@ export default function GitHubIntelligence() {
                 {/* Developer Overview */}
                 <DeveloperOverview data={data} />
 
+                {/* Visualizations Section */}
+                <div className="mt-8 space-y-8">
+                    {/* Contribution Heatmap */}
+                    <Card>
+                        <ContributionHeatmap contributions={data.contributions} />
+                    </Card>
+
+                    {/* Activity Timeline and Skill Radar */}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <Card>
+                            <ActivityTimeline contributions={data.contributions} />
+                        </Card>
+                        <Card>
+                            <SkillRadar metrics={data.metrics} repositories={data.repositories} />
+                        </Card>
+                    </div>
+                </div>
+
                 {/* Projects Section */}
                 <div className="mt-8">
-                    <div className="flex items-center justify-between mb-6">
-                        <h2 className="text-2xl font-bold text-text-primary-light dark:text-text-primary-dark">
-                            🚀 {showAllRepos ? 'All Projects' : 'Top Projects'} ({displayedRepos.length}{!showAllRepos && ` of ${sortedRepos.length}`})
-                        </h2>
+                    <h2 className="text-2xl font-bold text-text-primary-light dark:text-text-primary-dark mb-6">
+                        🚀 Projects
+                    </h2>
+
+                    {/* Repository Filters */}
+                    <RepoFilters
+                        repositories={data.repositories || []}
+                        filter={filter}
+                        setFilter={setFilter}
+                        sortBy={sortBy}
+                        setSortBy={setSortBy}
+                        searchQuery={searchQuery}
+                        setSearchQuery={setSearchQuery}
+                    />
+
+                    <div className="flex items-center justify-between mb-4">
+                        <p className="text-sm text-light-text-tertiary dark:text-dark-text-tertiary">
+                            Showing {displayedRepos.length} {displayedRepos.length === 1 ? 'repository' : 'repositories'}
+                            {!showAllRepos && filteredRepos.length > 5 && ` of ${filteredRepos.length}`}
+                        </p>
                         {hiddenReposCount > 0 && (
                             <Button
                                 variant="outline"
