@@ -1,199 +1,110 @@
-# DevIntel - GitHub Developer Intelligence Platform
+# DevIntel - Developer Intelligence Platform
 
-Transform raw GitHub activity into meaningful insights, growth patterns, and actionable recommendations.
+<p align="center">
+  <h3 align="center">DevIntel</h3>
+  <p align="center">
+    Unlock the story behind the code.
+    <br />
+    <a href="https://devintel.vercel.app"><strong>View Live Demo »</strong></a>
+    <br />
+    <br />
+    <a href="https://github.com/itslokeshx/DevIntel/issues">Report Bug</a>
+    ·
+    <a href="https://github.com/itslokeshx/DevIntel/issues">Request Feature</a>
+  </p>
+</p>
 
-## 🎯 Features
+DevIntel is a **premium developer intelligence platform** that transforms raw GitHub & LeetCode activity into meaningful narratives. It goes beyond simple statistics to reveal coding patterns, growth trajectories, and true developer identity using advanced AI.
 
-- **GitHub Intelligence**: Deep analysis of developer profiles, repositories, and contribution patterns
-- **AI-Powered Insights**: Google Gemini generates personalized insights and recommendations
-- **Developer Metrics**: Dev Score, Consistency Score, Impact Score, and more
-- **Project X-Ray**: Health scores, maturity stages, and documentation quality for each repository
-- **Growth Actions**: Actionable recommendations to improve your developer profile
-- **Beautiful UI**: Premium design with light/dark theme support
+## ✨ Key Features
 
-## 🏗️ Tech Stack
+- **🚀 GitHub Intelligence**: Deep-dive analysis of repositories, contribution habits, and code quality.
+- **⚔️ Developer Comparison**: Compare two developers side-by-side with AI-driven verdicts (e.g., `torvalds` vs `gaearon`).
+- **🧠 AI-Powered Insights**: Uses **OpenRouter (Mixtral 8x7B)** to generate personalized growth plans and archetypes (e.g., "The Architect", "The Sprinter").
+- **🧩 LeetCode Analytics**: Visualize problem-solving skills with heatmaps and difficulty distribution charts.
+- **🎨 Premium UI**: A "Glassmorphism" inspired design with seamless dark/light modes and rich data visualizations.
 
-### Backend
-- **Node.js** + **Express** - REST API
-- **MongoDB** - Database with Mongoose ODM
-- **GitHub API** - Fetch user and repository data
-- **Google Gemini AI** - Generate insights and recommendations
-- **Axios** - HTTP client for API calls
+## 🛠️ Tech Stack
 
 ### Frontend
-- **React 18** - UI library
-- **Vite** - Build tool and dev server
-- **Tailwind CSS** - Styling with custom design system
-- **React Router** - Client-side routing
-- **Lucide React** - Premium icon library
-- **Recharts** - Data visualization (future)
+- **React 18** + **Vite** (Lightning fast build)
+- **Tailwind CSS** (Utility-first styling)
+- **Framer Motion** (Smooth animations)
+- **Recharts** (Data visualization)
+
+### Backend
+- **Node.js** + **Express** (Robust API)
+- **MongoDB** (Data persistence & caching)
+- **OpenRouter API** (Access to Mixtral/Mistral AI models)
+- **Memory Caching** (Optimized performance)
 
 ## 🚀 Getting Started
 
 ### Prerequisites
-
-- Node.js 18+ and npm
-- MongoDB (local or cloud)
-- GitHub Personal Access Token ([Get one here](https://github.com/settings/tokens))
-- Google Gemini API Key ([Get one here](https://makersuite.google.com/app/apikey))
+- Node.js 18+
+- MongoDB (Local or Atlas)
+- OpenRouter API Key
 
 ### Installation
 
-1. **Clone the repository**
-```bash
-git clone <your-repo-url>
-cd DevIntel
-```
+1.  **Clone the repository**
+    ```bash
+    git clone https://github.com/itslokeshx/DevIntel.git
+    cd DevIntel
+    ```
 
-2. **Backend Setup**
-```bash
-cd backend
-npm install
+2.  **Backend Setup**
+    ```bash
+    cd backend
+    npm install
+    # Create .env based on the example below
+    npm start
+    ```
 
-# Create .env file
-cp .env.example .env
-# Edit .env and add your API keys:
-# - GITHUB_TOKEN=your_github_token
-# - GEMINI_API_KEY=your_gemini_api_key
-# - MONGODB_URI=mongodb://localhost:27017/devintel
-```
+3.  **Frontend Setup**
+    ```bash
+    cd ../frontend
+    npm install
+    npm run dev
+    ```
 
-3. **Frontend Setup**
-```bash
-cd ../frontend
-npm install
-```
+## 🔑 Environment Variables (.env)
 
-4. **Start MongoDB**
-```bash
-# If using local MongoDB
-mongod
-```
-
-5. **Run the Application**
-
-In separate terminals:
-
-```bash
-# Terminal 1: Backend
-cd backend
-npm run dev
-
-# Terminal 2: Frontend
-cd frontend
-npm run dev
-```
-
-The application will be available at:
-- Frontend: http://localhost:3000
-- Backend API: http://localhost:5000
-
-## 📖 Usage
-
-1. **Analyze a GitHub Profile**
-   - Enter a GitHub username on the home page
-   - Click "Analyze with DevIntel"
-   - View comprehensive intelligence report
-
-2. **Explore Insights**
-   - Dev Score, Consistency, and Impact metrics
-   - AI-generated one-line insight
-   - Repository health scores and maturity stages
-   - Growth action recommendations
-
-3. **Refresh Data**
-   - Click "Refresh Data" to force re-analysis
-   - Data is cached for 7 days by default
-
-## 🔑 Environment Variables
-
-### Backend (.env)
+**Backend**
 ```env
 PORT=5000
-NODE_ENV=development
-MONGODB_URI=mongodb://localhost:27017/devintel
-GITHUB_TOKEN=your_github_personal_access_token
-GEMINI_API_KEY=your_gemini_api_key
-RATE_LIMIT_WINDOW_MS=900000
-RATE_LIMIT_MAX_REQUESTS=100
-CACHE_TTL_SECONDS=604800
+MONGODB_URI=your_mongodb_connection_string
+GITHUB_TOKEN=your_github_pat
+OR_API=your_openrouter_api_key
+GEMINI_API_KEY=optional_fallback_key
 FRONTEND_URL=http://localhost:3000
 ```
 
-## 📁 Project Structure
-
-```
-DevIntel/
-├── backend/
-│   ├── src/
-│   │   ├── models/          # MongoDB schemas
-│   │   ├── services/        # GitHub & AI services
-│   │   ├── controllers/     # API controllers
-│   │   ├── routes/          # API routes
-│   │   ├── middleware/      # Express middleware
-│   │   ├── utils/           # Utility functions
-│   │   └── config/          # Configuration files
-│   ├── server.js            # Entry point
-│   └── package.json
-│
-└── frontend/
-    ├── src/
-    │   ├── components/      # React components
-    │   ├── pages/           # Page components
-    │   ├── context/         # React context
-    │   ├── hooks/           # Custom hooks
-    │   ├── services/        # API service
-    │   └── styles/          # Global styles
-    ├── index.html
-    └── package.json
+**Frontend**
+```env
+VITE_API_URL=http://localhost:5000/api
 ```
 
-## 🎨 Design Philosophy
+## 🌍 Deployment
 
-- **Ultra Clean**: Apple-level minimalism, generous white space
-- **Intelligence over Statistics**: Show patterns, not just numbers
-- **GitHub-First**: 70% weight on GitHub activity
-- **AI as Interpreter**: AI explains data, never collects it
-- **Premium Minimalism**: Professional, not playful
-
-## 🔒 Privacy & Security
-
-- **Public Data Only**: Analyzes only public GitHub activity
-- **No Authentication Required**: No user login needed
-- **Rate Limited**: 100 requests per 15 minutes per IP
-- **Cached Data**: Results cached for 7 days to reduce API calls
-
-## 🚧 Roadmap
-
-### Phase 1 (MVP) ✅
-- [x] GitHub Intelligence page
-- [x] Basic metrics and insights
-- [x] AI-powered recommendations
-- [x] Light/dark theme
-- [x] Responsive design
-
-### Phase 2 (Future)
-- [ ] LeetCode integration
-- [ ] Codeforces integration
-- [ ] DEV Community integration
-- [ ] GitHub Comparison page
-- [ ] Unified Profile page
-- [ ] Export to PDF
+- **Frontend**: Deployed on [Vercel](https://devintel.vercel.app)
+- **Backend**: Deployed on [Render](https://devintel.onrender.com)
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
 ## 📄 License
 
-MIT License - feel free to use this project for learning or building your own tools!
-
-## 🙏 Acknowledgments
-
-- GitHub API for developer data
-- Google Gemini for AI insights
-- The open-source community
+Distributed under the MIT License. See `LICENSE` for more information.
 
 ---
-
-Built with ❤️ for developers, by developers
+<p align="center">
+  Built with ❤️ by <a href="https://github.com/itslokeshx">Lokesh</a>
+</p>
