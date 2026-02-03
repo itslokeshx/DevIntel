@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { ThemeProvider } from './context/ThemeContext';
 import { Header } from './components/layout/Header';
 import { Home } from './pages/Home';
-import { GitHubIntelligence } from './pages/GitHubIntelligence';
+import GitHubIntelligence from './pages/GitHubIntelligence';
 import './styles/globals.css';
 
 function App() {

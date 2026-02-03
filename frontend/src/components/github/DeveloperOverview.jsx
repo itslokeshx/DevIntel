@@ -2,7 +2,7 @@ import React from 'react';
 import { Flame, TrendingUp, Star, GitFork, FolderGit2, Code2, Calendar, Trophy } from 'lucide-react';
 import StatsCard from '../common/StatsCard';
 import AchievementBadge from '../common/AchievementBadge';
-import Card from '../common/Card';
+import { Card } from '../common/Card';
 
 export default function DeveloperOverview({ data }) {
     const { profile, metrics, contributions, aiInsights } = data;

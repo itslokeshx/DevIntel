@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, RefreshCw, ChevronDown, ChevronUp } from 'lucide-react';
-import { getUser, analyze } from '../services/api';
+import { githubAPI } from '../services/api';
 import DeveloperOverview from '../components/github/DeveloperOverview';
 import ProjectCard from '../components/github/ProjectCard';
-import Button from '../components/common/Button';
-import Loading from '../components/common/Loading';
+import { Button } from '../components/common/Button';
+import { Loading } from '../components/common/Loading';
 
 export default function GitHubIntelligence() {
     const { username } = useParams();
@@ -26,15 +26,15 @@ export default function GitHubIntelligence() {
 
             // Try to get cached data first
             try {
-                const response = await getUser(username);
-                setData(response.data);
+                const response = await githubAPI.getUser(username);
+                setData(response);
                 setLoading(false);
             } catch (err) {
                 // If no cached data, analyze the user
-                if (err.response?.status === 404) {
+                if (err.message.includes('No data found')) {
                     console.log('No cached data, analyzing user...');
-                    const analyzeResponse = await analyze(username);
-                    setData(analyzeResponse.data);
+                    const analyzeResponse = await githubAPI.analyze(username);
+                    setData(analyzeResponse);
                     setLoading(false);
                 } else {
                     throw err;
@@ -51,8 +51,8 @@ export default function GitHubIntelligence() {
         try {
             setLoading(true);
             setError(null);
-            const response = await analyze(username);
-            setData(response.data);
+            const response = await githubAPI.analyze(username);
+            setData(response);
             setLoading(false);
         } catch (err) {
             console.error('Error refreshing data:', err);
