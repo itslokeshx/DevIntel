@@ -66,12 +66,15 @@ exports.compareUsers = async (req, res) => {
         const cached = await ComparisonCache.findOne({ comparisonKey });
         // Return cached if valid and both users exist in our DB (sanity check)
         if (cached && cached.expiresAt > new Date()) {
+            // Check if we need to swap the data (if requested A is actually stored as B)
+            const isSwapped = cached.userA.toLowerCase() !== usernameA.toLowerCase();
+
             return res.json({
                 success: true,
                 data: {
-                    userA: cached.userAData,
-                    userB: cached.userBData,
-                    comparison: cached.comparison
+                    userA: isSwapped ? cached.userBData : cached.userAData,
+                    userB: isSwapped ? cached.userAData : cached.userBData,
+                    comparison: isSwapped ? swapComparisonMetrics(cached.comparison) : cached.comparison
                 }
             });
         }
@@ -269,6 +272,37 @@ Be balanced and avoid declaring one "better" - focus on different strengths and 
     }
 }
 
+// Helper to swap comparison metrics if users are swapped
+function swapComparisonMetrics(comparison) {
+    const swapped = { ...comparison };
+
+    // Swap global winner metrics (activeProjects, totalStars, avgDocQuality, etc)
+    const metricsToSwap = ['devScore', 'consistencyScore', 'impactScore', 'totalProjects', 'activeProjects', 'totalCommits', 'currentStreak', 'totalStars', 'avgDocQuality'];
+
+    metricsToSwap.forEach(key => {
+        if (swapped[key]) {
+            swapped[key] = {
+                ...swapped[key],
+                userA: swapped[key].userB,
+                userB: swapped[key].userA,
+                // If winner is A, it becomes B, and vice versa
+                winner: swapped[key].winner === 'A' ? 'B' : (swapped[key].winner === 'B' ? 'A' : swapped[key].winner)
+            };
+        }
+    });
+
+    // Swap Tech Stack
+    if (swapped.techStack) {
+        swapped.techStack = {
+            ...swapped.techStack,
+            uniqueA: swapped.techStack.uniqueB,
+            uniqueB: swapped.techStack.uniqueA
+        };
+    }
+
+    return swapped;
+}
+
 // Get cached comparison
 exports.getComparison = async (req, res) => {
     try {
@@ -284,12 +318,15 @@ exports.getComparison = async (req, res) => {
             });
         }
 
+        // Check if we need to swap
+        const isSwapped = cached.userA.toLowerCase() !== userA.toLowerCase();
+
         res.json({
             success: true,
             data: {
-                userA: cached.userAData,
-                userB: cached.userBData,
-                comparison: cached.comparison
+                userA: isSwapped ? cached.userBData : cached.userAData,
+                userB: isSwapped ? cached.userAData : cached.userBData,
+                comparison: isSwapped ? swapComparisonMetrics(cached.comparison) : cached.comparison
             }
         });
     } catch (error) {

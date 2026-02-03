@@ -7,16 +7,17 @@ export function ProfileComparison({ userA, userB }) {
         const metrics = user.metrics;
 
         // Distinct themes for User A vs User B
+        // Distinct themes for User A vs User B
         const theme = isUserA ? {
-            bg: 'bg-gradient-to-br from-primary-50/80 to-primary-100/30 dark:from-primary-900/10 dark:to-primary-900/5',
-            border: 'border-primary-100 dark:border-primary-800',
-            accent: 'bg-primary-500',
-            accentText: 'text-primary-700 dark:text-primary-300',
-            ring: 'ring-primary-100 dark:ring-primary-900',
-            shadow: 'shadow-primary-500/10',
+            bg: 'bg-gradient-to-br from-emerald-50 to-emerald-100/30 dark:from-emerald-900/20 dark:to-emerald-900/5',
+            border: 'border-emerald-100 dark:border-emerald-800',
+            accent: 'bg-emerald-500',
+            accentText: 'text-emerald-700 dark:text-emerald-300',
+            ring: 'ring-emerald-100 dark:ring-emerald-900',
+            shadow: 'shadow-emerald-500/10',
             label: 'Player A'
         } : {
-            bg: 'bg-gradient-to-br from-purple-50/80 to-purple-100/30 dark:from-purple-900/10 dark:to-purple-900/5',
+            bg: 'bg-gradient-to-br from-purple-50 to-purple-100/30 dark:from-purple-900/20 dark:to-purple-900/5',
             border: 'border-purple-100 dark:border-purple-800',
             accent: 'bg-purple-500',
             accentText: 'text-purple-700 dark:text-purple-300',
@@ -79,11 +80,21 @@ export function ProfileComparison({ userA, userB }) {
 
                 {/* Key Stats Grid */}
                 <div className="grid grid-cols-2 gap-3 mt-auto">
+                    <div className="col-span-2 p-3 bg-white/60 dark:bg-white/5 rounded-xl border border-light-border dark:border-dark-border backdrop-blur-sm group hover:border-primary-300 dark:hover:border-primary-700 transition-colors">
+                        <div className="text-[10px] font-bold text-light-text-tertiary dark:text-dark-text-tertiary mb-1 uppercase tracking-widest">Dev Score</div>
+                        <div className="font-black text-2xl flex items-center justify-center gap-1">
+                            <span className={isUserA ? 'text-primary-600 dark:text-primary-400' : 'text-purple-600 dark:text-purple-400'}>
+                                {user.metrics.devScore}
+                            </span>
+                            <span className="text-xs text-gray-400 font-medium self-end mb-1.5">/100</span>
+                        </div>
+                    </div>
+
                     <div className="p-3 bg-white/60 dark:bg-white/5 rounded-xl border border-light-border dark:border-dark-border backdrop-blur-sm group hover:border-primary-300 dark:hover:border-primary-700 transition-colors">
                         <div className="text-[10px] font-bold text-light-text-tertiary dark:text-dark-text-tertiary mb-1 uppercase tracking-widest">Global Rank</div>
                         <div className="font-black text-lg flex items-center justify-center gap-1.5">
                             <Trophy className="w-4 h-4 text-yellow-500" />
-                            Top {metrics.globalRank}%
+                            Top {user.metrics.globalRank}%
                         </div>
                     </div>
                     <div className="p-3 bg-white/60 dark:bg-white/5 rounded-xl border border-light-border dark:border-dark-border backdrop-blur-sm group hover:border-purple-300 dark:hover:border-purple-700 transition-colors">
