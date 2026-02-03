@@ -7,69 +7,97 @@ const {
     getDeveloperArchetypePrompt
 } = require('./prompts');
 
-/**
- * Generate all AI insights for a GitHub user analysis
- */
 async function generateGitHubInsights(analyzedData) {
     console.log('Generating AI insights...');
 
     try {
-        // Generate repository summaries (batch for top 10 repos)
+        // OPTIMIZATION: Combine all insights into 2 API calls to fit within 5 requests/minute limit
+
+        // Call 1: Generate all developer insights in one prompt
+        console.log('Generating comprehensive developer insights...');
+        const developerPrompt = `Analyze this GitHub developer profile and provide insights in JSON format:
+
+Developer Stats:
+- Dev Score: ${analyzedData.metrics.devScore}/100
+- Consistency Score: ${analyzedData.metrics.consistencyScore}/100
+- Impact Score: ${analyzedData.metrics.impactScore}/100
+- Activity Pattern: ${analyzedData.metrics.activityPattern}
+- Primary Tech: ${analyzedData.metrics.primaryTechIdentity}
+- Total Repos: ${analyzedData.repositories.length}
+- Active Repos: ${analyzedData.repositories.filter(r => r.maturityStage === 'active').length}
+- Abandoned Repos: ${analyzedData.repositories.filter(r => r.maturityStage === 'abandoned').length}
+- Top Skills: ${analyzedData.metrics.skills.slice(0, 5).map(s => s.name).join(', ')}
+
+Contribution Pattern:
+- Total Commits: ${analyzedData.contributions.totalCommits}
+- Longest Streak: ${analyzedData.contributions.longestStreak} days
+- Current Streak: ${analyzedData.contributions.currentStreak} days
+- Busiest Month: ${analyzedData.contributions.busiestMonth}
+
+Respond with ONLY valid JSON (no markdown, no code blocks):
+{
+  "oneLineInsight": "A single compelling sentence describing this developer",
+  "activityNarrative": "2-3 sentences about their coding rhythm and patterns",
+  "developerArchetype": "One word: Builder/Maintainer/Explorer/Specialist",
+  "growthActions": ["action 1", "action 2", "action 3"]
+}`;
+
+        const developerInsightsRaw = await generateContent(developerPrompt);
+
+        // Parse JSON response
+        let developerInsights;
+        try {
+            // Remove markdown code blocks if present
+            const cleanJson = developerInsightsRaw.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+            developerInsights = JSON.parse(cleanJson);
+        } catch (e) {
+            console.error('Failed to parse developer insights JSON:', e);
+            // Fallback
+            developerInsights = {
+                oneLineInsight: 'Skilled developer with diverse technical expertise',
+                activityNarrative: 'Active contributor with consistent coding patterns',
+                developerArchetype: 'Builder',
+                growthActions: ['Continue building great projects', 'Expand technical skills', 'Engage with community']
+            };
+        }
+
+        // Call 2: Generate top 3 repo summaries only (not 10)
         const topRepos = analyzedData.repositories
             .filter(r => r.maturityStage !== 'abandoned')
             .sort((a, b) => b.healthScore - a.healthScore)
-            .slice(0, 10);
+            .slice(0, 3);
 
-        console.log(`Generating summaries for ${topRepos.length} repositories...`);
-        const repoPrompts = topRepos.map(repo => getRepoSummaryPrompt(repo));
-        const repoSummaries = await generateBatch(repoPrompts);
+        console.log(`Generating summaries for top ${topRepos.length} repositories...`);
 
-        // Attach summaries to repositories
-        topRepos.forEach((repo, index) => {
-            repo.aiSummary = repoSummaries[index];
-        });
+        if (topRepos.length > 0) {
+            const repoSummaryPrompt = `Generate brief one-line summaries for these GitHub repositories. Respond with ONLY a JSON array of strings (no markdown):
 
-        // Generate developer one-liner
-        console.log('Generating developer insight...');
-        const oneLineInsight = await generateContent(
-            getDeveloperInsightPrompt(analyzedData)
-        );
+${topRepos.map((repo, i) => `${i + 1}. ${repo.name}: ${repo.description || 'No description'} (${repo.language || 'Unknown'}, ${repo.stars} stars, Health: ${repo.healthScore}/100)`).join('\n')}
 
-        // Generate activity narrative
-        console.log('Generating activity narrative...');
-        const activityNarrative = await generateContent(
-            getActivityNarrativePrompt(
-                analyzedData.contributions,
-                analyzedData.metrics.activityPattern
-            )
-        );
+Format: ["summary 1", "summary 2", "summary 3"]`;
 
-        // Generate growth actions
-        console.log('Generating growth actions...');
-        const growthActionsRaw = await generateContent(
-            getGrowthActionsPrompt(analyzedData)
-        );
+            const repoSummariesRaw = await generateContent(repoSummaryPrompt);
 
-        // Parse growth actions (should be JSON array)
-        let growthActions = [];
-        try {
-            growthActions = JSON.parse(growthActionsRaw);
-        } catch (e) {
-            // Fallback if not valid JSON
-            growthActions = growthActionsRaw.split('\n').filter(line => line.trim()).slice(0, 3);
+            try {
+                const cleanJson = repoSummariesRaw.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+                const repoSummaries = JSON.parse(cleanJson);
+                topRepos.forEach((repo, index) => {
+                    repo.aiSummary = repoSummaries[index] || 'Interesting project';
+                });
+            } catch (e) {
+                console.error('Failed to parse repo summaries:', e);
+                // Fallback summaries
+                topRepos.forEach(repo => {
+                    repo.aiSummary = `${repo.language || 'Software'} project with ${repo.stars} stars`;
+                });
+            }
         }
 
-        // Generate developer archetype
-        console.log('Generating developer archetype...');
-        const developerArchetype = await generateContent(
-            getDeveloperArchetypePrompt(analyzedData)
-        );
-
         return {
-            oneLineInsight,
-            activityNarrative,
-            growthActions,
-            developerArchetype,
+            oneLineInsight: developerInsights.oneLineInsight,
+            activityNarrative: developerInsights.activityNarrative,
+            growthActions: Array.isArray(developerInsights.growthActions) ? developerInsights.growthActions : ['Keep building', 'Stay consistent', 'Engage with community'],
+            developerArchetype: developerInsights.developerArchetype,
             strengthsWeaknesses: {
                 strengths: extractStrengths(analyzedData),
                 improvements: extractImprovements(analyzedData)
