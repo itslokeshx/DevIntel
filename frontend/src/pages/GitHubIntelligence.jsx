@@ -1,76 +1,71 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { RefreshCw, ArrowLeft } from 'lucide-react';
-import { githubAPI } from '../services/api';
-import { Button } from '../components/common/Button';
-import { Card } from '../components/common/Card';
-import { Loading, SkeletonCard } from '../components/common/Loading';
-import { DeveloperOverview } from '../components/github/DeveloperOverview';
-import { RepoCard } from '../components/github/RepoCard';
-import { GrowthActions } from '../components/github/GrowthActions';
+import { ArrowLeft, RefreshCw, ChevronDown, ChevronUp } from 'lucide-react';
+import { getUser, analyze } from '../services/api';
+import DeveloperOverview from '../components/github/DeveloperOverview';
+import ProjectCard from '../components/github/ProjectCard';
+import Button from '../components/common/Button';
+import Loading from '../components/common/Loading';
 
-export function GitHubIntelligence() {
+export default function GitHubIntelligence() {
     const { username } = useParams();
     const navigate = useNavigate();
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [showAllRepos, setShowAllRepos] = useState(false);
 
     useEffect(() => {
         fetchGitHubData();
     }, [username]);
 
-    const fetchGitHubData = async () => {
-        setLoading(true);
-        setError(null);
-
+    async function fetchGitHubData() {
         try {
+            setLoading(true);
+            setError(null);
+
             // Try to get cached data first
             try {
-                const cachedData = await githubAPI.getUser(username);
-                setData(cachedData.data);
+                const response = await getUser(username);
+                setData(response.data);
                 setLoading(false);
-                return;
             } catch (err) {
-                // If no cached data, analyze
-                console.log('No cached data, analyzing...');
+                // If no cached data, analyze the user
+                if (err.response?.status === 404) {
+                    console.log('No cached data, analyzing user...');
+                    const analyzeResponse = await analyze(username);
+                    setData(analyzeResponse.data);
+                    setLoading(false);
+                } else {
+                    throw err;
+                }
             }
-
-            // Analyze user
-            const result = await githubAPI.analyze(username);
-            setData(result.data);
         } catch (err) {
-            setError(err.message);
-        } finally {
+            console.error('Error fetching GitHub data:', err);
+            setError(err.response?.data?.message || err.message || 'Failed to fetch data');
             setLoading(false);
         }
-    };
+    }
 
-    const handleRefresh = async () => {
-        setLoading(true);
+    async function handleRefresh() {
         try {
-            const result = await githubAPI.refresh(username);
-            setData(result.data);
+            setLoading(true);
+            setError(null);
+            const response = await analyze(username);
+            setData(response.data);
+            setLoading(false);
         } catch (err) {
-            setError(err.message);
-        } finally {
+            console.error('Error refreshing data:', err);
+            setError(err.response?.data?.message || err.message || 'Failed to refresh data');
             setLoading(false);
         }
-    };
+    }
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-light-bg-primary dark:bg-dark-bg-primary py-8">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="text-center mb-8">
-                        <h2 className="text-h2 font-bold text-light-text-primary dark:text-dark-text-primary">
-                            Analyzing {username}'s GitHub profile...
-                        </h2>
-                        <p className="text-body text-light-text-secondary dark:text-dark-text-secondary mt-2">
-                            This may take 20-30 seconds
-                        </p>
-                    </div>
-                    <Loading />
+            <div className="min-h-screen bg-background-light dark:bg-background-dark py-12">
+                <div className="container mx-auto px-4">
+                    <Loading text="Analyzing GitHub profile..." />
                 </div>
             </div>
         );
@@ -78,37 +73,61 @@ export function GitHubIntelligence() {
 
     if (error) {
         return (
-            <div className="min-h-screen bg-light-bg-primary dark:bg-dark-bg-primary py-8">
-                <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <Card padding="lg" className="text-center">
-                        <h2 className="text-h2 font-bold text-accent-error mb-4">Error</h2>
-                        <p className="text-body text-light-text-secondary dark:text-dark-text-secondary mb-6">
-                            {error}
-                        </p>
+            <div className="min-h-screen bg-background-light dark:bg-background-dark py-12">
+                <div className="container mx-auto px-4 max-w-2xl">
+                    <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-6 text-center">
+                        <p className="text-red-800 dark:text-red-200 mb-4">{error}</p>
                         <Button onClick={() => navigate('/')}>
-                            <ArrowLeft className="mr-2 h-5 w-5" />
-                            Back to Home
+                            Go Back
                         </Button>
-                    </Card>
+                    </div>
                 </div>
             </div>
         );
     }
 
-    if (!data) return null;
+    if (!data) {
+        return null;
+    }
+
+    // Sort repositories: active first, then by quality score
+    const sortedRepos = [...(data.repositories || [])].sort((a, b) => {
+        // Active repos first
+        if (a.maturityStage === 'active' && b.maturityStage !== 'active') return -1;
+        if (a.maturityStage !== 'active' && b.maturityStage === 'active') return 1;
+
+        // Then by health score
+        return (b.healthScore || 0) - (a.healthScore || 0);
+    });
+
+    // Get top 5 repos (excluding abandoned ones for initial view)
+    const topRepos = sortedRepos
+        .filter(r => r.maturityStage !== 'abandoned')
+        .slice(0, 5);
+
+    const displayedRepos = showAllRepos ? sortedRepos : topRepos;
+    const hiddenReposCount = sortedRepos.length - topRepos.length;
 
     return (
-        <div className="min-h-screen bg-light-bg-primary dark:bg-dark-bg-primary py-8">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="min-h-screen bg-background-light dark:bg-background-dark py-8">
+            <div className="container mx-auto px-4 max-w-7xl">
                 {/* Header */}
                 <div className="flex items-center justify-between mb-8">
-                    <Button variant="ghost" onClick={() => navigate('/')}>
-                        <ArrowLeft className="mr-2 h-5 w-5" />
+                    <Button
+                        variant="ghost"
+                        onClick={() => navigate('/')}
+                        className="flex items-center gap-2"
+                    >
+                        <ArrowLeft className="w-4 h-4" />
                         Back
                     </Button>
-
-                    <Button variant="secondary" onClick={handleRefresh}>
-                        <RefreshCw className="mr-2 h-5 w-5" />
+                    <Button
+                        variant="outline"
+                        onClick={handleRefresh}
+                        disabled={loading}
+                        className="flex items-center gap-2"
+                    >
+                        <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
                         Refresh Data
                     </Button>
                 </div>
@@ -116,24 +135,44 @@ export function GitHubIntelligence() {
                 {/* Developer Overview */}
                 <DeveloperOverview data={data} />
 
-                {/* Growth Actions */}
-                {data.aiInsights?.growthActions && (
-                    <div className="mt-8">
-                        <GrowthActions actions={data.aiInsights.growthActions} />
+                {/* Projects Section */}
+                <div className="mt-8">
+                    <div className="flex items-center justify-between mb-6">
+                        <h2 className="text-2xl font-bold text-text-primary-light dark:text-text-primary-dark">
+                            🚀 {showAllRepos ? 'All Projects' : 'Top Projects'} ({displayedRepos.length}{!showAllRepos && ` of ${sortedRepos.length}`})
+                        </h2>
+                        {hiddenReposCount > 0 && (
+                            <Button
+                                variant="outline"
+                                onClick={() => setShowAllRepos(!showAllRepos)}
+                                className="flex items-center gap-2"
+                            >
+                                {showAllRepos ? (
+                                    <>
+                                        Show Less
+                                        <ChevronUp className="w-4 h-4" />
+                                    </>
+                                ) : (
+                                    <>
+                                        View All ({hiddenReposCount} more)
+                                        <ChevronDown className="w-4 h-4" />
+                                    </>
+                                )}
+                            </Button>
+                        )}
                     </div>
-                )}
 
-                {/* Projects */}
-                <div className="mt-12">
-                    <h2 className="text-h2 font-bold text-light-text-primary dark:text-dark-text-primary mb-6">
-                        Projects ({data.repositories?.length || 0})
-                    </h2>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {data.repositories?.slice(0, 20).map((repo, index) => (
-                            <RepoCard key={index} repo={repo} />
+                    <div className="grid grid-cols-1 gap-6">
+                        {displayedRepos.map((repo, index) => (
+                            <ProjectCard key={repo._id || index} repo={repo} />
                         ))}
                     </div>
+
+                    {displayedRepos.length === 0 && (
+                        <div className="text-center py-12 text-text-tertiary-light dark:text-text-tertiary-dark">
+                            No repositories found
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
