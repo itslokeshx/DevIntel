@@ -41,12 +41,12 @@ export function TechStackOverlap({ techStack }) {
                 <div className="grid grid-cols-2 gap-4">
                     {/* User A Unique */}
                     <div>
-                        <h4 className="text-sm font-semibold text-primary-600 dark:text-primary-400 mb-3 border-b-2 border-primary-100 dark:border-primary-800 pb-1">
+                        <h4 className="text-sm font-semibold text-indigo-600 dark:text-indigo-400 mb-3 border-b-2 border-indigo-100 dark:border-indigo-800 pb-1">
                             Unique to User A
                         </h4>
                         <div className="flex flex-wrap gap-2">
                             {uniqueA.map(tech => (
-                                <span key={tech} className="px-2 py-1 bg-primary-50 dark:bg-primary-900/10 text-primary-700 dark:text-primary-300 rounded text-xs font-medium">
+                                <span key={tech} className="px-2 py-1 bg-indigo-50 dark:bg-indigo-900/10 text-indigo-700 dark:text-indigo-300 rounded text-xs font-medium">
                                     {tech}
                                 </span>
                             ))}
@@ -58,12 +58,12 @@ export function TechStackOverlap({ techStack }) {
 
                     {/* User B Unique */}
                     <div>
-                        <h4 className="text-sm font-semibold text-purple-600 dark:text-purple-400 mb-3 border-b-2 border-purple-100 dark:border-purple-800 pb-1">
+                        <h4 className="text-sm font-semibold text-violet-600 dark:text-violet-400 mb-3 border-b-2 border-violet-100 dark:border-violet-800 pb-1">
                             Unique to User B
                         </h4>
                         <div className="flex flex-wrap gap-2">
                             {uniqueB.map(tech => (
-                                <span key={tech} className="px-2 py-1 bg-purple-50 dark:bg-purple-900/10 text-purple-700 dark:text-purple-300 rounded text-xs font-medium">
+                                <span key={tech} className="px-2 py-1 bg-violet-50 dark:bg-violet-900/10 text-violet-700 dark:text-violet-300 rounded text-xs font-medium">
                                     {tech}
                                 </span>
                             ))}

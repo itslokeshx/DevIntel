@@ -21,7 +21,7 @@ export function MetricsComparison({ metrics }) {
             <div className="mb-6 last:mb-0">
                 <div className="flex justify-between items-end mb-2">
                     {/* User A Value */}
-                    <div className={`flex items-center gap-2 ${isWinnerA ? 'text-primary-600 dark:text-primary-400 font-bold' : 'text-light-text-secondary dark:text-dark-text-secondary'}`}>
+                    <div className={`flex items-center gap-2 ${isWinnerA ? 'text-indigo-600 dark:text-indigo-400 font-bold' : 'text-light-text-secondary dark:text-dark-text-secondary'}`}>
                         {isWinnerA && <Trophy className="w-4 h-4" />}
                         <span className="text-lg">{valA.toLocaleString()}</span>
                     </div>
@@ -32,7 +32,7 @@ export function MetricsComparison({ metrics }) {
                     </span>
 
                     {/* User B Value */}
-                    <div className={`flex items-center gap-2 ${isWinnerB ? 'text-purple-600 dark:text-purple-400 font-bold' : 'text-light-text-secondary dark:text-dark-text-secondary'}`}>
+                    <div className={`flex items-center gap-2 ${isWinnerB ? 'text-violet-600 dark:text-violet-400 font-bold' : 'text-light-text-secondary dark:text-dark-text-secondary'}`}>
                         <span className="text-lg">{valB.toLocaleString()}</span>
                         {isWinnerB && <Trophy className="w-4 h-4" />}
                     </div>
@@ -42,7 +42,7 @@ export function MetricsComparison({ metrics }) {
                     {/* User A Bar (Right Aligned) */}
                     <div className="flex-1 flex justify-end h-full bg-light-bg-tertiary dark:bg-dark-bg-tertiary rounded-full overflow-hidden">
                         <div
-                            className={`h-full rounded-full ${isWinnerA ? 'bg-primary-500' : 'bg-primary-300/50 dark:bg-primary-700/50'}`}
+                            className={`h-full rounded-full ${isWinnerA ? 'bg-indigo-500' : 'bg-indigo-300/50 dark:bg-indigo-700/50'}`}
                             style={{ width: `${pctA}%`, minWidth: pctA > 0 ? '4px' : '0' }}
                         />
                     </div>
@@ -53,7 +53,7 @@ export function MetricsComparison({ metrics }) {
                     {/* User B Bar (Left Aligned) */}
                     <div className="flex-1 flex justify-start h-full bg-light-bg-tertiary dark:bg-dark-bg-tertiary rounded-full overflow-hidden">
                         <div
-                            className={`h-full rounded-full ${isWinnerB ? 'bg-purple-500' : 'bg-purple-300/50 dark:bg-purple-700/50'}`}
+                            className={`h-full rounded-full ${isWinnerB ? 'bg-violet-500' : 'bg-violet-300/50 dark:bg-violet-700/50'}`}
                             style={{ width: `${pctB}%`, minWidth: pctB > 0 ? '4px' : '0' }}
                         />
                     </div>
@@ -70,10 +70,10 @@ export function MetricsComparison({ metrics }) {
                 </h3>
                 <div className="flex gap-4 text-xs font-semibold">
                     <div className="flex items-center gap-2">
-                        <div className="w-3 h-3 rounded-full bg-primary-500"></div> User A
+                        <div className="w-3 h-3 rounded-full bg-indigo-500"></div> User A
                     </div>
                     <div className="flex items-center gap-2">
-                        <div className="w-3 h-3 rounded-full bg-purple-500"></div> User B
+                        <div className="w-3 h-3 rounded-full bg-violet-500"></div> User B
                     </div>
                 </div>
             </div>
@@ -99,6 +99,6 @@ export function MetricsComparison({ metrics }) {
                     <MetricRow label="Stars Earned" metricKey="totalStars" maxVal={5} />
                 </div>
             </div>
-        </div>
+        </div >
     );
 }

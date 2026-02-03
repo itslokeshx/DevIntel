@@ -20,7 +20,7 @@ export function ComparisonHeader({ onCompare, loading }) {
 
             <div className="relative z-10">
                 <div className="flex items-center gap-3 mb-8">
-                    <div className="p-3 bg-gradient-to-br from-primary-500 to-indigo-600 rounded-xl shadow-lg text-white">
+                    <div className="p-3 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-xl shadow-lg text-white">
                         <Sparkles className="w-6 h-6" />
                     </div>
                     <div>
@@ -35,14 +35,14 @@ export function ComparisonHeader({ onCompare, loading }) {
 
                 <form onSubmit={handleSubmit} className="flex flex-col md:flex-row gap-4 items-center">
                     <div className="flex-1 w-full group">
-                        <label className="block text-xs font-bold text-light-text-tertiary dark:text-dark-text-tertiary uppercase tracking-wider mb-2 group-focus-within:text-primary-500 transition-colors">
+                        <label className="block text-xs font-bold text-light-text-tertiary dark:text-dark-text-tertiary uppercase tracking-wider mb-2 group-focus-within:text-indigo-500 transition-colors">
                             Developer A
                         </label>
                         <Input
                             placeholder="e.g. facebook"
                             value={userA}
                             onChange={(e) => setUserA(e.target.value)}
-                            className="bg-primary-50/50 dark:bg-primary-900/10 border-primary-200 dark:border-primary-800 focus:ring-primary-500 w-full h-12 text-lg"
+                            className="bg-indigo-50/50 dark:bg-indigo-900/10 border-indigo-200 dark:border-indigo-800 focus:ring-indigo-500 w-full h-12 text-lg"
                         />
                     </div>
 
@@ -53,14 +53,14 @@ export function ComparisonHeader({ onCompare, loading }) {
                     </div>
 
                     <div className="flex-1 w-full group">
-                        <label className="block text-xs font-bold text-light-text-tertiary dark:text-dark-text-tertiary uppercase tracking-wider mb-2 group-focus-within:text-purple-500 transition-colors">
+                        <label className="block text-xs font-bold text-light-text-tertiary dark:text-dark-text-tertiary uppercase tracking-wider mb-2 group-focus-within:text-violet-500 transition-colors">
                             Developer B
                         </label>
                         <Input
                             placeholder="e.g. google"
                             value={userB}
                             onChange={(e) => setUserB(e.target.value)}
-                            className="bg-purple-50/50 dark:bg-purple-900/10 border-purple-200 dark:border-purple-800 focus:ring-purple-500 w-full h-12 text-lg"
+                            className="bg-violet-50/50 dark:bg-violet-900/10 border-violet-200 dark:border-violet-800 focus:ring-violet-500 w-full h-12 text-lg"
                         />
                     </div>
 

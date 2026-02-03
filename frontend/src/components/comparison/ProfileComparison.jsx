@@ -8,21 +8,22 @@ export function ProfileComparison({ userA, userB }) {
 
         // Distinct themes for User A vs User B
         // Distinct themes for User A vs User B
+        // Distinct themes for User A vs User B
         const theme = isUserA ? {
-            bg: 'bg-gradient-to-br from-emerald-50 to-emerald-100/30 dark:from-emerald-900/20 dark:to-emerald-900/5',
-            border: 'border-emerald-100 dark:border-emerald-800',
-            accent: 'bg-emerald-500',
-            accentText: 'text-emerald-700 dark:text-emerald-300',
-            ring: 'ring-emerald-100 dark:ring-emerald-900',
-            shadow: 'shadow-emerald-500/10',
+            bg: 'bg-gradient-to-br from-indigo-50 to-indigo-100/30 dark:from-indigo-900/20 dark:to-indigo-900/5',
+            border: 'border-indigo-100 dark:border-indigo-800',
+            accent: 'bg-indigo-500',
+            accentText: 'text-indigo-700 dark:text-indigo-300',
+            ring: 'ring-indigo-100 dark:ring-indigo-900',
+            shadow: 'shadow-indigo-500/10',
             label: 'Player A'
         } : {
-            bg: 'bg-gradient-to-br from-purple-50 to-purple-100/30 dark:from-purple-900/20 dark:to-purple-900/5',
-            border: 'border-purple-100 dark:border-purple-800',
-            accent: 'bg-purple-500',
-            accentText: 'text-purple-700 dark:text-purple-300',
-            ring: 'ring-purple-100 dark:ring-purple-900',
-            shadow: 'shadow-purple-500/10',
+            bg: 'bg-gradient-to-br from-violet-50 to-violet-100/30 dark:from-violet-900/20 dark:to-violet-900/5',
+            border: 'border-violet-100 dark:border-violet-800',
+            accent: 'bg-violet-500',
+            accentText: 'text-violet-700 dark:text-violet-300',
+            ring: 'ring-violet-100 dark:ring-violet-900',
+            shadow: 'shadow-violet-500/10',
             label: 'Player B'
         };
 
@@ -116,7 +117,7 @@ export function ProfileComparison({ userA, userB }) {
 
             <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 hidden md:flex flex-col items-center justify-center pointer-events-none">
                 <div className="w-12 h-12 rounded-full bg-white dark:bg-dark-bg-secondary border-4 border-gray-100 dark:border-gray-800 shadow-xl flex items-center justify-center">
-                    <span className="font-black text-transparent bg-clip-text bg-gradient-to-r from-primary-500 to-purple-500 text-sm">VS</span>
+                    <span className="font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 to-violet-500 text-sm">VS</span>
                 </div>
             </div>
 
