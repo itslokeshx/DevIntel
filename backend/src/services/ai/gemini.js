@@ -26,8 +26,8 @@ async function generateContent(prompt, retries = 3) {
             return generateContent(prompt, retries - 1);
         }
 
-        // Return fallback message if all retries fail
-        return 'AI insight generation temporarily unavailable';
+        // Return null if all retries fail
+        return null;
     }
 }
 

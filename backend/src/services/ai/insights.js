@@ -46,19 +46,30 @@ Respond with ONLY valid JSON (no markdown, no code blocks):
 
         // Parse JSON response
         let developerInsights;
-        try {
-            // Remove markdown code blocks if present
-            const cleanJson = developerInsightsRaw.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-            developerInsights = JSON.parse(cleanJson);
-        } catch (e) {
-            console.error('Failed to parse developer insights JSON:', e);
-            // Fallback
+
+        if (!developerInsightsRaw) {
+            console.log('AI unavailable, using fallback insights');
             developerInsights = {
                 oneLineInsight: 'Skilled developer with diverse technical expertise',
                 activityNarrative: 'Active contributor with consistent coding patterns',
                 developerArchetype: 'Builder',
                 growthActions: ['Continue building great projects', 'Expand technical skills', 'Engage with community']
             };
+        } else {
+            try {
+                // Remove markdown code blocks if present
+                const cleanJson = developerInsightsRaw.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+                developerInsights = JSON.parse(cleanJson);
+            } catch (e) {
+                console.error('Failed to parse developer insights JSON:', e);
+                // Fallback
+                developerInsights = {
+                    oneLineInsight: 'Skilled developer with diverse technical expertise',
+                    activityNarrative: 'Active contributor with consistent coding patterns',
+                    developerArchetype: 'Builder',
+                    growthActions: ['Continue building great projects', 'Expand technical skills', 'Engage with community']
+                };
+            }
         }
 
         // Call 2: Generate top 3 repo summaries only (not 10)

@@ -1,40 +1,48 @@
 import React from 'react';
-import { ExternalLink, MapPin, Users } from 'lucide-react';
+import { ExternalLink, MapPin, Users, Trophy } from 'lucide-react';
 
 export function ProfileComparison({ userA, userB }) {
     const ProfileCard = ({ user, isUserA }) => {
         const profile = user.profile;
         const colorClass = isUserA
-            ? 'text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/10 border-primary-100 dark:border-primary-800'
-            : 'text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/10 border-purple-100 dark:border-purple-800';
+            ? 'from-primary-50 to-white dark:from-primary-900/10 dark:to-dark-bg-secondary border-primary-100 dark:border-primary-800'
+            : 'from-purple-50 to-white dark:from-purple-900/10 dark:to-dark-bg-secondary border-purple-100 dark:border-purple-800';
+
+        const ringColor = isUserA ? 'ring-primary-100 dark:ring-primary-900' : 'ring-purple-100 dark:ring-purple-900';
+        const textColor = isUserA ? 'text-primary-700 dark:text-primary-300' : 'text-purple-700 dark:text-purple-300';
 
         return (
-            <div className={`p-6 rounded-xl border ${colorClass} text-center flex-1`}>
-                <div className="relative inline-block mb-4">
+            <div className={`relative p-6 rounded-xl border bg-gradient-to-b ${colorClass} text-center flex-1 flex flex-col shadow-sm transition-all duration-300 hover:shadow-md`}>
+                <div className={`absolute top-0 left-0 w-full h-1 rounded-t-xl ${isUserA ? 'bg-primary-500' : 'bg-purple-500'}`} />
+
+                <div className="relative inline-block mx-auto mb-4">
+                    <div className={`absolute inset-0 rounded-full ring-4 ${ringColor} opacity-50`}></div>
                     <img
                         src={profile.avatarUrl}
                         alt={profile.name}
-                        className={`w-24 h-24 rounded-full border-4 ${isUserA ? 'border-primary-200' : 'border-purple-200'}`}
+                        className={`relative w-28 h-28 rounded-full border-4 ${isUserA ? 'border-primary-500' : 'border-purple-500'} shadow-md`}
                     />
-                    <div className={`absolute -bottom-2 left-1/2 transform -translate-x-1/2 px-3 py-1 rounded-full text-xs font-bold text-white shadow-sm ${isUserA ? 'bg-primary-500' : 'bg-purple-500'}`}>
+                    <div className={`absolute -bottom-3 left-1/2 transform -translate-x-1/2 px-3 py-1 rounded-full text-xs font-bold text-white shadow-sm whitespace-nowrap z-10 ${isUserA ? 'bg-primary-600' : 'bg-purple-600'}`}>
                         {isUserA ? 'Player A' : 'Player B'}
                     </div>
                 </div>
 
-                <h3 className="text-xl font-bold text-light-text-primary dark:text-dark-text-primary mb-1">
-                    {profile.name}
-                </h3>
-                <a
-                    href={`https://github.com/${profile.username}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-sm font-medium text-light-text-secondary dark:text-dark-text-secondary hover:underline flex items-center justify-center gap-1 mb-4"
-                >
-                    @{profile.username}
-                    <ExternalLink className="w-3 h-3" />
-                </a>
+                <div className="mt-2 mb-1">
+                    <h3 className="text-2xl font-bold text-light-text-primary dark:text-dark-text-primary">
+                        {profile.name}
+                    </h3>
+                    <a
+                        href={`https://github.com/${profile.username}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={`text-sm font-medium ${textColor} hover:underline flex items-center justify-center gap-1`}
+                    >
+                        @{profile.username}
+                        <ExternalLink className="w-3 h-3" />
+                    </a>
+                </div>
 
-                <div className="space-y-2 text-sm text-light-text-secondary dark:text-dark-text-secondary mb-6">
+                <div className="space-y-2 text-sm text-light-text-secondary dark:text-dark-text-secondary mb-6 min-h-[48px] flex flex-col justify-center">
                     {profile.location && (
                         <div className="flex items-center justify-center gap-1">
                             <MapPin className="w-3 h-3" />
@@ -43,18 +51,21 @@ export function ProfileComparison({ userA, userB }) {
                     )}
                     <div className="flex items-center justify-center gap-1">
                         <Users className="w-3 h-3" />
-                        {profile.followers} followers
+                        {profile.followers.toLocaleString()} followers
                     </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2 text-center">
-                    <div className="p-2 bg-white dark:bg-dark-bg-tertiary rounded-lg border border-light-border dark:border-dark-border">
-                        <div className="text-xs text-light-text-tertiary dark:text-dark-text-tertiary">Global Rank</div>
-                        <div className="font-bold">Top {user.metrics.globalRank}%</div>
+                <div className="grid grid-cols-2 gap-3 mt-auto">
+                    <div className="p-3 bg-white/80 dark:bg-black/20 rounded-lg border border-light-border dark:border-dark-border backdrop-blur-sm">
+                        <div className="text-xs text-light-text-tertiary dark:text-dark-text-tertiary mb-1 uppercase tracking-wide">Global Rank</div>
+                        <div className="font-bold flex items-center justify-center gap-1">
+                            <Trophy className="w-3 h-3 text-yellow-500" />
+                            Top {user.metrics.globalRank}%
+                        </div>
                     </div>
-                    <div className="p-2 bg-white dark:bg-dark-bg-tertiary rounded-lg border border-light-border dark:border-dark-border">
-                        <div className="text-xs text-light-text-tertiary dark:text-dark-text-tertiary">Identity</div>
-                        <div className="font-bold text-xs truncate" title={user.metrics.primaryTechIdentity}>
+                    <div className="p-3 bg-white/80 dark:bg-black/20 rounded-lg border border-light-border dark:border-dark-border backdrop-blur-sm">
+                        <div className="text-xs text-light-text-tertiary dark:text-dark-text-tertiary mb-1 uppercase tracking-wide">Identity</div>
+                        <div className="font-bold text-sm truncate px-1" title={user.metrics.primaryTechIdentity}>
                             {user.metrics.primaryTechIdentity}
                         </div>
                     </div>
@@ -64,17 +75,20 @@ export function ProfileComparison({ userA, userB }) {
     };
 
     return (
-        <div className="flex flex-col md:flex-row gap-6 mb-8">
-            <ProfileCard user={userA} isUserA={true} />
+        <div className="relative flex flex-col md:flex-row gap-8 mb-8">
+            <div className="flex-1 flex">
+                <ProfileCard user={userA} isUserA={true} />
+            </div>
 
-            <div className="hidden md:flex flex-col items-center justify-center">
-                <div className="w-px h-full bg-light-border dark:bg-dark-border absolute" />
-                <div className="z-10 bg-light-bg-tertiary dark:bg-dark-bg-tertiary p-2 rounded-full border border-light-border dark:border-dark-border font-bold text-light-text-tertiary dark:text-dark-text-tertiary">
-                    VS
+            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 hidden md:flex flex-col items-center justify-center pointer-events-none">
+                <div className="w-12 h-12 rounded-full bg-white dark:bg-dark-bg-secondary border-4 border-gray-100 dark:border-gray-800 shadow-xl flex items-center justify-center">
+                    <span className="font-black text-transparent bg-clip-text bg-gradient-to-r from-primary-500 to-purple-500 text-sm">VS</span>
                 </div>
             </div>
 
-            <ProfileCard user={userB} isUserA={false} />
+            <div className="flex-1 flex">
+                <ProfileCard user={userB} isUserA={false} />
+            </div>
         </div>
     );
 }
