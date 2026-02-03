@@ -17,11 +17,13 @@ async function fetchUserProfile(username) {
     try {
         const response = await githubAPI.get(`/users/${username}`);
         return {
+            username: response.data.login,
             name: response.data.name,
             bio: response.data.bio,
             location: response.data.location,
             company: response.data.company,
             blog: response.data.blog,
+            htmlUrl: response.data.html_url,
             avatarUrl: response.data.avatar_url,
             followers: response.data.followers,
             following: response.data.following,
