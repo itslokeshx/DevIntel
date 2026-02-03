@@ -5,6 +5,10 @@
   <p>
     <strong>Unlock the Story Behind the Code</strong>
   </p>
+  
+  <p>
+    <strong>LIVE DEMO: <a href="https://dev-intel.vercel.app/">https://dev-intel.vercel.app/</a></strong>
+  </p>
 
   <br />
 </div>
@@ -81,15 +85,6 @@ DevIntel/
 
 ---
 
-## 🌍 Live Deployment
-
-| Component | Status | URL |
-| :--- | :--- | :--- |
-| **Frontend** | 🟢 Live on Vercel | [dev-intel.vercel.app](https://dev-intel.vercel.app) |
-| **Backend** | 🟢 Live on Render | [devintel.onrender.com](https://devintel.onrender.com) |
-
----
-
 ## ⚡ Quick Start
 
 ### 1. Clone & Install
@@ -124,8 +119,4 @@ OR_API=...
 
 <div align="center">
   <p>Built with ❤️ by <strong>Lokesh</strong></p>
-  <p>
-    <a href="https://github.com/itslokeshx">GitHub</a> · 
-    <a href="https://twitter.com/itslokeshx">Twitter</a>
-  </p>
 </div>
