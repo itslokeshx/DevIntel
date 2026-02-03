@@ -1,58 +1,46 @@
 const mongoose = require('mongoose');
 
 const comparisonCacheSchema = new mongoose.Schema({
-    userA: {
+    comparisonKey: {
         type: String,
         required: true,
-        lowercase: true,
-        trim: true
+        unique: true,
+        index: true
+    },
+    userA: {
+        type: String,
+        required: true
     },
     userB: {
         type: String,
-        required: true,
-        lowercase: true,
-        trim: true
+        required: true
     },
 
+    // Cache the full user data snapshots to avoid refetching
+    userAData: {
+        type: mongoose.Schema.Types.Mixed,
+        required: true
+    },
+    userBData: {
+        type: mongoose.Schema.Types.Mixed,
+        required: true
+    },
+
+    // The computed comparison metrics and AI verdict
     comparison: {
-        projectMaturity: {
-            userA: mongoose.Schema.Types.Mixed,
-            userB: mongoose.Schema.Types.Mixed,
-            winner: String // "userA", "userB", "tie"
-        },
-        consistency: {
-            userA: Number,
-            userB: Number,
-            winner: String
-        },
-        impact: {
-            userA: Number,
-            userB: Number,
-            winner: String
-        },
-        techOverlap: {
-            shared: [String],
-            userAUnique: [String],
-            userBUnique: [String]
-        },
-        longTermFocus: {
-            userA: String,
-            userB: String
-        }
+        type: mongoose.Schema.Types.Mixed,
+        required: true
     },
 
-    aiVerdict: String, // Full paragraph comparison
-
+    createdAt: {
+        type: Date,
+        default: Date.now
+    },
     expiresAt: {
         type: Date,
-        default: () => new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 days
+        required: true,
+        index: { expires: 0 } // TTL index
     }
-}, {
-    timestamps: true
 });
-
-// Compound index for faster lookups (order doesn't matter)
-comparisonCacheSchema.index({ userA: 1, userB: 1 });
-comparisonCacheSchema.index({ userB: 1, userA: 1 });
 
 module.exports = mongoose.model('ComparisonCache', comparisonCacheSchema);
