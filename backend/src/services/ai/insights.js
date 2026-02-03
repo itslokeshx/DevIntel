@@ -89,18 +89,25 @@ Format: ["summary 1", "summary 2", "summary 3"]`;
 
             const repoSummariesRaw = await generateContent(repoSummaryPrompt);
 
-            try {
-                const cleanJson = repoSummariesRaw.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-                const repoSummaries = JSON.parse(cleanJson);
-                topRepos.forEach((repo, index) => {
-                    repo.aiSummary = repoSummaries[index] || 'Interesting project';
-                });
-            } catch (e) {
-                console.error('Failed to parse repo summaries:', e);
-                // Fallback summaries
+            if (!repoSummariesRaw) {
+                // Return fallback summaries
                 topRepos.forEach(repo => {
                     repo.aiSummary = `${repo.language || 'Software'} project with ${repo.stars} stars`;
                 });
+            } else {
+                try {
+                    const cleanJson = repoSummariesRaw.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+                    const repoSummaries = JSON.parse(cleanJson);
+                    topRepos.forEach((repo, index) => {
+                        repo.aiSummary = repoSummaries[index] || 'Interesting project';
+                    });
+                } catch (e) {
+                    console.error('Failed to parse repo summaries:', e);
+                    // Fallback summaries
+                    topRepos.forEach(repo => {
+                        repo.aiSummary = `${repo.language || 'Software'} project with ${repo.stars} stars`;
+                    });
+                }
             }
         }
 
