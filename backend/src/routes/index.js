@@ -4,10 +4,12 @@ const router = express.Router();
 // Import route modules
 const githubRoutes = require('./github');
 const comparisonRoutes = require('./comparison');
+const leetCodeRoutes = require('./leetcode');
 
 // Mount routes
 router.use('/github', githubRoutes);
 router.use('/compare', comparisonRoutes);
+router.use('/leetcode', leetCodeRoutes);
 
 // Health check endpoint
 router.get('/health', (req, res) => {

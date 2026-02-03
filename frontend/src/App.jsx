@@ -5,6 +5,7 @@ import { Header } from './components/layout/Header';
 import { Home } from './pages/Home';
 import GitHubIntelligence from './pages/GitHubIntelligence';
 import GitHubComparison from './pages/GitHubComparison';
+import LeetCodeSkills from './pages/LeetCodeSkills';
 import './styles/globals.css';
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
                         <Route path="/" element={<Home />} />
                         <Route path="/github/:username" element={<GitHubIntelligence />} />
                         <Route path="/compare" element={<GitHubComparison />} />
+                        <Route path="/leetcode/:username" element={<LeetCodeSkills />} />
                         <Route path="*" element={
                             <div className="flex items-center justify-center min-h-[60vh]">
                                 <div className="text-center">

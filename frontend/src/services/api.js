@@ -45,4 +45,9 @@ export const comparisonAPI = {
     getComparison: (userA, userB) => api.get(`/compare/${userA}/${userB}`)
 };
 
+export const leetCodeAPI = {
+    analyze: (username) => api.post('/leetcode/analyze', { username }),
+    getUser: (username) => api.get(`/leetcode/${username}`)
+};
+
 export default api;
