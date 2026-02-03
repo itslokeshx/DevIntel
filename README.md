@@ -2,57 +2,60 @@
 
   <h1>🚀 DevIntel</h1>
   
+  <h3>Unlock the Story Behind the Code</h3>
+
   <p>
-    <strong>Unlock the Story Behind the Code</strong>
+    <strong>🌍 <a href="https://dev-intel.vercel.app/">View Live Site</a> ↗</strong>
   </p>
-  
+
   <p>
-    <strong>LIVE DEMO: <a href="https://dev-intel.vercel.app/">https://dev-intel.vercel.app/</a></strong>
+    <i>
+      "An AI-powered intelligence platform that decodes your GitHub activity to reveal your true developer identity."
+    </i>
   </p>
 
   <br />
+
 </div>
 
-🚀 **DevIntel** is an AI-powered platform that decodes your GitHub activity to reveal your true developer identity and career potential.
-✨ Go beyond simple stats with deep repository analysis, skill visualization, and head-to-head developer comparisons.
-
 ---
 
-## ⚡ Why DevIntel?
+### ⚡ Why DevIntel?
 
-Most developer tools just show you numbers. We show you **insight**.
+> Most developer tools just show you numbers. **We show you insight.**
 
-| 🔍 **Deep Analysis** | 🧠 **AI Verdicts** | ⚔️ **Comparisons** |
+| 🔍 **Deep Analysis** | 🧠 **AI Verdicts** | ⚔️ **The Arena** |
 | :--- | :--- | :--- |
-| Don't just count commits. Measure **consistency**, **impact**, and **code maturity**. | Our **Mixtral 8x7B** engine generates personalized career advice and growth plans. | **Head-to-Head battles**. Compare `torvalds` vs `gaearon` dynamically. |
+| Don't just count commits. Measure *consistency*, *impact*, and *code maturity*. | Our **Mixtral 8x7B** engine generates personalized career advice and growth plans. | **Head-to-Head battles**. Compare profiles side-by-side with objective scoring. |
 
 ---
 
-## ✨ Features at a Glance
+### ✨ Features at a Glance
 
-### 🚀 GitHub Intelligence
-*   **Project X-Ray**: Health scores & maturity stages for every repo.
-*   **Tech Identity**: Are you a _"Full-Stack Architect"_ or a _"Backend Ninja"_?
-*   **Documentation Quality**: We analyze how well you document your code.
-
-### ⚔️ The Arena (Comparison)
-*   **AI Referee**: An objective, AI-generated verdict on who "wins" the comparison.
-*   **Skill Overlap**: A Venn-diagram style view of shared technologies.
-
----
-
-## 🛠️ Tech Stack
-
-| Component | Technologies |
+| 🚀 **GitHub Intelligence** | ⚔️ **Competitive Analysis** |
 | :--- | :--- |
-| **Frontend** | React 18, Vite, Tailwind CSS, Framer Motion, Recharts |
-| **Backend** | Node.js, Express.js, MongoDB (Atlas), Mongoose |
-| **AI Engine** | OpenRouter (Mixtral 8x7B, Mistral 7B) |
-| **Deployment** | Vercel (Frontend), Render (Backend) |
+| • **Project X-Ray** — Health scores & stages<br>• **Tech Identity** — "Full-Stack" vs "Backend"<br>• **Doc Quality** — README documentation analysis | • **AI Referee** — Objective, AI-generated verdicts<br>• **Skill Overlap** — Visual Venn-diagram comparison<br>• **Rankings** — Global percentile scoring |
 
 ---
 
-## 📁 Project Structure
+### 🛠️ Tech Stack
+
+<div align="center">
+
+| **Frontend Ecosystem** | **Backend Infrastructure** | **AI & Intelligence** |
+| :--- | :--- | :--- |
+| React 18 / Vite | Node.js / Express | OpenRouter (Mixtral 8x7B) |
+| Tailwind CSS | MongoDB Atlas | Predictive Analysis |
+| Framer Motion | Redis Caching | Retrieval Augmented Gen |
+
+</div>
+
+---
+
+### 📁 Project Structure
+
+<details>
+<summary>Click to expand directory tree</summary>
 
 ```bash
 DevIntel/
@@ -61,11 +64,11 @@ DevIntel/
 │   │   ├── config/          # DB & Environment setup
 │   │   ├── controllers/     # Comparison & GitHub logic
 │   │   ├── middleware/      # Rate limits & Error handling
-│   │   ├── models/          # MongoDB Schemas (User, Cache)
+│   │   ├── models/          # MongoDB Schemas
 │   │   ├── routes/          # API Endpoints
 │   │   ├── services/
 │   │   │   ├── ai/          # OpenRouter integration
-│   │   │   └── github/      # GitHub API fetchers & analyzers
+│   │   │   └── github/      # GitHub API analyzers
 │   │   └── utils/           # Math & Helper functions
 │   ├── server.js            # Entry point
 │   └── package.json
@@ -77,38 +80,37 @@ DevIntel/
     │   │   ├── comparison/  # Comparison view components
     │   │   ├── github/      # GitHub stats visualizations
     │   │   └── layout/      # Navbar, Footer
-    │   ├── pages/           # Home, Comparison, Dashboard
+    │   ├── pages/           # Application Routes
     │   ├── services/        # Axios API client
     │   └── App.jsx
     ├── vercel.json          # Deployment config
     └── package.json
 ```
+</details>
 
 ---
 
-## ⚡ Quick Start
+### ⚡ Quick Start
 
-### 1. Clone & Install
+**1. Clone & Install**
 ```bash
 git clone https://github.com/itslokeshx/DevIntel.git
 cd DevIntel
 ```
 
-### 2. Backend Setup
+**2. Backend Setup**
 ```bash
-cd backend
-npm install
+cd backend && npm install
 npm start
 ```
 
-### 3. Frontend Setup
+**3. Frontend Setup**
 ```bash
-cd ../frontend
-npm install
+cd ../frontend && npm install
 npm run dev
 ```
 
-### 4. Environment Secrets
+**4. Environment Secrets**
 Create a `.env` file in `backend/` with your keys:
 ```env
 MONGODB_URI=...
@@ -119,5 +121,5 @@ OR_API=...
 ---
 
 <div align="center">
-  <p>Built with ❤️ by <strong>Lokesh</strong></p>
+  <p>Crafted with ❤️ by <strong>Lokesh</strong></p>
 </div>
