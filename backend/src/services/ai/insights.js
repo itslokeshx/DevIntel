@@ -1,4 +1,4 @@
-const { generateContent, generateBatch } = require('./gemini');
+const { generateContent, generateBatch } = require('./openrouter');
 const {
     getRepoSummaryPrompt,
     getDeveloperInsightPrompt,
