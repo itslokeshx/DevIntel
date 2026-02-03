@@ -1,6 +1,51 @@
+const User = require('../models/User');
 const GitHubData = require('../models/GitHubData');
 const ComparisonCache = require('../models/ComparisonCache');
+const { analyzeGitHubUser } = require('../services/github/analyzer');
+const { generateGitHubInsights } = require('../services/ai/insights');
 const { generateContent } = require('../services/ai/gemini');
+
+// Helper to get or analyze user data
+async function ensureUserData(username) {
+    // 1. Try to find in DB
+    let data = await GitHubData.findOne({
+        username: username.toLowerCase().trim()
+    }).sort({ createdAt: -1 });
+
+    if (data && data.expiresAt > new Date()) {
+        return data;
+    }
+
+    // 2. If not found or expired, analyze
+    console.log(`Analyzing GitHub user for comparison: ${username}`);
+    const analyzedData = await analyzeGitHubUser(username);
+
+    // Generate AI insights
+    const aiInsights = await generateGitHubInsights({
+        ...analyzedData,
+        username
+    });
+
+    // Find or create user
+    const user = await User.findOneAndUpdate(
+        { githubUsername: username },
+        { githubUsername: username },
+        { upsert: true, new: true, setDefaultsOnInsert: true }
+    );
+
+    // Store GitHub data
+    data = await GitHubData.create({
+        userId: user._id,
+        username,
+        profile: analyzedData.profile,
+        repositories: analyzedData.repositories,
+        contributions: analyzedData.contributions,
+        metrics: analyzedData.metrics,
+        aiInsights
+    });
+
+    return data;
+}
 
 // Compare two GitHub users
 exports.compareUsers = async (req, res) => {
@@ -19,6 +64,7 @@ exports.compareUsers = async (req, res) => {
 
         // Check cache first
         const cached = await ComparisonCache.findOne({ comparisonKey });
+        // Return cached if valid and both users exist in our DB (sanity check)
         if (cached && cached.expiresAt > new Date()) {
             return res.json({
                 success: true,
@@ -30,22 +76,14 @@ exports.compareUsers = async (req, res) => {
             });
         }
 
-        // Fetch both users' data
-        const userAData = await GitHubData.findOne({ username: usernameA });
-        const userBData = await GitHubData.findOne({ username: usernameB });
+        // Ensure we have data for both users
+        const [userAData, userBData] = await Promise.all([
+            ensureUserData(usernameA),
+            ensureUserData(usernameB)
+        ]);
 
-        if (!userAData) {
-            return res.status(404).json({
-                success: false,
-                error: { message: `No data found for user '${usernameA}'. Please analyze first.` }
-            });
-        }
-
-        if (!userBData) {
-            return res.status(404).json({
-                success: false,
-                error: { message: `No data found for user '${usernameB}'. Please analyze first.` }
-            });
+        if (!userAData || !userBData) {
+            throw new Error('Failed to retrieve data for one or both users');
         }
 
         // Generate comparison metrics
