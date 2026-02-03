@@ -13,7 +13,8 @@
   <br />
 </div>
 
-> **DevIntel** is a premium developer intelligence platform that transforms raw **GitHub** activity into meaningful narratives. Powered by **OpenRouter AI**, it goes beyond simple stats to reveal your true developer identity.
+🚀 **DevIntel** is an AI-powered platform that decodes your GitHub activity to reveal your true developer identity and career potential.
+✨ Go beyond simple stats with deep repository analysis, skill visualization, and head-to-head developer comparisons.
 
 ---
 
