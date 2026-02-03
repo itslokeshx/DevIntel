@@ -7,8 +7,25 @@ const routes = require('./routes');
 const app = express();
 
 // Middleware
+// Middleware
+// Robust CORS configuration
+// Allows the specific frontend URL (with or without trailing slash) or localhost for development
+const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+const allowedOrigins = [
+    frontendUrl,
+    frontendUrl.replace(/\/$/, ""), // Remove trailing slash if present
+    'http://localhost:3000'
+];
+
 app.use(cors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            console.log('Blocked by CORS:', origin);
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     credentials: true
 }));
 
