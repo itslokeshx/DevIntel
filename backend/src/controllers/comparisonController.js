@@ -1,207 +1,266 @@
-const ComparisonCache = require('../models/ComparisonCache');
 const GitHubData = require('../models/GitHubData');
+const ComparisonCache = require('../models/ComparisonCache');
 const { generateContent } = require('../services/ai/gemini');
-const { getComparisonVerdictPrompt } = require('../services/ai/prompts');
 
-/**
- * POST /api/compare
- * Compare two GitHub users
- */
-async function compareUsers(req, res, next) {
+// Compare two GitHub users
+exports.compareUsers = async (req, res) => {
     try {
-        const { userA, userB } = req.body;
+        const { usernameA, usernameB } = req.body;
 
-        if (!userA || !userB) {
-            const error = new Error('Both userA and userB are required');
-            error.statusCode = 400;
-            throw error;
+        if (!usernameA || !usernameB) {
+            return res.status(400).json({
+                success: false,
+                error: { message: 'Both usernameA and usernameB are required' }
+            });
         }
 
-        const usernameA = userA.toLowerCase().trim();
-        const usernameB = userB.toLowerCase().trim();
+        // Create comparison key (sorted alphabetically for consistency)
+        const comparisonKey = [usernameA, usernameB].sort().join('-');
 
-        if (usernameA === usernameB) {
-            const error = new Error('Cannot compare a user with themselves');
-            error.statusCode = 400;
-            throw error;
-        }
-
-        // Check for cached comparison (order doesn't matter)
-        const existingComparison = await ComparisonCache.findOne({
-            $or: [
-                { userA: usernameA, userB: usernameB },
-                { userA: usernameB, userB: usernameA }
-            ],
-            expiresAt: { $gt: new Date() }
-        });
-
-        if (existingComparison) {
-            console.log(`Returning cached comparison for ${usernameA} vs ${usernameB}`);
+        // Check cache first
+        const cached = await ComparisonCache.findOne({ comparisonKey });
+        if (cached && cached.expiresAt > new Date()) {
             return res.json({
                 success: true,
-                data: existingComparison,
-                cached: true
+                data: {
+                    userA: cached.userAData,
+                    userB: cached.userBData,
+                    comparison: cached.comparison
+                }
             });
         }
 
         // Fetch both users' data
-        const dataA = await GitHubData.findOne({
-            username: usernameA,
-            expiresAt: { $gt: new Date() }
-        });
+        const userAData = await GitHubData.findOne({ username: usernameA });
+        const userBData = await GitHubData.findOne({ username: usernameB });
 
-        const dataB = await GitHubData.findOne({
-            username: usernameB,
-            expiresAt: { $gt: new Date() }
-        });
-
-        if (!dataA) {
-            const error = new Error(`No data found for user '${usernameA}'. Please analyze first.`);
-            error.statusCode = 404;
-            throw error;
+        if (!userAData) {
+            return res.status(404).json({
+                success: false,
+                error: { message: `No data found for user '${usernameA}'. Please analyze first.` }
+            });
         }
 
-        if (!dataB) {
-            const error = new Error(`No data found for user '${usernameB}'. Please analyze first.`);
-            error.statusCode = 404;
-            throw error;
+        if (!userBData) {
+            return res.status(404).json({
+                success: false,
+                error: { message: `No data found for user '${usernameB}'. Please analyze first.` }
+            });
         }
 
-        // Perform comparison
-        const comparison = performComparison(dataA, dataB);
+        // Generate comparison metrics
+        const comparison = generateComparisonMetrics(userAData, userBData);
 
-        // Generate AI verdict
-        const aiVerdict = await generateContent(
-            getComparisonVerdictPrompt(
-                { username: usernameA, ...dataA.toObject() },
-                { username: usernameB, ...dataB.toObject() }
-            )
+        // Generate AI comparative analysis
+        const aiVerdict = await generateComparativeAnalysis(userAData, userBData, comparison);
+        comparison.aiVerdict = aiVerdict;
+
+        // Cache the comparison
+        await ComparisonCache.findOneAndUpdate(
+            { comparisonKey },
+            {
+                comparisonKey,
+                userA: usernameA,
+                userB: usernameB,
+                userAData,
+                userBData,
+                comparison,
+                expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 days
+            },
+            { upsert: true, new: true }
         );
 
-        // Store comparison
-        const comparisonCache = await ComparisonCache.create({
-            userA: usernameA,
-            userB: usernameB,
-            comparison,
-            aiVerdict
-        });
-
         res.json({
             success: true,
-            data: comparisonCache,
-            cached: false
+            data: {
+                userA: userAData,
+                userB: userBData,
+                comparison
+            }
         });
 
     } catch (error) {
-        next(error);
+        console.error('Error comparing users:', error);
+        res.status(500).json({
+            success: false,
+            error: { message: error.message || 'Failed to compare users' }
+        });
+    }
+};
+
+function generateComparisonMetrics(userA, userB) {
+    const metrics = {
+        devScore: {
+            userA: userA.metrics.devScore,
+            userB: userB.metrics.devScore,
+            winner: userA.metrics.devScore > userB.metrics.devScore ? 'A' : 'B',
+            difference: Math.abs(userA.metrics.devScore - userB.metrics.devScore)
+        },
+        consistencyScore: {
+            userA: userA.metrics.consistencyScore,
+            userB: userB.metrics.consistencyScore,
+            winner: userA.metrics.consistencyScore > userB.metrics.consistencyScore ? 'A' : 'B',
+            difference: Math.abs(userA.metrics.consistencyScore - userB.metrics.consistencyScore)
+        },
+        impactScore: {
+            userA: userA.metrics.impactScore,
+            userB: userB.metrics.impactScore,
+            winner: userA.metrics.impactScore > userB.metrics.impactScore ? 'A' : 'B',
+            difference: Math.abs(userA.metrics.impactScore - userB.metrics.impactScore)
+        },
+        totalProjects: {
+            userA: userA.repositories.length,
+            userB: userB.repositories.length,
+            winner: userA.repositories.length > userB.repositories.length ? 'A' : 'B',
+            difference: Math.abs(userA.repositories.length - userB.repositories.length)
+        },
+        activeProjects: {
+            userA: userA.repositories.filter(r => r.maturityStage === 'active').length,
+            userB: userB.repositories.filter(r => r.maturityStage === 'active').length,
+            winner: null,
+            difference: 0
+        },
+        totalCommits: {
+            userA: userA.contributions.totalCommits,
+            userB: userB.contributions.totalCommits,
+            winner: userA.contributions.totalCommits > userB.contributions.totalCommits ? 'A' : 'B',
+            difference: Math.abs(userA.contributions.totalCommits - userB.contributions.totalCommits)
+        },
+        currentStreak: {
+            userA: userA.contributions.currentStreak,
+            userB: userB.contributions.currentStreak,
+            winner: userA.contributions.currentStreak > userB.contributions.currentStreak ? 'A' : 'B',
+            difference: Math.abs(userA.contributions.currentStreak - userB.contributions.currentStreak)
+        },
+        totalStars: {
+            userA: userA.repositories.reduce((sum, r) => sum + (r.stars || 0), 0),
+            userB: userB.repositories.reduce((sum, r) => sum + (r.stars || 0), 0),
+            winner: null,
+            difference: 0
+        },
+        avgDocQuality: {
+            userA: calculateAvgDocQuality(userA.repositories),
+            userB: calculateAvgDocQuality(userB.repositories),
+            winner: null,
+            difference: 0
+        }
+    };
+
+    // Calculate winners for remaining metrics
+    metrics.activeProjects.winner = metrics.activeProjects.userA > metrics.activeProjects.userB ? 'A' : 'B';
+    metrics.activeProjects.difference = Math.abs(metrics.activeProjects.userA - metrics.activeProjects.userB);
+
+    metrics.totalStars.winner = metrics.totalStars.userA > metrics.totalStars.userB ? 'A' : 'B';
+    metrics.totalStars.difference = Math.abs(metrics.totalStars.userA - metrics.totalStars.userB);
+
+    metrics.avgDocQuality.winner = metrics.avgDocQuality.userA > metrics.avgDocQuality.userB ? 'A' : 'B';
+    metrics.avgDocQuality.difference = Math.abs(metrics.avgDocQuality.userA - metrics.avgDocQuality.userB);
+
+    // Tech stack comparison
+    const techStackA = userA.metrics.skills?.map(s => s.name) || [];
+    const techStackB = userB.metrics.skills?.map(s => s.name) || [];
+
+    const shared = techStackA.filter(tech => techStackB.includes(tech));
+    const uniqueA = techStackA.filter(tech => !techStackB.includes(tech));
+    const uniqueB = techStackB.filter(tech => !techStackA.includes(tech));
+
+    metrics.techStack = {
+        shared,
+        uniqueA,
+        uniqueB,
+        overlapPercentage: Math.round((shared.length / Math.max(techStackA.length, techStackB.length)) * 100)
+    };
+
+    return metrics;
+}
+
+function calculateAvgDocQuality(repositories) {
+    if (!repositories || repositories.length === 0) return 0;
+
+    const qualityMap = {
+        'excellent': 100,
+        'good': 75,
+        'basic': 50,
+        'minimal': 25
+    };
+
+    const sum = repositories.reduce((total, repo) => {
+        return total + (qualityMap[repo.documentationQuality] || 0);
+    }, 0);
+
+    return Math.round(sum / repositories.length);
+}
+
+async function generateComparativeAnalysis(userA, userB, metrics) {
+    const prompt = `Compare these two GitHub developers objectively:
+
+Developer A (${userA.username}):
+- Dev Score: ${metrics.devScore.userA}/100
+- Consistency: ${metrics.consistencyScore.userA}/100
+- Impact: ${metrics.impactScore.userA}/100
+- Projects: ${metrics.totalProjects.userA} (${metrics.activeProjects.userA} active)
+- Total Commits: ${metrics.totalCommits.userA}
+- Stars Earned: ${metrics.totalStars.userA}
+- Primary Tech: ${userA.metrics.primaryTechIdentity}
+
+Developer B (${userB.username}):
+- Dev Score: ${metrics.devScore.userB}/100
+- Consistency: ${metrics.consistencyScore.userB}/100
+- Impact: ${metrics.impactScore.userB}/100
+- Projects: ${metrics.totalProjects.userB} (${metrics.activeProjects.userB} active)
+- Total Commits: ${metrics.totalCommits.userB}
+- Stars Earned: ${metrics.totalStars.userB}
+- Primary Tech: ${userB.metrics.primaryTechIdentity}
+
+Tech Stack Overlap: ${metrics.techStack.overlapPercentage}%
+Shared Technologies: ${metrics.techStack.shared.join(', ')}
+
+Write a 3-4 sentence objective comparison highlighting:
+1. Different development approaches and strengths
+2. Complementary skills or similar expertise
+3. Notable differences in activity patterns or project focus
+
+Be balanced and avoid declaring one "better" - focus on different strengths and styles.`;
+
+    try {
+        const analysis = await generateContent(prompt);
+        return analysis;
+    } catch (error) {
+        console.error('Error generating comparative analysis:', error);
+        return `${userA.username} and ${userB.username} demonstrate different development approaches. ${userA.username} focuses on ${userA.metrics.primaryTechIdentity} with ${metrics.totalProjects.userA} projects, while ${userB.username} specializes in ${userB.metrics.primaryTechIdentity} with ${metrics.totalProjects.userB} projects. Both developers show unique strengths in their respective areas.`;
     }
 }
 
-/**
- * GET /api/compare/:userA/:userB
- * Get cached comparison
- */
-async function getComparison(req, res, next) {
+// Get cached comparison
+exports.getComparison = async (req, res) => {
     try {
-        const usernameA = req.params.userA.toLowerCase().trim();
-        const usernameB = req.params.userB.toLowerCase().trim();
+        const { userA, userB } = req.params;
+        const comparisonKey = [userA, userB].sort().join('-');
 
-        const comparison = await ComparisonCache.findOne({
-            $or: [
-                { userA: usernameA, userB: usernameB },
-                { userA: usernameB, userB: usernameA }
-            ],
-            expiresAt: { $gt: new Date() }
-        });
+        const cached = await ComparisonCache.findOne({ comparisonKey });
 
-        if (!comparison) {
-            const error = new Error(`No comparison found for ${usernameA} vs ${usernameB}`);
-            error.statusCode = 404;
-            throw error;
+        if (!cached || cached.expiresAt < new Date()) {
+            return res.status(404).json({
+                success: false,
+                error: { message: 'Comparison not found or expired' }
+            });
         }
 
         res.json({
             success: true,
-            data: comparison
+            data: {
+                userA: cached.userAData,
+                userB: cached.userBData,
+                comparison: cached.comparison
+            }
         });
-
     } catch (error) {
-        next(error);
+        console.error('Error fetching comparison:', error);
+        res.status(500).json({
+            success: false,
+            error: { message: 'Failed to fetch comparison' }
+        });
     }
-}
-
-/**
- * Perform comparison logic
- */
-function performComparison(dataA, dataB) {
-    // Project maturity comparison
-    const projectMaturity = compareProjectMaturity(dataA.repositories, dataB.repositories);
-
-    // Consistency comparison
-    const consistency = {
-        userA: dataA.metrics.consistencyScore,
-        userB: dataB.metrics.consistencyScore,
-        winner: dataA.metrics.consistencyScore > dataB.metrics.consistencyScore ? 'userA' :
-            dataB.metrics.consistencyScore > dataA.metrics.consistencyScore ? 'userB' : 'tie'
-    };
-
-    // Impact comparison
-    const impact = {
-        userA: dataA.metrics.impactScore,
-        userB: dataB.metrics.impactScore,
-        winner: dataA.metrics.impactScore > dataB.metrics.impactScore ? 'userA' :
-            dataB.metrics.impactScore > dataA.metrics.impactScore ? 'userB' : 'tie'
-    };
-
-    // Tech stack overlap
-    const techOverlap = compareTechStack(dataA.metrics.skills, dataB.metrics.skills);
-
-    // Long-term focus
-    const longTermFocus = {
-        userA: dataA.metrics.projectFocus,
-        userB: dataB.metrics.projectFocus
-    };
-
-    return {
-        projectMaturity,
-        consistency,
-        impact,
-        techOverlap,
-        longTermFocus
-    };
-}
-
-function compareProjectMaturity(reposA, reposB) {
-    const countByStage = (repos) => ({
-        idea: repos.filter(r => r.maturityStage === 'idea').length,
-        active: repos.filter(r => r.maturityStage === 'active').length,
-        stable: repos.filter(r => r.maturityStage === 'stable').length,
-        abandoned: repos.filter(r => r.maturityStage === 'abandoned').length
-    });
-
-    return {
-        userA: countByStage(reposA),
-        userB: countByStage(reposB),
-        winner: 'tie' // Maturity is subjective, no clear winner
-    };
-}
-
-function compareTechStack(skillsA, skillsB) {
-    const techA = new Set(skillsA.map(s => s.name));
-    const techB = new Set(skillsB.map(s => s.name));
-
-    const shared = [...techA].filter(t => techB.has(t));
-    const userAUnique = [...techA].filter(t => !techB.has(t));
-    const userBUnique = [...techB].filter(t => !techA.has(t));
-
-    return {
-        shared,
-        userAUnique,
-        userBUnique
-    };
-}
-
-module.exports = {
-    compareUsers,
-    getComparison
 };
+
+module.exports = exports;

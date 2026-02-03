@@ -41,7 +41,7 @@ export const githubAPI = {
 };
 
 export const comparisonAPI = {
-    compare: (userA, userB) => api.post('/compare', { userA, userB }),
+    compare: (userA, userB) => api.post('/compare', { usernameA: userA, usernameB: userB }),
     getComparison: (userA, userB) => api.get(`/compare/${userA}/${userB}`)
 };
 
