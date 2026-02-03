@@ -27,14 +27,14 @@ export default function GitHubIntelligence() {
             // Try to get cached data first
             try {
                 const response = await githubAPI.getUser(username);
-                setData(response);
+                setData(response.data);
                 setLoading(false);
             } catch (err) {
                 // If no cached data, analyze the user
                 if (err.message.includes('No data found')) {
                     console.log('No cached data, analyzing user...');
                     const analyzeResponse = await githubAPI.analyze(username);
-                    setData(analyzeResponse);
+                    setData(analyzeResponse.data);
                     setLoading(false);
                 } else {
                     throw err;
@@ -52,7 +52,7 @@ export default function GitHubIntelligence() {
             setLoading(true);
             setError(null);
             const response = await githubAPI.analyze(username);
-            setData(response);
+            setData(response.data);
             setLoading(false);
         } catch (err) {
             console.error('Error refreshing data:', err);

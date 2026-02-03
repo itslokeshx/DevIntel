@@ -5,6 +5,11 @@ import AchievementBadge from '../common/AchievementBadge';
 import { Card } from '../common/Card';
 
 export default function DeveloperOverview({ data }) {
+    // Null checks
+    if (!data || !data.profile || !data.metrics || !data.contributions) {
+        return null;
+    }
+
     const { profile, metrics, contributions, aiInsights } = data;
 
     // Calculate streak progress to next milestone (every 10 days)
