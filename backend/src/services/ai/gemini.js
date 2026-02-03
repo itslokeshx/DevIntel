@@ -6,9 +6,13 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 /**
  * Generate AI content using Gemini
  */
-async function generateContent(prompt, retries = 3) {
+async function generateContent(prompt, retries = 0) {
+    // Temporarily disabled - return fallback immediately
+    return 'AI insights temporarily disabled - focusing on core metrics';
+
+    /* Commented out until we fix the model name
     try {
-        const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+        const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
 
         const result = await model.generateContent(prompt);
         const response = await result.response;
@@ -28,6 +32,7 @@ async function generateContent(prompt, retries = 3) {
         // Return fallback message if all retries fail
         return 'AI insight generation temporarily unavailable';
     }
+    */
 }
 
 /**

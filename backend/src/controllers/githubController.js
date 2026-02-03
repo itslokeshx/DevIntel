@@ -44,11 +44,12 @@ async function analyzeUser(req, res, next) {
             username
         });
 
-        // Find or create user
-        let user = await User.findOne({ githubUsername: username });
-        if (!user) {
-            user = await User.create({ githubUsername: username });
-        }
+        // Find or create user (upsert to avoid duplicate key errors)
+        const user = await User.findOneAndUpdate(
+            { githubUsername: username },
+            { githubUsername: username },
+            { upsert: true, new: true, setDefaultsOnInsert: true }
+        );
 
         // Store GitHub data
         const githubData = await GitHubData.create({
@@ -119,11 +120,12 @@ async function refreshUser(req, res, next) {
             username
         });
 
-        // Find or create user
-        let user = await User.findOne({ githubUsername: username });
-        if (!user) {
-            user = await User.create({ githubUsername: username });
-        }
+        // Find or create user (upsert to avoid duplicate key errors)
+        const user = await User.findOneAndUpdate(
+            { githubUsername: username },
+            { githubUsername: username },
+            { upsert: true, new: true, setDefaultsOnInsert: true }
+        );
 
         // Store new data
         const githubData = await GitHubData.create({
