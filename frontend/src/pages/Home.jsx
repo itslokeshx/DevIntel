@@ -57,7 +57,7 @@ export function Home() {
                             label="GitHub Username"
                             type="text"
                             icon={Github}
-                            placeholder="octocat"
+                            placeholder="torvalds"
                             value={githubUsername}
                             onChange={(e) => setGithubUsername(e.target.value)}
                             onKeyPress={(e) => e.key === 'Enter' && handleAnalyze()}
