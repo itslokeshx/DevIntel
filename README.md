@@ -1,53 +1,76 @@
 # DevIntel - Developer Intelligence Platform
 
-<p align="center">
-  <h3 align="center">DevIntel</h3>
-  <p align="center">
-    Unlock the story behind the code.
-    <br />
-    <a href="https://devintel.vercel.app"><strong>View Live Demo »</strong></a>
-    <br />
-    <br />
-    <a href="https://github.com/itslokeshx/DevIntel/issues">Report Bug</a>
-    ·
-    <a href="https://github.com/itslokeshx/DevIntel/issues">Request Feature</a>
-  </p>
-</p>
+<div align="center">
 
-DevIntel is a **premium developer intelligence platform** that transforms raw GitHub & LeetCode activity into meaningful narratives. It goes beyond simple statistics to reveal coding patterns, growth trajectories, and true developer identity using advanced AI.
+[![Status](https://img.shields.io/badge/status-active-success.svg)]()
+![GitHub Issues](https://img.shields.io/github/issues/itslokeshx/DevIntel)
+![GitHub Pull Requests](https://img.shields.io/github/issues-pr/itslokeshx/DevIntel)
+![License](https://img.shields.io/badge/license-MIT-blue.svg)
+
+**Unlock the story behind the code.**
+
+[View Live Demo](https://dev-intel.vercel.app) · [Report Bug](https://github.com/itslokeshx/DevIntel/issues) · [Request Feature](https://github.com/itslokeshx/DevIntel/issues)
+
+</div>
+
+---
+
+**DevIntel** goes beyond simple statistics to reveal coding patterns, growth trajectories, and true developer identity. Powered by **OpenRouter AI (Mixtral 8x7B)**, it transforms raw activity from GitHub and LeetCode into actionable career insights.
 
 ## ✨ Key Features
 
-- **🚀 GitHub Intelligence**: Deep-dive analysis of repositories, contribution habits, and code quality.
-- **⚔️ Developer Comparison**: Compare two developers side-by-side with AI-driven verdicts (e.g., `torvalds` vs `gaearon`).
-- **🧠 AI-Powered Insights**: Uses **OpenRouter (Mixtral 8x7B)** to generate personalized growth plans and archetypes (e.g., "The Architect", "The Sprinter").
-- **🧩 LeetCode Analytics**: Visualize problem-solving skills with heatmaps and difficulty distribution charts.
-- **🎨 Premium UI**: A "Glassmorphism" inspired design with seamless dark/light modes and rich data visualizations.
+### 🚀 GitHub Intelligence
+- **Deep Profile Analysis**: Beyond commit counts. We analyze repository quality, documentation habits, and code maturity.
+- **Tech Identity**: Are you a "Full-Stack Architect" or a "Backend Specialist"? Our algorithm decides.
+- **Project X-Ray**: Health scores, maturity stages, and maintenance tracking for every repo.
+
+### ⚔️ Developer Comparison (New!)
+- **Head-to-Head**: Compare two developers side-by-side (e.g., `torvalds` vs `gaearon`).
+- **AI Verdict**: Get an objective, AI-generated analysis of who "wins" in different categories like Consistency, Impact, and Documentation.
+- **Skill Overlap**: Visualize shared technologies and unique strengths.
+
+### 🧩 LeetCode Analytics
+- **Problem Solving Heatmaps**: Visualize your coding practice consistency.
+- **Difficulty Distribution**: See your mastery across Easy/Medium/Hard problems.
+
+### 🧠 AI-Powered Insights
+- **Personalized Growth Plans**: AI suggests specific actions to improve your profile.
+- **Archetype Detection**: Classifies developers into personas like "The Sprinter," "The Marathon Runner," or "The Architect."
+
+### 🎨 Premium UI
+- **Glassmorphism Design**: Modern, clean interface with blur effects and gradients.
+- **Smart Theme**: Seamless Dark/Light mode support.
+- **Responsive**: Fully optimized for mobile and desktop.
 
 ## 🛠️ Tech Stack
 
 ### Frontend
-- **React 18** + **Vite** (Lightning fast build)
-- **Tailwind CSS** (Utility-first styling)
-- **Framer Motion** (Smooth animations)
-- **Recharts** (Data visualization)
+- **Framework**: [React 18](https://reactjs.org/) + [Vite](https://vitejs.dev/)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
+- **Icons**: [Lucide React](https://lucide.dev/)
+- **Animations**: CSS Transitions & Keyframes
+- **Deployment**: [Vercel](https://vercel.com/)
 
 ### Backend
-- **Node.js** + **Express** (Robust API)
-- **MongoDB** (Data persistence & caching)
-- **OpenRouter API** (Access to Mixtral/Mistral AI models)
-- **Memory Caching** (Optimized performance)
+- **Runtime**: [Node.js](https://nodejs.org/)
+- **Framework**: [Express.js](https://expressjs.com/)
+- **Database**: [MongoDB](https://www.mongodb.com/) (Atlas)
+- **AI Engine**: [OpenRouter](https://openrouter.ai/) (Mixtral 8x7B / Mistral 7B)
+- **Deployment**: [Render](https://render.com/)
 
 ## 🚀 Getting Started
 
+Follow these steps to set up DevIntel locally.
+
 ### Prerequisites
-- Node.js 18+
-- MongoDB (Local or Atlas)
+- Node.js (v18+)
+- MongoDB (Running locally or Atlas URL)
+- GitHub Personal Access Token
 - OpenRouter API Key
 
 ### Installation
 
-1.  **Clone the repository**
+1.  **Clone the Repo**
     ```bash
     git clone https://github.com/itslokeshx/DevIntel.git
     cd DevIntel
@@ -57,7 +80,11 @@ DevIntel is a **premium developer intelligence platform** that transforms raw Gi
     ```bash
     cd backend
     npm install
-    # Create .env based on the example below
+    
+    # Create .env file
+    cp .env.example .env
+    # Add your MONGO_URI, GITHUB_TOKEN, and OR_API keys
+    
     npm start
     ```
 
@@ -65,46 +92,56 @@ DevIntel is a **premium developer intelligence platform** that transforms raw Gi
     ```bash
     cd ../frontend
     npm install
+    
+    # Run development server
     npm run dev
     ```
 
-## 🔑 Environment Variables (.env)
+## 🔑 Environment Variables
 
-**Backend**
-```env
-PORT=5000
-MONGODB_URI=your_mongodb_connection_string
-GITHUB_TOKEN=your_github_pat
-OR_API=your_openrouter_api_key
-GEMINI_API_KEY=optional_fallback_key
-FRONTEND_URL=http://localhost:3000
-```
+**Backend (`backend/.env`)**
+| Variable | Description |
+| :--- | :--- |
+| `PORT` | Server port (default: 5000) |
+| `MONGODB_URI` | MongoDB connection string |
+| `GITHUB_TOKEN` | GitHub PAT for API access |
+| `OR_API` | OpenRouter API Key for AI |
+| `FRONTEND_URL` | URL of frontend for CORS |
 
-**Frontend**
-```env
-VITE_API_URL=http://localhost:5000/api
-```
+**Frontend (`frontend/.env`)**
+| Variable | Description |
+| :--- | :--- |
+| `VITE_API_URL` | URL of the backend API |
 
-## 🌍 Deployment
+## 🌍 Deployment Status
 
-- **Frontend**: Deployed on [Vercel](https://devintel.vercel.app)
-- **Backend**: Deployed on [Render](https://devintel.onrender.com)
+| Service | Status | Provider | URL |
+| :--- | :--- | :--- | :--- |
+| **Frontend** | 🟢 Live | Vercel | [dev-intel.vercel.app](https://dev-intel.vercel.app) |
+| **Backend** | 🟢 Live | Render | [devintel.onrender.com](https://devintel.onrender.com) |
 
 ## 🤝 Contributing
 
-Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+Contributions make the open-source community amazing!
 
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+1.  Fork the Project
+2.  Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3.  Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4.  Push to the Branch (`git push origin feature/AmazingFeature`)
+5.  Open a Pull Request
 
 ## 📄 License
 
 Distributed under the MIT License. See `LICENSE` for more information.
 
+## 🙏 Acknowledgments
+
+- **GitHub API** for the incredible data.
+- **OpenRouter** for democratizing AI access.
+- **Render & Vercel** for free-tier hosting excellence.
+
 ---
+
 <p align="center">
   Built with ❤️ by <a href="https://github.com/itslokeshx">Lokesh</a>
 </p>
