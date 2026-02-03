@@ -24,7 +24,7 @@ async function generateContent(prompt, modelIndex = 0) {
     const currentModel = MODELS[modelIndex];
 
     try {
-        // console.log(`Attempting AI generation with model: ${currentModel}`);
+        console.log(`Attempting AI generation with model: ${currentModel}`);
 
         const response = await axios.post(
             OPENROUTER_API_URL,
@@ -41,7 +41,7 @@ async function generateContent(prompt, modelIndex = 0) {
                     }
                 ],
                 temperature: 0.7,
-                max_tokens: 1000
+                max_tokens: 2500
             },
             {
                 headers: {
