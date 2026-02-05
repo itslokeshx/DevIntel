@@ -1,172 +1,115 @@
 import React from 'react';
+import { motion } from 'framer-motion';
+import { format, startOfYear, eachDayOfInterval, getDay, subWeeks } from 'date-fns';
 
-export function ContributionHeatmap({ contributions, year = new Date().getFullYear() }) {
-    // Process contribution data into calendar format
-    const getContributionData = () => {
-        if (!contributions || !contributions.commitsByMonth) return [];
-
-        const data = [];
-        const startDate = new Date(year, 0, 1);
-        const endDate = new Date(year, 11, 31);
-
-        // Create a map of dates to commit counts
-        const commitMap = {};
-        contributions.commitsByMonth?.forEach(month => {
-            // Parse month string (e.g., "2024-01") and distribute commits
-            const [y, m] = month.month.split('-').map(Number);
-            if (y === year) {
-                const daysInMonth = new Date(y, m, 0).getDate();
-                const avgPerDay = Math.floor(month.count / daysInMonth);
-
-                for (let day = 1; day <= daysInMonth; day++) {
-                    const date = new Date(y, m - 1, day);
-                    const dateKey = date.toISOString().split('T')[0];
-                    commitMap[dateKey] = avgPerDay + Math.floor(Math.random() * 3); // Add some variance
-                }
+export function ContributionHeatmap({ contributions }) {
+    // Generate last 52 weeks of data
+    const today = new Date();
+    const startDate = subWeeks(today, 52);
+    const days = eachDayOfInterval({ start: startDate, end: today });
+    
+    // Create a map of dates to commit counts
+    const commitMap = new Map();
+    if (contributions?.commitsByMonth) {
+        contributions.commitsByMonth.forEach(({ month, count }) => {
+            // Distribute commits across days in that month (simplified)
+            const [year, monthNum] = month.split('-').map(Number);
+            const daysInMonth = new Date(year, monthNum, 0).getDate();
+            const commitsPerDay = Math.round(count / daysInMonth);
+            
+            for (let day = 1; day <= daysInMonth; day++) {
+                const date = new Date(year, monthNum - 1, day);
+                const dateStr = format(date, 'yyyy-MM-dd');
+                commitMap.set(dateStr, commitsPerDay);
             }
         });
-
-        // Generate all days of the year
-        for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
-            const dateKey = d.toISOString().split('T')[0];
-            data.push({
-                date: new Date(d),
-                count: commitMap[dateKey] || 0,
-                level: getContributionLevel(commitMap[dateKey] || 0)
-            });
-        }
-
-        return data;
-    };
-
-    const getContributionLevel = (count) => {
-        if (count === 0) return 0;
-        if (count <= 3) return 1;
-        if (count <= 6) return 2;
-        if (count <= 9) return 3;
-        return 4;
-    };
-
-    const contributionData = getContributionData();
-
-    // Group by weeks
+    }
+    
+    // Organize into weeks (7 days per week, 52 weeks)
     const weeks = [];
-    let currentWeek = [];
-    let currentDay = 0; // 0 = Sunday
-
-    contributionData.forEach((day, index) => {
-        const dayOfWeek = day.date.getDay();
-
-        // Start new week on Sunday
-        if (dayOfWeek === 0 && currentWeek.length > 0) {
-            weeks.push([...currentWeek]);
-            currentWeek = [];
-        }
-
-        // Fill empty days at start of first week
-        if (index === 0 && dayOfWeek > 0) {
-            for (let i = 0; i < dayOfWeek; i++) {
-                currentWeek.push(null);
+    for (let w = 0; w < 52; w++) {
+        const week = [];
+        for (let d = 0; d < 7; d++) {
+            const dayIndex = w * 7 + d;
+            if (dayIndex < days.length) {
+                const day = days[dayIndex];
+                const dateStr = format(day, 'yyyy-MM-dd');
+                const count = commitMap.get(dateStr) || 0;
+                week.push({ date: dateStr, count });
+            } else {
+                week.push({ date: null, count: 0 });
             }
         }
-
-        currentWeek.push(day);
-    });
-
-    // Push last week
-    if (currentWeek.length > 0) {
-        weeks.push(currentWeek);
+        weeks.push(week);
     }
-
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-
-    const totalContributions = contributionData.reduce((sum, day) => sum + day.count, 0);
-
+    
+    const getColor = (count) => {
+        if (count === 0) return 'bg-gray-100 dark:bg-gray-800';
+        if (count < 3) return 'bg-blue-200 dark:bg-blue-900';
+        if (count < 6) return 'bg-blue-400 dark:bg-blue-700';
+        if (count < 10) return 'bg-blue-600 dark:bg-blue-500';
+        return 'bg-blue-800 dark:bg-blue-300';
+    };
+    
+    const totalCommits = contributions?.totalCommits || 0;
+    const currentStreak = contributions?.currentStreak || 0;
+    const longestStreak = contributions?.longestStreak || 0;
+    
     return (
-        <div className="w-full">
-            <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-light-text-primary dark:text-dark-text-primary">
-                    {totalContributions.toLocaleString()} contributions in {year}
-                </h3>
-                <div className="flex items-center gap-2 text-xs text-light-text-tertiary dark:text-dark-text-tertiary">
-                    <span>Less</span>
-                    <div className="flex gap-1">
-                        {[0, 1, 2, 3, 4].map(level => (
-                            <div
-                                key={level}
-                                className={`w-3 h-3 rounded-sm ${level === 0 ? 'bg-gray-200 dark:bg-gray-700' :
-                                        level === 1 ? 'bg-green-200 dark:bg-green-900' :
-                                            level === 2 ? 'bg-green-400 dark:bg-green-700' :
-                                                level === 3 ? 'bg-green-600 dark:bg-green-500' :
-                                                    'bg-green-800 dark:bg-green-300'
-                                    }`}
-                            />
-                        ))}
-                    </div>
-                    <span>More</span>
-                </div>
+        <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-8">
+            <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">📊 Contribution Timeline</h3>
+            
+            {/* Month labels */}
+            <div className="flex gap-1 mb-2 text-xs text-gray-500 dark:text-gray-400">
+                {['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'].map(m => (
+                    <div key={m} className="w-[calc(100%/12)] text-center">{m}</div>
+                ))}
             </div>
-
-            <div className="overflow-x-auto">
-                <div className="inline-block min-w-full">
-                    {/* Month labels */}
-                    <div className="flex mb-1 ml-8">
-                        {months.map((month, index) => (
-                            <div
-                                key={month}
-                                className="text-xs text-light-text-tertiary dark:text-dark-text-tertiary"
-                                style={{ width: `${100 / 12}%`, minWidth: '60px' }}
-                            >
-                                {month}
-                            </div>
-                        ))}
+            
+            {/* Heatmap grid */}
+            <div className="flex gap-1 mb-4">
+                {weeks.map((week, weekIdx) => (
+                    <div key={weekIdx} className="flex flex-col gap-1">
+                        {week.map((day, dayIdx) => {
+                            if (!day.date) return <div key={dayIdx} className="w-3 h-3" />;
+                            
+                            return (
+                                <motion.div
+                                    key={`${weekIdx}-${dayIdx}`}
+                                    whileHover={{ scale: 1.3, zIndex: 10 }}
+                                    className={`w-3 h-3 rounded-sm ${getColor(day.count)} cursor-pointer transition-all`}
+                                    title={`${day.date}: ${day.count} commits`}
+                                />
+                            );
+                        })}
                     </div>
-
-                    {/* Grid */}
-                    <div className="flex">
-                        {/* Day labels */}
-                        <div className="flex flex-col justify-between pr-2 text-xs text-light-text-tertiary dark:text-dark-text-tertiary">
-                            {['Mon', 'Wed', 'Fri'].map(day => (
-                                <div key={day} className="h-3 flex items-center">
-                                    {day}
-                                </div>
-                            ))}
-                        </div>
-
-                        {/* Contribution grid */}
-                        <div className="flex gap-1">
-                            {weeks.map((week, weekIndex) => (
-                                <div key={weekIndex} className="flex flex-col gap-1">
-                                    {[0, 1, 2, 3, 4, 5, 6].map(dayIndex => {
-                                        const day = week[dayIndex];
-
-                                        if (!day) {
-                                            return (
-                                                <div
-                                                    key={dayIndex}
-                                                    className="w-3 h-3"
-                                                />
-                                            );
-                                        }
-
-                                        return (
-                                            <div
-                                                key={dayIndex}
-                                                className={`w-3 h-3 rounded-sm cursor-pointer transition-all hover:ring-2 hover:ring-primary-500 ${day.level === 0 ? 'bg-gray-200 dark:bg-gray-700' :
-                                                        day.level === 1 ? 'bg-green-200 dark:bg-green-900' :
-                                                            day.level === 2 ? 'bg-green-400 dark:bg-green-700' :
-                                                                day.level === 3 ? 'bg-green-600 dark:bg-green-500' :
-                                                                    'bg-green-800 dark:bg-green-300'
-                                                    }`}
-                                                title={`${day.count} contributions on ${day.date.toLocaleDateString()}`}
-                                            />
-                                        );
-                                    })}
-                                </div>
-                            ))}
-                        </div>
-                    </div>
+                ))}
+            </div>
+            
+            {/* Legend */}
+            <div className="flex items-center gap-2 mb-6 text-xs text-gray-600 dark:text-gray-400">
+                <span>Less</span>
+                <div className="w-3 h-3 bg-gray-100 dark:bg-gray-800 rounded-sm" />
+                <div className="w-3 h-3 bg-blue-200 dark:bg-blue-900 rounded-sm" />
+                <div className="w-3 h-3 bg-blue-400 dark:bg-blue-700 rounded-sm" />
+                <div className="w-3 h-3 bg-blue-600 dark:bg-blue-500 rounded-sm" />
+                <div className="w-3 h-3 bg-blue-800 dark:bg-blue-300 rounded-sm" />
+                <span>More</span>
+            </div>
+            
+            {/* Stats row */}
+            <div className="grid grid-cols-3 gap-4 pt-6 border-t border-gray-200 dark:border-gray-800">
+                <div>
+                    <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">{totalCommits}</div>
+                    <div className="text-sm text-gray-500 dark:text-gray-400">Total Commits (2024)</div>
+                </div>
+                <div>
+                    <div className="text-3xl font-bold text-green-600 dark:text-green-400">{currentStreak}</div>
+                    <div className="text-sm text-gray-500 dark:text-gray-400">Current Streak</div>
+                </div>
+                <div>
+                    <div className="text-3xl font-bold text-purple-600 dark:text-purple-400">{longestStreak}</div>
+                    <div className="text-sm text-gray-500 dark:text-gray-400">Longest Streak</div>
                 </div>
             </div>
         </div>

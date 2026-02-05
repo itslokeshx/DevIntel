@@ -2,9 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import CountUp from 'react-countup';
-import { ArrowLeft, RefreshCw, Link as LinkIcon, Star, GitFork, Code2, TrendingUp, Calendar, Sparkles, Target, BookOpen } from 'lucide-react';
+import { ArrowLeft, RefreshCw, Link as LinkIcon, Star, GitFork, Code2, TrendingUp, Calendar, Sparkles, Target, Building2 } from 'lucide-react';
 import { githubAPI } from '../services/api';
 import useStore from '../store';
+import { ContributionHeatmap } from '../components/github/ContributionHeatmap';
+import { TechStackDNA } from '../components/github/TechStackDNA';
+import { YearlyBreakdown } from '../components/github/YearlyBreakdown';
+import { DeveloperWrapped } from '../components/github/DeveloperWrapped';
 
 export default function GitHubIntelligence() {
     const { username } = useParams();
@@ -91,11 +95,19 @@ export default function GitHubIntelligence() {
                 >
                     <div className="p-12 bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-950 rounded-2xl border border-gray-200 dark:border-gray-800">
                         <div className="flex items-start gap-8">
-                            <img
-                                src={data.profile?.avatarUrl}
-                                alt={username}
-                                className="w-40 h-40 rounded-full border-4 border-blue-500/10"
-                            />
+                            <div className="relative">
+                                {/* Animated gradient ring */}
+                                <motion.div 
+                                    className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 opacity-20"
+                                    animate={{ rotate: 360 }}
+                                    transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+                                />
+                                <img
+                                    src={data.profile?.avatarUrl}
+                                    alt={username}
+                                    className="relative w-40 h-40 rounded-full border-4 border-blue-500/10"
+                                />
+                            </div>
                             <div className="flex-1">
                                 <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-2">
                                     {data.profile?.name || username}
@@ -104,7 +116,8 @@ export default function GitHubIntelligence() {
                                     @{username}
                                 </p>
                                 <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-full text-sm font-semibold mb-4">
-                                    🌐 {data.metrics?.primaryTechIdentity || 'Full-Stack Developer'}
+                                    <Building2 className="w-4 h-4" />
+                                    {data.metrics?.primaryTechIdentity || 'Full-Stack Developer'}
                                 </div>
                                 {data.profile?.bio && (
                                     <p className="text-lg text-gray-600 dark:text-gray-300 italic mb-4">
@@ -114,7 +127,12 @@ export default function GitHubIntelligence() {
                                 <div className="flex items-center gap-6 text-sm text-gray-600 dark:text-gray-400">
                                     <span>{data.profile?.followers || 0} followers</span>
                                     <span>{data.profile?.following || 0} following</span>
-                                    <span>Joined {data.profile?.createdAt ? new Date(data.profile.createdAt).getFullYear() : 'N/A'}</span>
+                                    {data.profile?.createdAt && (
+                                        <span className="flex items-center gap-1">
+                                            <Calendar className="w-4 h-4" />
+                                            Joined {new Date(data.profile.createdAt).getFullYear()} · Active for {Math.floor((Date.now() - new Date(data.profile.createdAt).getTime()) / (1000 * 60 * 60 * 24 * 365))} year{Math.floor((Date.now() - new Date(data.profile.createdAt).getTime()) / (1000 * 60 * 60 * 24 * 365)) !== 1 ? 's' : ''}
+                                        </span>
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -161,7 +179,7 @@ export default function GitHubIntelligence() {
                     <MetricCard label="Languages" value={languages} />
                 </motion.div>
 
-                {/* Year in Code Timeline */}
+                {/* Contribution Heatmap */}
                 {data.contributions && (
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
@@ -169,82 +187,19 @@ export default function GitHubIntelligence() {
                         transition={{ duration: 0.5, delay: 0.3 }}
                         className="mb-16"
                     >
-                        <SectionCard
-                            icon={<Calendar className="w-6 h-6" />}
-                            title="📊 YOUR YEAR IN CODE"
-                        >
-                            <div className="space-y-6">
-                                <div>
-                                    <div className="text-sm text-gray-600 dark:text-gray-400 mb-2">2024</div>
-                                    <div className="h-8 bg-gray-200 dark:bg-gray-800 rounded-full overflow-hidden">
-                                        <div 
-                                            className="h-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-end pr-4 text-white text-sm font-semibold"
-                                            style={{ width: '85%' }}
-                                        >
-                                            {totalCommits} commits
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                                    <div>
-                                        <span className="text-gray-600 dark:text-gray-400">Peak Productivity:</span>
-                                        <span className="ml-2 font-semibold text-gray-900 dark:text-gray-100">
-                                            {data.contributions.busiestMonth || 'N/A'}
-                                        </span>
-                                    </div>
-                                    <div>
-                                        <span className="text-gray-600 dark:text-gray-400">Current Streak:</span>
-                                        <span className="ml-2 font-semibold text-gray-900 dark:text-gray-100">
-                                            {data.contributions.currentStreak || 0} days
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        </SectionCard>
+                        <ContributionHeatmap contributions={data.contributions} />
                     </motion.div>
                 )}
 
                 {/* Tech Stack DNA */}
-                {data.metrics?.skills && Object.keys(data.metrics.skills).length > 0 && (
+                {data.metrics?.languageStats && data.metrics.languageStats.length > 0 && (
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5, delay: 0.4 }}
                         className="mb-16"
                     >
-                        <SectionCard
-                            icon={<Code2 className="w-6 h-6" />}
-                            title="🧪 TECH STACK DNA"
-                        >
-                            <div className="space-y-6">
-                                {Object.entries(data.metrics.skills)
-                                    .sort(([, a], [, b]) => (b.totalBytes || 0) - (a.totalBytes || 0))
-                                    .slice(0, 5)
-                                    .map(([lang, langData]) => {
-                                        const percentage = Math.round((langData.totalBytes / Object.values(data.metrics.skills).reduce((sum, s) => sum + (s.totalBytes || 0), 0)) * 100);
-                                        return (
-                                            <div key={lang} className="space-y-2">
-                                                <div className="flex items-center justify-between">
-                                                    <span className="font-semibold text-gray-900 dark:text-gray-100">
-                                                        {lang}
-                                                    </span>
-                                                    <span className="text-sm text-gray-600 dark:text-gray-400">
-                                                        {percentage}% · {langData.repos || 0} repos
-                                                    </span>
-                                                </div>
-                                                <div className="h-3 bg-gray-200 dark:bg-gray-800 rounded-full overflow-hidden">
-                                                    <motion.div
-                                                        initial={{ width: 0 }}
-                                                        animate={{ width: `${percentage}%` }}
-                                                        transition={{ duration: 1, delay: 0.5 }}
-                                                        className="h-full bg-gradient-to-r from-blue-500 to-purple-500"
-                                                    />
-                                                </div>
-                                            </div>
-                                        );
-                                    })}
-                            </div>
-                        </SectionCard>
+                        <TechStackDNA languageStats={data.metrics.languageStats} />
                     </motion.div>
                 )}
 
@@ -315,11 +270,37 @@ export default function GitHubIntelligence() {
                     </motion.div>
                 )}
 
-                {/* Growth Opportunities */}
+                {/* Year-by-Year Breakdown */}
+                {data.yearlyBreakdown && data.yearlyBreakdown.length > 0 && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5, delay: 0.5 }}
+                        className="mb-16"
+                    >
+                        <YearlyBreakdown yearlyBreakdown={data.yearlyBreakdown} contributions={data.contributions} />
+                    </motion.div>
+                )}
+
+                {/* Developer Wrapped */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: 0.6 }}
+                    className="mb-16"
+                >
+                    <DeveloperWrapped 
+                        wrappedData={data.wrappedData}
+                        contributions={data.contributions}
+                        repositories={data.repositories}
+                    />
+                </motion.div>
+
+                {/* Growth Opportunities */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 0.7 }}
                     className="mb-16"
                 >
                     <SectionCard

@@ -46,6 +46,9 @@ async function analyzeGitHubUser(username) {
     // Infer skills from repositories
     const skills = inferSkills(repositories);
 
+    // Calculate language statistics with proper formatting
+    const languageStats = calculateLanguageStats(repositories, skills);
+
     // Calculate overall metrics
     const consistencyScore = calculateConsistencyScore(contributions);
     const impactScore = calculateImpactScore(repositories);
@@ -64,6 +67,9 @@ async function analyzeGitHubUser(username) {
     // Assess documentation habits
     const documentationHabits = assessDocHabits(repositories);
 
+    // Calculate yearly breakdown
+    const yearlyBreakdown = calculateYearlyBreakdown(repositories, contributions);
+
     return {
         profile,
         repositories,
@@ -74,10 +80,12 @@ async function analyzeGitHubUser(username) {
             impactScore,
             primaryTechIdentity,
             skills,
+            languageStats, // Add properly formatted language stats
             activityPattern,
             projectFocus,
             documentationHabits
-        }
+        },
+        yearlyBreakdown
     };
 }
 
@@ -321,6 +329,111 @@ function assessDocHabits(repositories) {
     if (ratio > 0.5) return 'good';
     if (ratio > 0.2) return 'inconsistent';
     return 'poor';
+}
+
+/**
+ * Calculate language statistics with proper formatting
+ */
+function calculateLanguageStats(repositories, skills) {
+    // Count repos per language
+    const langCount = {};
+    const langBytes = {};
+    
+    repositories.forEach(repo => {
+        if (repo.language) {
+            langCount[repo.language] = (langCount[repo.language] || 0) + 1;
+        }
+        if (repo.languages) {
+            Object.entries(repo.languages).forEach(([lang, bytes]) => {
+                langBytes[lang] = (langBytes[lang] || 0) + bytes;
+            });
+        }
+    });
+    
+    const totalRepos = repositories.length;
+    const totalBytes = Object.values(langBytes).reduce((sum, bytes) => sum + bytes, 0);
+    
+    // Create stats array
+    const stats = Object.entries(langCount).map(([name, count]) => {
+        const bytes = langBytes[name] || 0;
+        const percentage = totalRepos > 0 ? (count / totalRepos) * 100 : 0;
+        const bytesPercentage = totalBytes > 0 ? (bytes / totalBytes) * 100 : 0;
+        
+        return {
+            name,
+            count,
+            repos: count,
+            percentage: Math.round(percentage * 10) / 10,
+            bytes,
+            bytesPercentage: Math.round(bytesPercentage * 10) / 10,
+            totalBytes: bytes
+        };
+    });
+    
+    return stats.sort((a, b) => b.count - a.count);
+}
+
+/**
+ * Calculate yearly breakdown
+ */
+function calculateYearlyBreakdown(repositories, contributions) {
+    const yearMap = {};
+    const currentYear = new Date().getFullYear();
+    
+    // Initialize years from account creation to current year
+    if (repositories.length > 0) {
+        const firstRepo = repositories.reduce((oldest, r) => 
+            r.createdAt < oldest.createdAt ? r : oldest, repositories[0]
+        );
+        const startYear = firstRepo.createdAt.getFullYear();
+        
+        for (let year = startYear; year <= currentYear; year++) {
+            yearMap[year] = {
+                year,
+                repos: 0,
+                commits: 0,
+                stars: 0,
+                topLanguage: null,
+                streak: 0
+            };
+        }
+    }
+    
+    // Aggregate data by year
+    repositories.forEach(repo => {
+        const year = repo.createdAt.getFullYear();
+        if (yearMap[year]) {
+            yearMap[year].repos += 1;
+            yearMap[year].stars += (repo.stars || 0);
+            yearMap[year].commits += (repo.commitCount || 0);
+        }
+    });
+    
+    // Find top language per year
+    Object.keys(yearMap).forEach(year => {
+        const yearRepos = repositories.filter(r => r.createdAt.getFullYear() === parseInt(year));
+        const langCount = {};
+        yearRepos.forEach(r => {
+            if (r.language) {
+                langCount[r.language] = (langCount[r.language] || 0) + 1;
+            }
+        });
+        const topLang = Object.entries(langCount).sort((a, b) => b[1] - a[1])[0];
+        yearMap[year].topLanguage = topLang ? topLang[0] : null;
+    });
+    
+    // Calculate streaks per year (simplified)
+    Object.keys(yearMap).forEach(year => {
+        const yearRepos = repositories.filter(r => {
+            const repoYear = r.pushedAt ? r.pushedAt.getFullYear() : r.createdAt.getFullYear();
+            return repoYear === parseInt(year);
+        });
+        if (yearRepos.length > 0) {
+            yearMap[year].streak = contributions.currentStreak || 0;
+        }
+    });
+    
+    return Object.values(yearMap).sort((a, b) => b.year - a.year);
 }
 
 module.exports = {

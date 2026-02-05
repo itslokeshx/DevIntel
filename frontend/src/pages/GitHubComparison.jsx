@@ -122,13 +122,15 @@ export default function GitHubComparison() {
                                 <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">🧬 AI REFEREE VERDICT</h2>
                             </div>
                             <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
-                                {data.comparison?.aiVerdict || data.comparison?.summary || 'Analysis complete.'}
+                                {data.comparison?.aiVerdict || data.comparison?.aiInsights?.verdict || data.comparison?.summary || 'Analysis complete.'}
                             </p>
                             <div className="mt-6 pt-6 border-t border-blue-200 dark:border-blue-800">
                                 <div className="inline-flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-900 rounded-full">
                                     <span className="text-2xl">🏆</span>
                                     <span className="font-semibold text-gray-900 dark:text-gray-100">
-                                        {data.comparison?.verdict || 'Both are valuable developers'}
+                                        {data.comparison?.winner === 'tie' ? 'BOTH LEGENDARY' : 
+                                         data.comparison?.winner ? `Winner: ${data.comparison.winner === 'A' ? userA : userB}` : 
+                                         'Both are valuable developers'}
                                     </span>
                                 </div>
                             </div>
@@ -140,42 +142,42 @@ export default function GitHubComparison() {
                             <ProfileCard
                                 profile={data.userA?.profile || data.userA}
                                 username={userA}
-                                metrics={data.comparison?.metrics || {}}
+                                comparison={data.comparison}
                                 side="A"
                             />
                             {/* Developer B */}
                             <ProfileCard
                                 profile={data.userB?.profile || data.userB}
                                 username={userB}
-                                metrics={data.comparison?.metrics || {}}
+                                comparison={data.comparison}
                                 side="B"
                             />
                         </div>
 
                         {/* Metrics Comparison */}
-                        {data.comparison?.metrics && (
+                        {data.comparison && (
                             <div className="p-8 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800">
                                 <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">📊 HEAD-TO-HEAD METRICS</h2>
                                 <div className="space-y-6">
                                     <MetricBar
                                         label="Dev Score"
-                                        valueA={data.comparison.metrics.devScore?.userA || 0}
-                                        valueB={data.comparison.metrics.devScore?.userB || 0}
+                                        valueA={data.comparison.devScore?.userA || data.comparison.metrics?.devScore?.userA || 0}
+                                        valueB={data.comparison.devScore?.userB || data.comparison.metrics?.devScore?.userB || 0}
                                     />
                                     <MetricBar
                                         label="Repositories"
-                                        valueA={data.comparison.metrics.totalProjects?.userA || 0}
-                                        valueB={data.comparison.metrics.totalProjects?.userB || 0}
+                                        valueA={data.comparison.totalProjects?.userA || data.comparison.metrics?.totalProjects?.userA || 0}
+                                        valueB={data.comparison.totalProjects?.userB || data.comparison.metrics?.totalProjects?.userB || 0}
                                     />
                                     <MetricBar
                                         label="Stars"
-                                        valueA={data.comparison.metrics.totalStars?.userA || 0}
-                                        valueB={data.comparison.metrics.totalStars?.userB || 0}
+                                        valueA={data.comparison.totalStars?.userA || data.comparison.metrics?.totalStars?.userA || 0}
+                                        valueB={data.comparison.totalStars?.userB || data.comparison.metrics?.totalStars?.userB || 0}
                                     />
                                     <MetricBar
                                         label="Commits"
-                                        valueA={data.comparison.metrics.totalCommits?.userA || 0}
-                                        valueB={data.comparison.metrics.totalCommits?.userB || 0}
+                                        valueA={data.comparison.totalCommits?.userA || data.comparison.metrics?.totalCommits?.userA || 0}
+                                        valueB={data.comparison.totalCommits?.userB || data.comparison.metrics?.totalCommits?.userB || 0}
                                     />
                                 </div>
                             </div>
@@ -188,13 +190,42 @@ export default function GitHubComparison() {
                                     <Code2 className="w-6 h-6" />
                                     🎯 TECH STACK VENN DIAGRAM
                                 </h2>
-                                <div className="text-center py-8">
-                                    <p className="text-gray-600 dark:text-gray-400 mb-4">
-                                        Shared Technologies: {data.comparison.techStack.shared?.join(', ') || 'None'}
-                                    </p>
-                                    <p className="text-sm text-gray-500 dark:text-gray-500">
-                                        Overlap: {data.comparison.techStack.overlapPercentage || 0}%
-                                    </p>
+                                <div className="grid grid-cols-3 gap-6 text-center">
+                                    <div>
+                                        <h4 className="font-semibold text-blue-400 mb-2">Only {userA}</h4>
+                                        <div className="flex flex-wrap gap-2 justify-center">
+                                            {(data.comparison.techStack.uniqueA || []).slice(0, 5).map(tech => (
+                                                <span key={tech} className="bg-blue-500/20 text-blue-300 px-3 py-1 rounded-full text-sm">
+                                                    {tech}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </div>
+                                    
+                                    <div>
+                                        <h4 className="font-semibold text-yellow-400 mb-2">Shared</h4>
+                                        <div className="flex flex-wrap gap-2 justify-center">
+                                            {(data.comparison.techStack.shared || []).slice(0, 5).map(tech => (
+                                                <span key={tech} className="bg-yellow-500/20 text-yellow-300 px-3 py-1 rounded-full text-sm font-bold">
+                                                    {tech}
+                                                </span>
+                                            ))}
+                                        </div>
+                                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-4">
+                                            Overlap: {data.comparison.techStack.overlapPercentage || 0}%
+                                        </p>
+                                    </div>
+                                    
+                                    <div>
+                                        <h4 className="font-semibold text-purple-400 mb-2">Only {userB}</h4>
+                                        <div className="flex flex-wrap gap-2 justify-center">
+                                            {(data.comparison.techStack.uniqueB || []).slice(0, 5).map(tech => (
+                                                <span key={tech} className="bg-purple-500/20 text-purple-300 px-3 py-1 rounded-full text-sm">
+                                                    {tech}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         )}
@@ -205,18 +236,29 @@ export default function GitHubComparison() {
     );
 }
 
-function ProfileCard({ profile, username, metrics, side }) {
+function ProfileCard({ profile, username, comparison, side }) {
     const userMetrics = side === 'A' ? {
-        devScore: metrics.devScore?.userA || 0,
-        repos: metrics.totalProjects?.userA || 0,
-        stars: metrics.totalStars?.userA || 0,
-        commits: metrics.totalCommits?.userA || 0,
+        devScore: comparison?.devScore?.userA || comparison?.metrics?.devScore?.userA || 0,
+        repos: comparison?.totalProjects?.userA || comparison?.metrics?.totalProjects?.userA || 0,
+        stars: comparison?.totalStars?.userA || comparison?.metrics?.totalStars?.userA || 0,
+        commits: comparison?.totalCommits?.userA || comparison?.metrics?.totalCommits?.userA || 0,
     } : {
-        devScore: metrics.devScore?.userB || 0,
-        repos: metrics.totalProjects?.userB || 0,
-        stars: metrics.totalStars?.userB || 0,
-        commits: metrics.totalCommits?.userB || 0,
+        devScore: comparison?.devScore?.userB || comparison?.metrics?.devScore?.userB || 0,
+        repos: comparison?.totalProjects?.userB || comparison?.metrics?.totalProjects?.userB || 0,
+        stars: comparison?.totalStars?.userB || comparison?.metrics?.totalStars?.userB || 0,
+        commits: comparison?.totalCommits?.userB || comparison?.metrics?.totalCommits?.userB || 0,
     };
+    
+    // Fallback to profile data if metrics are zero
+    if (userMetrics.repos === 0 && profile?.publicRepos) {
+        userMetrics.repos = profile.publicRepos;
+    }
+    if (userMetrics.stars === 0 && profile?.repositories) {
+        userMetrics.stars = profile.repositories.reduce((sum, r) => sum + (r.stars || 0), 0);
+    }
+    if (userMetrics.commits === 0 && profile?.contributions) {
+        userMetrics.commits = profile.contributions.totalCommits || 0;
+    }
 
     return (
         <div className="p-8 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800">
