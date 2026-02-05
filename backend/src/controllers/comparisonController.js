@@ -2,7 +2,7 @@ const User = require('../models/User');
 const GitHubData = require('../models/GitHubData');
 const ComparisonCache = require('../models/ComparisonCache');
 const { analyzeGitHubUser } = require('../services/github/analyzer');
-const { generateGitHubInsights } = require('../services/ai/insights');
+const { generateGitHubInsights, generateComparisonInsights } = require('../services/ai/insights');
 const { generateContent } = require('../services/ai/groq');
 
 // Helper to get or analyze user data
@@ -92,9 +92,10 @@ exports.compareUsers = async (req, res) => {
         // Generate comparison metrics
         const comparison = generateComparisonMetrics(userAData, userBData);
 
-        // Generate AI comparative analysis
-        const aiVerdict = await generateComparativeAnalysis(userAData, userBData, comparison);
-        comparison.aiVerdict = aiVerdict;
+        // Generate enhanced AI comparative analysis
+        const detailedComparison = await generateComparisonInsights(userAData, userBData, comparison);
+        comparison.aiInsights = detailedComparison;
+        comparison.aiVerdict = detailedComparison.verdict; // Legacy compatibility
 
         // Cache the comparison
         await ComparisonCache.findOneAndUpdate(

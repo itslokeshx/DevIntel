@@ -1,164 +1,316 @@
 /**
- * AI Prompt Templates for DevIntel
+ * Enhanced AI Prompt Templates for DevIntel Premium
+ * Leveraging Groq's Llama 3.3 70B for detailed, personalized insights
  */
 
 /**
- * Generate repository summary prompt
+ * Generate comprehensive developer personality analysis
+ */
+function getDeveloperPersonalityPrompt(data) {
+    const topLanguages = data.metrics.skills.slice(0, 5).map(s => s.name).join(', ');
+    const activeRepos = data.repositories.filter(r => r.maturityStage === 'active').length;
+    const totalRepos = data.repositories.length;
+
+    return `You are an expert developer psychologist analyzing GitHub behavior patterns.
+
+DEVELOPER PROFILE:
+Username: ${data.username}
+Total Projects: ${totalRepos} (${activeRepos} active)
+Primary Languages: ${topLanguages}
+Dev Score: ${data.metrics.devScore}/100
+Consistency: ${data.metrics.consistencyScore}/100
+Impact: ${data.metrics.impactScore}/100
+Activity Pattern: ${data.metrics.activityPattern}
+Project Focus: ${data.metrics.projectFocus}
+Documentation: ${data.metrics.documentationHabits}
+
+CONTRIBUTION PATTERN:
+Total Commits: ${data.contributions.totalCommits}
+Current Streak: ${data.contributions.currentStreak} days
+Longest Streak: ${data.contributions.longestStreak} days
+Avg Commits/Day: ${data.contributions.averageCommitsPerDay}
+
+TASK: Analyze this developer's personality and provide a JSON response with:
+
+{
+  "archetype": "One of: Builder, Explorer, Specialist, Maintainer, Educator, Problem Solver",
+  "codingStyle": "2-3 word description (e.g., 'Methodical and thorough', 'Fast and iterative')",
+  "workPattern": "Brief description of their work rhythm",
+  "strengths": ["strength 1", "strength 2", "strength 3"],
+  "traits": ["trait 1", "trait 2", "trait 3", "trait 4"],
+  "motivations": "What drives this developer (1 sentence)"
+}
+
+Be specific and insightful. Base everything on the data provided.`;
+}
+
+/**
+ * Generate engaging repository story
+ */
+function getRepositoryStoryPrompt(repo) {
+    return `You are a technical storyteller. Create a compelling narrative about this GitHub repository.
+
+REPOSITORY DATA:
+Name: ${repo.name}
+Description: ${repo.description || 'No description'}
+Language: ${repo.language || 'Multiple'}
+Stars: ${repo.stars}
+Commits: ${repo.commitCount || 0}
+Age: ${repo.ageInDays} days
+Health Score: ${repo.healthScore}/100
+Maturity: ${repo.maturityStage}
+Documentation: ${repo.documentationQuality}
+Last Updated: ${repo.updatedAt ? new Date(repo.updatedAt).toLocaleDateString() : 'Unknown'}
+
+README EXCERPT:
+${repo.readmeContent ? repo.readmeContent.substring(0, 500) : 'No README available'}
+
+TASK: Write a compelling 2-3 sentence story that:
+1. Explains what problem this project solves
+2. Highlights what makes it interesting or unique
+3. Mentions its current state and potential
+
+Be engaging and specific. Avoid generic descriptions.
+
+Example: "A real-time collaborative whiteboard that brings remote teams together through seamless drawing and annotation. Built with WebSockets for instant synchronization, it's gained traction with 127 stars and active development. The clean codebase and excellent documentation suggest a project ready for production use."
+
+Your story:`;
+}
+
+/**
+ * Generate personalized growth trajectory
+ */
+function getGrowthTrajectoryPrompt(data) {
+    const weakAreas = [];
+    if (data.metrics.consistencyScore < 60) weakAreas.push('consistency');
+    if (data.metrics.documentationHabits === 'poor' || data.metrics.documentationHabits === 'inconsistent') weakAreas.push('documentation');
+    if (data.repositories.filter(r => r.maturityStage === 'abandoned').length > 5) weakAreas.push('project completion');
+    if (data.metrics.impactScore < 40) weakAreas.push('community engagement');
+
+    return `You are a senior developer mentor creating a personalized growth plan.
+
+DEVELOPER STATS:
+Username: ${data.username}
+Dev Score: ${data.metrics.devScore}/100
+Consistency: ${data.metrics.consistencyScore}/100
+Impact: ${data.metrics.impactScore}/100
+Primary Tech: ${data.metrics.primaryTechIdentity}
+Skills: ${data.metrics.skills.slice(0, 5).map(s => s.name).join(', ')}
+Active Projects: ${data.repositories.filter(r => r.maturityStage === 'active').length}
+Abandoned Projects: ${data.repositories.filter(r => r.maturityStage === 'abandoned').length}
+
+IDENTIFIED WEAK AREAS: ${weakAreas.join(', ') || 'None - strong across the board'}
+
+TASK: Create a personalized growth plan as JSON:
+
+{
+  "currentLevel": "Beginner/Intermediate/Advanced/Expert",
+  "nextMilestone": "Specific achievable goal",
+  "recommendations": [
+    {
+      "area": "Specific area to improve",
+      "action": "Concrete action to take this week",
+      "impact": "Why this matters",
+      "difficulty": "Easy/Medium/Hard"
+    }
+  ],
+  "learningPath": ["Step 1", "Step 2", "Step 3"],
+  "timeframe": "Realistic timeframe for next level"
+}
+
+Provide 3-4 recommendations. Be specific, actionable, and encouraging.`;
+}
+
+/**
+ * Generate achievement detection
+ */
+function getAchievementDetectionPrompt(data) {
+    return `You are an achievement system analyzer. Detect which badges this developer has earned.
+
+DEVELOPER METRICS:
+Total Commits: ${data.contributions.totalCommits}
+Current Streak: ${data.contributions.currentStreak} days
+Longest Streak: ${data.contributions.longestStreak} days
+Total Stars: ${data.repositories.reduce((sum, r) => sum + (r.stars || 0), 0)}
+Total Repos: ${data.repositories.length}
+Active Repos: ${data.repositories.filter(r => r.maturityStage === 'active').length}
+Languages: ${data.metrics.skills.length}
+Documentation: ${data.metrics.documentationHabits}
+Consistency: ${data.metrics.consistencyScore}/100
+Impact: ${data.metrics.impactScore}/100
+
+AVAILABLE ACHIEVEMENTS:
+- streak_master: 30+ day current streak
+- rising_star: 100+ total stars
+- documentation_hero: Excellent documentation habits
+- prolific_builder: 20+ repositories
+- quality_craftsman: Average health score > 75
+- open_source_champion: Impact score > 70
+- specialist: Deep expertise (consistency > 80)
+- polyglot: 5+ programming languages
+- consistent_contributor: Consistency score > 70
+- community_favorite: 500+ total stars
+- marathon_coder: 100+ day streak
+- early_adopter: Account age > 2 years
+
+TASK: Return JSON array of earned achievement IDs:
+
+["achievement_id_1", "achievement_id_2", ...]
+
+Only include achievements where criteria are clearly met.`;
+}
+
+/**
+ * Generate skill progression analysis
+ */
+function getSkillProgressionPrompt(skills, repositories) {
+    const skillsData = skills.slice(0, 5).map(s => ({
+        name: s.name,
+        repos: s.evidenceCount,
+        firstUsed: s.firstUsed,
+        lastUsed: s.lastUsed
+    }));
+
+    return `Analyze this developer's skill progression over time.
+
+TOP SKILLS:
+${skillsData.map(s => `- ${s.name}: Used in ${s.repos} repos, First: ${new Date(s.firstUsed).getFullYear()}, Last: ${new Date(s.lastUsed).getFullYear()}`).join('\n')}
+
+TASK: Provide skill progression insights as JSON:
+
+{
+  "primarySkill": {
+    "name": "Most dominant skill",
+    "level": "Beginner/Intermediate/Advanced/Expert",
+    "trend": "Growing/Stable/Declining"
+  },
+  "emergingSkills": ["skill 1", "skill 2"],
+  "matureSkills": ["skill 1", "skill 2"],
+  "recommendations": "What skills to focus on next (1 sentence)"
+}`;
+}
+
+/**
+ * Generate detailed comparison analysis
+ */
+function getDetailedComparisonPrompt(userAData, userBData, metrics) {
+    return `You are comparing two developers for a head-to-head analysis. Be objective, specific, and insightful.
+
+DEVELOPER A (${userAData.username}):
+- Dev Score: ${metrics.devScore.userA}/100
+- Consistency: ${metrics.consistencyScore.userA}/100
+- Impact: ${metrics.impactScore.userA}/100
+- Projects: ${metrics.totalProjects.userA} (${metrics.activeProjects.userA} active)
+- Total Commits: ${metrics.totalCommits.userA}
+- Stars: ${metrics.totalStars.userA}
+- Primary Tech: ${userAData.metrics.primaryTechIdentity}
+- Top Skills: ${userAData.metrics.skills.slice(0, 3).map(s => s.name).join(', ')}
+- Activity: ${userAData.metrics.activityPattern}
+
+DEVELOPER B (${userBData.username}):
+- Dev Score: ${metrics.devScore.userB}/100
+- Consistency: ${metrics.consistencyScore.userB}/100
+- Impact: ${metrics.impactScore.userB}/100
+- Projects: ${metrics.totalProjects.userB} (${metrics.activeProjects.userB} active)
+- Total Commits: ${metrics.totalCommits.userB}
+- Stars: ${metrics.totalStars.userB}
+- Primary Tech: ${userBData.metrics.primaryTechIdentity}
+- Top Skills: ${userBData.metrics.skills.slice(0, 3).map(s => s.name).join(', ')}
+- Activity: ${userBData.metrics.activityPattern}
+
+TECH OVERLAP: ${metrics.techStack.overlapPercentage}%
+SHARED SKILLS: ${metrics.techStack.shared.join(', ') || 'None'}
+
+TASK: Provide detailed comparison as JSON:
+
+{
+  "summary": "2-3 sentence overview of key differences",
+  "strengths": {
+    "userA": ["strength 1", "strength 2"],
+    "userB": ["strength 1", "strength 2"]
+  },
+  "differences": [
+    {
+      "aspect": "What differs",
+      "userA": "A's approach",
+      "userB": "B's approach"
+    }
+  ],
+  "collaboration": "Would they work well together? Why? (2 sentences)",
+  "verdict": "Balanced conclusion without declaring a winner (2 sentences)"
+}
+
+Be specific and avoid generic statements.`;
+}
+
+/**
+ * Legacy prompts (simplified versions)
  */
 function getRepoSummaryPrompt(repo) {
-    return `You are analyzing a GitHub repository for a developer intelligence platform.
+    return `Summarize this repository in ONE compelling sentence (max 20 words):
 
-Repository: ${repo.name}
+Name: ${repo.name}
 Description: ${repo.description || 'No description'}
-README (first 500 words): ${repo.readmeContent || 'No README'}
-Languages: ${JSON.stringify(repo.languages)}
-Commit count: ${repo.commitCount || 0}
-Last commit: ${repo.pushedAt ? repo.pushedAt.toISOString().split('T')[0] : 'Unknown'}
-Created: ${repo.createdAt ? repo.createdAt.toISOString().split('T')[0] : 'Unknown'}
+Language: ${repo.language || 'Multiple'}
+Stars: ${repo.stars}
 
-Task: Write a single, concise sentence (max 20 words) that explains what this project IS and what problem it solves. Focus on value, not tech stack.
-
-Example good outputs:
-- "A web scraper that monitors product prices and sends alerts when deals appear"
-- "An automated backup system for MongoDB databases with S3 integration"
-- "A React component library for building accessible data tables"
-
-Your summary:`;
+Focus on what problem it solves, not the tech stack.`;
 }
 
-/**
- * Generate developer one-line insight prompt
- */
 function getDeveloperInsightPrompt(data) {
-    const topLanguages = data.metrics.skills.slice(0, 3).map(s => s.name).join(', ');
+    return `Write ONE sentence (max 25 words) capturing this developer's style:
 
-    return `You are analyzing a developer's GitHub activity for a developer intelligence platform.
+Repos: ${data.repositories.length}
+Consistency: ${data.metrics.consistencyScore}/100
+Documentation: ${data.metrics.documentationHabits}
+Pattern: ${data.metrics.activityPattern}
 
-Developer: ${data.username}
-Total repos: ${data.repositories.length}
-Active repos: ${data.repositories.filter(r => r.maturityStage === 'active').length}
-Primary languages: ${topLanguages}
-Consistency score: ${data.metrics.consistencyScore}/100
-Documentation quality: ${data.metrics.documentationHabits}
-Activity pattern: ${data.metrics.activityPattern}
-
-Task: Write ONE sentence (max 25 words) that captures this developer's building style and habits. Be specific and actionable.
-
-Examples:
-- "Consistent builder with strong backend focus; documentation is inconsistent across projects"
-- "Prolific experimenter who starts many projects but rarely maintains them long-term"
-- "Meticulous full-stack developer who prioritizes polish and documentation"
-
-Your insight:`;
+Be specific and actionable.`;
 }
 
-/**
- * Generate activity pattern narrative prompt
- */
 function getActivityNarrativePrompt(contributions, pattern) {
-    return `Analyze this developer's GitHub contribution pattern:
+    return `Describe this developer's coding rhythm in 2-3 sentences:
 
-Total commits: ${contributions.totalCommits}
-Longest streak: ${contributions.longestStreak} days
-Current streak: ${contributions.currentStreak} days
-Inactive gaps: ${contributions.inactiveGaps.length} gaps
-Activity pattern detected: ${pattern}
-
-Task: Write 2-3 sentences explaining their development rhythm. What does their pattern reveal about their workflow?
-
-Your insight:`;
+Commits: ${contributions.totalCommits}
+Streak: ${contributions.currentStreak} days (longest: ${contributions.longestStreak})
+Pattern: ${pattern}`;
 }
 
-/**
- * Generate growth actions prompt
- */
 function getGrowthActionsPrompt(data) {
-    const noReadmeRepos = data.repositories
-        .filter(r => !r.hasReadme && r.maturityStage !== 'abandoned')
-        .slice(0, 3)
-        .map(r => r.name);
-
-    const abandonedCount = data.repositories.filter(r => r.maturityStage === 'abandoned').length;
-
-    return `Based on this developer's GitHub profile, suggest 1-3 specific, actionable improvements they can make THIS WEEK:
+    return `Suggest 3 specific actions this developer can take THIS WEEK:
 
 Active projects: ${data.repositories.filter(r => r.maturityStage === 'active').length}
-Projects without README: ${noReadmeRepos.join(', ') || 'None'}
-Abandoned projects: ${abandonedCount}
-Documentation score: ${data.metrics.documentationHabits}
-Consistency score: ${data.metrics.consistencyScore}/100
-Activity pattern: ${data.metrics.activityPattern}
+Consistency: ${data.metrics.consistencyScore}/100
+Documentation: ${data.metrics.documentationHabits}
 
-Rules:
-- Max 3 suggestions
-- Be SPECIFIC (name repos if relevant)
-- Focus on quick wins
-- Use encouraging tone
-
-Format as a JSON array of strings.
-
-Example:
-["Add a detailed README to 'api-helper' to showcase its capabilities", "Complete or archive the 3 projects untouched in 6+ months", "Establish a weekly commit routine to improve consistency"]
-
-Your suggestions (JSON array only):`;
+Return as JSON array: ["action 1", "action 2", "action 3"]`;
 }
 
-/**
- * Generate developer archetype prompt
- */
 function getDeveloperArchetypePrompt(data) {
-    return `Classify this developer into ONE primary archetype based on their GitHub profile:
+    return `Classify this developer as ONE archetype:
 
-Project count: ${data.repositories.length}
-Average project lifespan: ${Math.round(data.repositories.reduce((sum, r) => sum + r.ageInDays, 0) / data.repositories.length)} days
-Documentation quality: ${data.metrics.documentationHabits}
-Contribution frequency: ${data.metrics.activityPattern}
-Primary tech: ${data.metrics.primaryTechIdentity}
+Projects: ${data.repositories.length}
+Documentation: ${data.metrics.documentationHabits}
+Pattern: ${data.metrics.activityPattern}
 
-Archetypes (choose ONE):
-1. Builder - Focuses on creating and shipping products
-2. Problem Solver - Prioritizes algorithmic thinking and competitive coding
-3. Educator - Shares knowledge through writing and teaching
-4. Experimenter - Explores many technologies, learns through building
-5. Specialist - Deep expertise in specific domains
-6. Balanced Polymath - Strong across multiple dimensions
+Choose: Builder, Problem Solver, Educator, Experimenter, Specialist, or Balanced Polymath
 
-Output ONLY the archetype name, nothing else.`;
-}
-
-/**
- * Generate comparison verdict prompt
- */
-function getComparisonVerdictPrompt(userAData, userBData) {
-    return `Compare these two GitHub developers objectively:
-
-Developer A (${userAData.username}):
-- Projects: ${userAData.repositories.length}
-- Consistency: ${userAData.metrics.consistencyScore}/100
-- Impact: ${userAData.metrics.impactScore}/100
-- Tech stack: ${userAData.metrics.skills.slice(0, 3).map(s => s.name).join(', ')}
-- Focus: ${userAData.metrics.projectFocus}
-
-Developer B (${userBData.username}):
-- Projects: ${userBData.repositories.length}
-- Consistency: ${userBData.metrics.consistencyScore}/100
-- Impact: ${userBData.metrics.impactScore}/100
-- Tech stack: ${userBData.metrics.skills.slice(0, 3).map(s => s.name).join(', ')}
-- Focus: ${userBData.metrics.projectFocus}
-
-Task: Write a single paragraph (4-5 sentences) comparing their development approaches. Be balanced, specific, and avoid declaring a "winner". Focus on differences in style, focus, and execution.
-
-Example:
-"Developer A maintains fewer projects but invests deeply in each, with strong documentation and long-term commitment. Developer B experiments broadly across the stack, starting many projects to learn new technologies but maintaining fewer to completion. Both show consistent activity, though A's impact metrics are higher due to community traction, while B demonstrates wider technical versatility."
-
-Your comparison:`;
+Return ONLY the archetype name.`;
 }
 
 module.exports = {
+    // Enhanced prompts
+    getDeveloperPersonalityPrompt,
+    getRepositoryStoryPrompt,
+    getGrowthTrajectoryPrompt,
+    getAchievementDetectionPrompt,
+    getSkillProgressionPrompt,
+    getDetailedComparisonPrompt,
+
+    // Legacy prompts
     getRepoSummaryPrompt,
     getDeveloperInsightPrompt,
     getActivityNarrativePrompt,
     getGrowthActionsPrompt,
-    getDeveloperArchetypePrompt,
-    getComparisonVerdictPrompt
+    getDeveloperArchetypePrompt
 };

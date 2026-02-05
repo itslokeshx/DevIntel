@@ -8,6 +8,8 @@ import { ContributionHeatmap } from '../components/github/ContributionHeatmap';
 import { ActivityTimeline } from '../components/github/ActivityTimeline';
 import { SkillRadar } from '../components/github/SkillRadar';
 import { RepoFilters } from '../components/github/RepoFilters';
+import { GamificationDashboard } from '../components/gamification/GamificationDashboard';
+import { DeveloperInsights } from '../components/github/DeveloperInsights';
 import { Button } from '../components/common/Button';
 import { Loading } from '../components/common/Loading';
 import { Card } from '../components/common/Card';
@@ -169,6 +171,23 @@ export default function GitHubIntelligence() {
 
                 {/* Developer Overview */}
                 <DeveloperOverview data={data} />
+
+                {/* Gamification Dashboard */}
+                {data.aiInsights?.gamification && (
+                    <div className="mt-8">
+                        <GamificationDashboard gamification={data.aiInsights.gamification} />
+                    </div>
+                )}
+
+                {/* AI-Powered Developer Insights */}
+                {data.aiInsights?.personality && data.aiInsights?.growthTrajectory && (
+                    <div className="mt-8">
+                        <DeveloperInsights
+                            personality={data.aiInsights.personality}
+                            growthTrajectory={data.aiInsights.growthTrajectory}
+                        />
+                    </div>
+                )}
 
                 {/* Visualizations Section */}
                 <div className="mt-8 space-y-8">

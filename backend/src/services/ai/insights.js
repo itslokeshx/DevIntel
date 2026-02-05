@@ -1,5 +1,12 @@
-const { generateContent, generateBatch } = require('./groq');
+const { generateContent } = require('./groq');
 const {
+    getDeveloperPersonalityPrompt,
+    getRepositoryStoryPrompt,
+    getGrowthTrajectoryPrompt,
+    getAchievementDetectionPrompt,
+    getSkillProgressionPrompt,
+    getDetailedComparisonPrompt,
+    // Legacy prompts
     getRepoSummaryPrompt,
     getDeveloperInsightPrompt,
     getActivityNarrativePrompt,
@@ -7,143 +14,235 @@ const {
     getDeveloperArchetypePrompt
 } = require('./prompts');
 
+const {
+    calculateLevel,
+    detectAchievements,
+    calculateSkillLevels,
+    generateStatsSummary,
+    calculatePercentiles
+} = require('../gamification');
+
+/**
+ * Generate comprehensive GitHub insights with enhanced AI and gamification
+ */
 async function generateGitHubInsights(analyzedData) {
-    console.log('Generating AI insights...');
+    console.log('Generating enhanced AI insights with gamification...');
 
     try {
-        // OPTIMIZATION: Combine all insights into 2 API calls to fit within 5 requests/minute limit
+        // Calculate gamification data first (no AI needed)
+        const gamification = {
+            level: calculateLevel(analyzedData),
+            achievements: detectAchievements(analyzedData),
+            skillLevels: calculateSkillLevels(analyzedData.metrics.skills, analyzedData.repositories),
+            stats: generateStatsSummary(analyzedData),
+            percentiles: calculatePercentiles(analyzedData)
+        };
 
-        // Call 1: Generate all developer insights in one prompt
-        console.log('Generating comprehensive developer insights...');
-        const developerPrompt = `Analyze this GitHub developer profile and provide insights in JSON format:
+        console.log(`Developer Level: ${gamification.level.level} (${gamification.level.tier})`);
+        console.log(`Achievements Earned: ${gamification.achievements.length}`);
 
-Developer Stats:
-- Dev Score: ${analyzedData.metrics.devScore}/100
-- Consistency Score: ${analyzedData.metrics.consistencyScore}/100
-- Impact Score: ${analyzedData.metrics.impactScore}/100
-- Activity Pattern: ${analyzedData.metrics.activityPattern}
-- Primary Tech: ${analyzedData.metrics.primaryTechIdentity}
-- Total Repos: ${analyzedData.repositories.length}
-- Active Repos: ${analyzedData.repositories.filter(r => r.maturityStage === 'active').length}
-- Abandoned Repos: ${analyzedData.repositories.filter(r => r.maturityStage === 'abandoned').length}
-- Top Skills: ${analyzedData.metrics.skills.slice(0, 5).map(s => s.name).join(', ')}
+        // Generate AI insights in parallel for speed
+        console.log('Generating AI-powered insights...');
 
-Contribution Pattern:
-- Total Commits: ${analyzedData.contributions.totalCommits}
-- Longest Streak: ${analyzedData.contributions.longestStreak} days
-- Current Streak: ${analyzedData.contributions.currentStreak} days
-- Busiest Month: ${analyzedData.contributions.busiestMonth}
+        const [personalityRaw, growthTrajectoryRaw, topRepoStoriesRaw] = await Promise.all([
+            // 1. Developer personality analysis
+            generateContent(getDeveloperPersonalityPrompt(analyzedData)),
 
-Respond with ONLY valid JSON (no markdown, no code blocks). Keep text concise (under 30 words per field):
-{
-  "oneLineInsight": "A single compelling sentence describing this developer",
-  "activityNarrative": "2-3 sentences about their coding rhythm and patterns",
-  "developerArchetype": "One word: Builder/Maintainer/Explorer/Specialist",
-  "growthActions": ["action 1", "action 2", "action 3"]
-}`;
+            // 2. Growth trajectory and recommendations
+            generateContent(getGrowthTrajectoryPrompt(analyzedData)),
 
-        const developerInsightsRaw = await generateContent(developerPrompt);
+            // 3. Top 3 repository stories
+            (async () => {
+                const topRepos = analyzedData.repositories
+                    .filter(r => r.maturityStage !== 'abandoned')
+                    .sort((a, b) => b.healthScore - a.healthScore)
+                    .slice(0, 3);
 
-        // Parse JSON response
-        let developerInsights;
+                if (topRepos.length === 0) return null;
 
-        if (!developerInsightsRaw) {
-            console.log('AI unavailable, using fallback insights');
-            developerInsights = {
-                oneLineInsight: 'Skilled developer with diverse technical expertise',
-                activityNarrative: 'Active contributor with consistent coding patterns',
-                developerArchetype: 'Builder',
-                growthActions: ['Continue building great projects', 'Expand technical skills', 'Engage with community']
-            };
-        } else {
-            try {
-                // Remove markdown code blocks and any text before/after JSON
-                let cleanJson = developerInsightsRaw.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+                // Generate stories for top repos
+                const stories = await Promise.all(
+                    topRepos.map(repo => generateContent(getRepositoryStoryPrompt(repo)))
+                );
 
-                // Try to find the first { and last }
-                const firstBrace = cleanJson.indexOf('{');
-                const lastBrace = cleanJson.lastIndexOf('}');
+                return stories.map((story, index) => ({
+                    repoName: topRepos[index].name,
+                    story: story || `${topRepos[index].language || 'Software'} project with ${topRepos[index].stars} stars`
+                }));
+            })()
+        ]);
 
-                if (firstBrace !== -1 && lastBrace !== -1) {
-                    cleanJson = cleanJson.substring(firstBrace, lastBrace + 1);
+        // Parse AI responses
+        const personality = parseJSON(personalityRaw, {
+            archetype: 'Builder',
+            codingStyle: 'Methodical developer',
+            workPattern: 'Consistent contributor',
+            strengths: ['Active development', 'Technical skills', 'Project creation'],
+            traits: ['Dedicated', 'Skilled', 'Productive', 'Focused'],
+            motivations: 'Driven by creating impactful software solutions'
+        });
+
+        const growthTrajectory = parseJSON(growthTrajectoryRaw, {
+            currentLevel: 'Intermediate',
+            nextMilestone: 'Increase project impact and community engagement',
+            recommendations: [
+                {
+                    area: 'Documentation',
+                    action: 'Add comprehensive READMEs to top projects',
+                    impact: 'Improves project discoverability and adoption',
+                    difficulty: 'Easy'
                 }
+            ],
+            learningPath: ['Improve documentation', 'Increase consistency', 'Engage with community'],
+            timeframe: '3-6 months'
+        });
 
-                developerInsights = JSON.parse(cleanJson);
-            } catch (e) {
-                console.error('Failed to parse developer insights JSON:', e);
-                // Fallback
-                developerInsights = {
-                    oneLineInsight: 'Skilled developer with diverse technical expertise',
-                    activityNarrative: 'Active contributor with consistent coding patterns',
-                    developerArchetype: 'Builder',
-                    growthActions: ['Continue building great projects', 'Expand technical skills', 'Engage with community']
-                };
-            }
+        // Attach repo stories to repositories
+        if (topRepoStoriesRaw) {
+            topRepoStoriesRaw.forEach(({ repoName, story }) => {
+                const repo = analyzedData.repositories.find(r => r.name === repoName);
+                if (repo) {
+                    repo.aiStory = story;
+                }
+            });
         }
 
-        // Call 2: Generate top 3 repo summaries only (not 10)
-        const topRepos = analyzedData.repositories
-            .filter(r => r.maturityStage !== 'abandoned')
-            .sort((a, b) => b.healthScore - a.healthScore)
-            .slice(0, 3);
-
-        console.log(`Generating summaries for top ${topRepos.length} repositories...`);
-
-        if (topRepos.length > 0) {
-            const repoSummaryPrompt = `Generate brief one-line summaries for these GitHub repositories. Respond with ONLY a JSON array of strings (no markdown):
-
-${topRepos.map((repo, i) => `${i + 1}. ${repo.name}: ${repo.description || 'No description'} (${repo.language || 'Unknown'}, ${repo.stars} stars, Health: ${repo.healthScore}/100)`).join('\n')}
-
-Format: ["summary 1", "summary 2", "summary 3"]`;
-
-            const repoSummariesRaw = await generateContent(repoSummaryPrompt);
-
-            if (!repoSummariesRaw) {
-                // Return fallback summaries
-                topRepos.forEach(repo => {
-                    repo.aiSummary = `${repo.language || 'Software'} project with ${repo.stars} stars`;
-                });
-            } else {
-                try {
-                    const cleanJson = repoSummariesRaw.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-                    const repoSummaries = JSON.parse(cleanJson);
-                    topRepos.forEach((repo, index) => {
-                        repo.aiSummary = repoSummaries[index] || 'Interesting project';
-                    });
-                } catch (e) {
-                    console.error('Failed to parse repo summaries:', e);
-                    // Fallback summaries
-                    topRepos.forEach(repo => {
-                        repo.aiSummary = `${repo.language || 'Software'} project with ${repo.stars} stars`;
-                    });
-                }
-            }
-        }
+        // Generate quick summary insights (legacy format for compatibility)
+        const quickInsight = `${personality.archetype} with ${personality.codingStyle.toLowerCase()} approach`;
+        const activityNarrative = `${personality.workPattern}. ${personality.motivations}`;
 
         return {
-            oneLineInsight: developerInsights.oneLineInsight,
-            activityNarrative: developerInsights.activityNarrative,
-            growthActions: Array.isArray(developerInsights.growthActions) ? developerInsights.growthActions : ['Keep building', 'Stay consistent', 'Engage with community'],
-            developerArchetype: developerInsights.developerArchetype,
+            // Enhanced insights
+            personality,
+            growthTrajectory,
+            gamification,
+
+            // Legacy insights (for backward compatibility)
+            oneLineInsight: quickInsight,
+            activityNarrative,
+            growthActions: growthTrajectory.recommendations.map(r => r.action).slice(0, 3),
+            developerArchetype: personality.archetype,
             strengthsWeaknesses: {
-                strengths: extractStrengths(analyzedData),
-                improvements: extractImprovements(analyzedData)
+                strengths: personality.strengths,
+                improvements: growthTrajectory.recommendations.map(r => r.area)
             }
         };
+
     } catch (error) {
         console.error('Error generating AI insights:', error);
 
-        // Return fallback insights
+        // Return fallback with gamification data
+        const gamification = {
+            level: calculateLevel(analyzedData),
+            achievements: detectAchievements(analyzedData),
+            skillLevels: calculateSkillLevels(analyzedData.metrics.skills, analyzedData.repositories),
+            stats: generateStatsSummary(analyzedData),
+            percentiles: calculatePercentiles(analyzedData)
+        };
+
         return {
-            oneLineInsight: 'Developer profile analysis in progress',
-            activityNarrative: 'Activity pattern analysis in progress',
-            growthActions: ['Continue building great projects'],
+            personality: {
+                archetype: 'Builder',
+                codingStyle: 'Active developer',
+                workPattern: 'Regular contributor',
+                strengths: ['Software development', 'Technical skills'],
+                traits: ['Dedicated', 'Skilled'],
+                motivations: 'Building software solutions'
+            },
+            growthTrajectory: {
+                currentLevel: 'Intermediate',
+                nextMilestone: 'Continue building great projects',
+                recommendations: [
+                    {
+                        area: 'Consistency',
+                        action: 'Maintain regular contribution schedule',
+                        impact: 'Improves development rhythm',
+                        difficulty: 'Medium'
+                    }
+                ],
+                learningPath: ['Keep coding', 'Learn new technologies', 'Share knowledge'],
+                timeframe: '6 months'
+            },
+            gamification,
+            oneLineInsight: 'Active developer with diverse technical skills',
+            activityNarrative: 'Maintains regular contribution pattern',
+            growthActions: ['Continue building', 'Improve documentation', 'Engage with community'],
             developerArchetype: 'Builder',
             strengthsWeaknesses: {
-                strengths: ['Active developer'],
-                improvements: ['Keep learning']
+                strengths: ['Active development'],
+                improvements: ['Documentation', 'Consistency']
             }
         };
+    }
+}
+
+/**
+ * Generate detailed comparison insights
+ */
+async function generateComparisonInsights(userAData, userBData, metrics) {
+    console.log('Generating detailed comparison insights...');
+
+    try {
+        const comparisonRaw = await generateContent(
+            getDetailedComparisonPrompt(userAData, userBData, metrics)
+        );
+
+        const comparison = parseJSON(comparisonRaw, {
+            summary: `${userAData.username} and ${userBData.username} demonstrate different development approaches and strengths.`,
+            strengths: {
+                userA: ['Technical expertise', 'Project quality'],
+                userB: ['Consistent activity', 'Diverse skills']
+            },
+            differences: [
+                {
+                    aspect: 'Development approach',
+                    userA: 'Focused on quality',
+                    userB: 'Focused on quantity'
+                }
+            ],
+            collaboration: 'Both developers bring unique strengths that could complement each other well in a team setting.',
+            verdict: 'Each developer excels in different areas, making direct comparison less meaningful than understanding their unique contributions.'
+        });
+
+        return comparison;
+
+    } catch (error) {
+        console.error('Error generating comparison insights:', error);
+        return {
+            summary: `${userAData.username} and ${userBData.username} show different development patterns.`,
+            strengths: {
+                userA: ['Active development'],
+                userB: ['Technical skills']
+            },
+            differences: [],
+            collaboration: 'Both developers have unique strengths.',
+            verdict: 'Each developer brings different skills and approaches to software development.'
+        };
+    }
+}
+
+/**
+ * Helper: Parse JSON with fallback
+ */
+function parseJSON(raw, fallback) {
+    if (!raw) return fallback;
+
+    try {
+        // Remove markdown code blocks
+        let cleanJson = raw.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+
+        // Find JSON object
+        const firstBrace = cleanJson.indexOf('{');
+        const lastBrace = cleanJson.lastIndexOf('}');
+
+        if (firstBrace !== -1 && lastBrace !== -1) {
+            cleanJson = cleanJson.substring(firstBrace, lastBrace + 1);
+        }
+
+        return JSON.parse(cleanJson);
+    } catch (e) {
+        console.error('Failed to parse JSON:', e.message);
+        return fallback;
     }
 }
 
@@ -209,5 +308,6 @@ function extractImprovements(data) {
 }
 
 module.exports = {
-    generateGitHubInsights
+    generateGitHubInsights,
+    generateComparisonInsights
 };

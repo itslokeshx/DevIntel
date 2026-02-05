@@ -67,18 +67,27 @@ export default function ProjectCard({ repo }) {
                     </a>
                 </div>
                 <span className={`px-2 py-1 text-xs font-semibold rounded-full ${status.color === 'green' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300' :
-                        status.color === 'blue' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300' :
-                            status.color === 'purple' ? 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300' :
-                                'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
+                    status.color === 'blue' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300' :
+                        status.color === 'purple' ? 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300' :
+                            'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
                     }`}>
                     {status.icon} {status.label}
                 </span>
             </div>
 
             {/* Description */}
-            <p className="text-text-secondary-light dark:text-text-secondary-dark text-sm mb-4 line-clamp-2">
-                {description}
-            </p>
+            <div className="mb-4">
+                {repo.aiStory && (
+                    <div className="flex items-center gap-2 mb-2">
+                        <span className="px-2 py-0.5 text-[10px] font-bold rounded bg-gradient-to-r from-purple-500 to-pink-500 text-white">
+                            ✨ AI INSIGHT
+                        </span>
+                    </div>
+                )}
+                <p className="text-text-secondary-light dark:text-text-secondary-dark text-sm line-clamp-3">
+                    {repo.aiStory || description}
+                </p>
+            </div>
 
             {/* Stats Row */}
             <div className="flex items-center gap-4 mb-4 text-sm text-text-tertiary-light dark:text-text-tertiary-dark flex-wrap">
