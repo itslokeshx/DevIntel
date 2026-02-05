@@ -1,4 +1,4 @@
-const { generateContent } = require('../ai/openrouter');
+const { generateContent } = require('../ai/groq');
 
 exports.analyzeLeetCodeProfile = async (data) => {
     try {
@@ -29,7 +29,7 @@ Provide a JSON analyze with the following fields:
 Return ONLY the JSON.`;
 
         const response = await generateContent(prompt);
-        // Try to parse JSON from response (Gemini might return markdown code block)
+        // Try to parse JSON from response (AI might return markdown code block)
         const jsonMatch = response.match(/\{[\s\S]*\}/);
         if (jsonMatch) {
             return JSON.parse(jsonMatch[0]);

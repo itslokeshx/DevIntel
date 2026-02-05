@@ -1,4 +1,4 @@
-const { generateContent, generateBatch } = require('./openrouter');
+const { generateContent, generateBatch } = require('./groq');
 const {
     getRepoSummaryPrompt,
     getDeveloperInsightPrompt,

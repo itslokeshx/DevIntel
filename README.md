@@ -26,7 +26,7 @@
 
 | 🔍 **Deep Analysis** | 🧠 **AI Verdicts** | ⚔️ **The Arena** |
 | :--- | :--- | :--- |
-| Don't just count commits. Measure *consistency*, *impact*, and *code maturity*. | Our **Mixtral 8x7B** engine generates personalized career advice and growth plans. | **Head-to-Head battles**. Compare profiles side-by-side with objective scoring. |
+| Don't just count commits. Measure *consistency*, *impact*, and *code maturity*. | Our **Llama 3.3 70B** engine generates personalized career advice and growth plans. | **Head-to-Head battles**. Compare profiles side-by-side with objective scoring. |
 
 ---
 
@@ -44,7 +44,7 @@
 
 | **Frontend Ecosystem** | **Backend Infrastructure** | **AI & Intelligence** |
 | :--- | :--- | :--- |
-| React 18 / Vite | Node.js / Express | OpenRouter (Mixtral 8x7B) |
+| React 18 / Vite | Node.js / Express | Groq (Llama 3.3 70B) |
 | Tailwind CSS | MongoDB Atlas | Predictive Analysis |
 | Framer Motion | Redis Caching | Retrieval Augmented Gen |
 
@@ -67,7 +67,7 @@ DevIntel/
 │   │   ├── models/          # MongoDB Schemas
 │   │   ├── routes/          # API Endpoints
 │   │   ├── services/
-│   │   │   ├── ai/          # OpenRouter integration
+│   │   │   ├── ai/          # Groq AI integration
 │   │   │   └── github/      # GitHub API analyzers
 │   │   └── utils/           # Math & Helper functions
 │   ├── server.js            # Entry point
@@ -115,7 +115,7 @@ Create a `.env` file in `backend/` with your keys:
 ```env
 MONGODB_URI=...
 GITHUB_TOKEN=...
-OR_API=...
+GROQ_API_KEY=...
 ```
 
 ---
