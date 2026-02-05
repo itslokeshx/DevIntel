@@ -29,6 +29,60 @@ async function generateGitHubInsights(analyzedData) {
     console.log('Generating enhanced AI insights with gamification...');
 
     try {
+        // Check if user has any meaningful data
+        const hasRepos = analyzedData.repositories && analyzedData.repositories.length > 0;
+        const hasCommits = analyzedData.contributions && analyzedData.contributions.totalCommits > 0;
+
+        // If user has no repos and no commits, return minimal data - NO FAKE INSIGHTS
+        if (!hasRepos && !hasCommits) {
+            console.log('⚠️  User has no public activity - returning minimal data (no fake insights)');
+
+            return {
+                personality: null,
+                growthTrajectory: null,
+                gamification: {
+                    level: {
+                        level: 1,
+                        tier: 'Beginner',
+                        totalXP: 0,
+                        currentLevelXP: 0,
+                        nextLevelXP: 100,
+                        progressToNext: 0,
+                        xpBreakdown: {}
+                    },
+                    achievements: [],
+                    skillLevels: [],
+                    stats: {
+                        totalProjects: 0,
+                        activeProjects: 0,
+                        totalStars: 0,
+                        totalForks: 0,
+                        totalCommits: 0,
+                        currentStreak: 0,
+                        longestStreak: 0,
+                        languages: 0,
+                        avgHealthScore: 0,
+                        devScore: 0,
+                        consistencyScore: 0,
+                        impactScore: 0
+                    },
+                    percentiles: {
+                        projects: 1,
+                        stars: 1,
+                        commits: 1,
+                        streak: 1,
+                        languages: 1,
+                        overall: 1
+                    }
+                },
+                oneLineInsight: null,
+                activityNarrative: null,
+                growthActions: [],
+                developerArchetype: null
+            };
+        }
+
+        // User has real data - generate real insights
         // Calculate gamification data first (no AI needed)
         const gamification = {
             level: calculateLevel(analyzedData),
@@ -75,26 +129,26 @@ async function generateGitHubInsights(analyzedData) {
         // Parse AI responses
         const personality = parseJSON(personalityRaw, {
             archetype: 'Builder',
-            codingStyle: 'Methodical developer',
-            workPattern: 'Consistent contributor',
-            strengths: ['Active development', 'Technical skills', 'Project creation'],
-            traits: ['Dedicated', 'Skilled', 'Productive', 'Focused'],
-            motivations: 'Driven by creating impactful software solutions'
+            codingStyle: 'Active developer',
+            workPattern: 'Regular contributor',
+            strengths: ['Software development', 'Technical skills'],
+            traits: ['Dedicated', 'Skilled'],
+            motivations: 'Building software solutions'
         });
 
         const growthTrajectory = parseJSON(growthTrajectoryRaw, {
             currentLevel: 'Intermediate',
-            nextMilestone: 'Increase project impact and community engagement',
+            nextMilestone: 'Continue building great projects',
             recommendations: [
                 {
-                    area: 'Documentation',
-                    action: 'Add comprehensive READMEs to top projects',
-                    impact: 'Improves project discoverability and adoption',
-                    difficulty: 'Easy'
+                    area: 'Consistency',
+                    action: 'Maintain regular contribution schedule',
+                    impact: 'Improves development rhythm',
+                    difficulty: 'Medium'
                 }
             ],
-            learningPath: ['Improve documentation', 'Increase consistency', 'Engage with community'],
-            timeframe: '3-6 months'
+            learningPath: ['Keep coding', 'Learn new technologies', 'Share knowledge'],
+            timeframe: '6 months'
         });
 
         // Attach repo stories to repositories
@@ -141,36 +195,16 @@ async function generateGitHubInsights(analyzedData) {
         };
 
         return {
-            personality: {
-                archetype: 'Builder',
-                codingStyle: 'Active developer',
-                workPattern: 'Regular contributor',
-                strengths: ['Software development', 'Technical skills'],
-                traits: ['Dedicated', 'Skilled'],
-                motivations: 'Building software solutions'
-            },
-            growthTrajectory: {
-                currentLevel: 'Intermediate',
-                nextMilestone: 'Continue building great projects',
-                recommendations: [
-                    {
-                        area: 'Consistency',
-                        action: 'Maintain regular contribution schedule',
-                        impact: 'Improves development rhythm',
-                        difficulty: 'Medium'
-                    }
-                ],
-                learningPath: ['Keep coding', 'Learn new technologies', 'Share knowledge'],
-                timeframe: '6 months'
-            },
+            personality: null,
+            growthTrajectory: null,
             gamification,
-            oneLineInsight: 'Active developer with diverse technical skills',
-            activityNarrative: 'Maintains regular contribution pattern',
-            growthActions: ['Continue building', 'Improve documentation', 'Engage with community'],
-            developerArchetype: 'Builder',
+            oneLineInsight: null,
+            activityNarrative: null,
+            growthActions: [],
+            developerArchetype: null,
             strengthsWeaknesses: {
-                strengths: ['Active development'],
-                improvements: ['Documentation', 'Consistency']
+                strengths: [],
+                improvements: []
             }
         };
     }
