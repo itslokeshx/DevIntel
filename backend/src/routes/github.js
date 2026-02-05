@@ -5,6 +5,9 @@ const githubController = require('../controllers/githubController');
 // POST /api/github/analyze - Analyze a GitHub user
 router.post('/analyze', githubController.analyzeUser);
 
+// POST /api/github/ai-verdict - Stream AI verdict
+router.post('/ai-verdict', githubController.streamAIVerdict);
+
 // GET /api/github/:username - Get cached GitHub data
 router.get('/:username', githubController.getUser);
 

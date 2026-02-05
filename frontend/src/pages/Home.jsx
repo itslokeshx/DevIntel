@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Github, Code, Trophy, FileText, ArrowRight, GitCompare } from 'lucide-react';
-import { Card } from '../components/common/Card';
-import { Input } from '../components/common/Input';
-import { Button } from '../components/common/Button';
+import { motion } from 'framer-motion';
+import { Search, ArrowRight, BarChart3, Dna, Rocket } from 'lucide-react';
 
 export function Home() {
     const navigate = useNavigate();
@@ -21,7 +19,6 @@ export function Home() {
         setLoading(true);
 
         try {
-            // Navigate to GitHub Intelligence page
             navigate(`/github/${githubUsername.trim()}`);
         } catch (err) {
             setError(err.message);
@@ -33,103 +30,141 @@ export function Home() {
         navigate('/compare');
     };
 
+    const exampleUsers = ['torvalds', 'gvanrossum', 'gaearon', 'tj'];
+
     return (
-        <div className="min-h-screen bg-light-bg-primary dark:bg-dark-bg-primary">
+        <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-950 dark:to-gray-900">
+            {/* Subtle Grid Background */}
+            <div className="absolute inset-0 bg-grid-pattern opacity-5 dark:opacity-10" />
+            
             {/* Hero Section */}
-            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-                <div className="text-center space-y-6">
-                    <h1 className="text-5xl md:text-6xl font-black text-light-text-primary dark:text-dark-text-primary tracking-tight leading-tight">
-                        Understand developers<br />
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 to-violet-600">
-                            through their actual work
-                        </span>
+            <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6 }}
+                    className="text-center space-y-8 mb-16"
+                >
+                    <h1 className="text-7xl font-bold text-gray-900 dark:text-gray-100 tracking-tight leading-tight">
+                        ✨ DevIntel
                     </h1>
-
-                    <p className="text-h3 text-light-text-secondary dark:text-dark-text-secondary max-w-2xl mx-auto">
-                        DevIntel analyzes public GitHub activity to reveal patterns, skills, and growth potential
+                    <p className="text-2xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+                        Decode Your Developer DNA
                     </p>
-                </div>
+                </motion.div>
 
-                {/* Input Form */}
-                <Card className="mt-12 max-w-md mx-auto" padding="lg">
-                    <div className="space-y-4">
-                        <Input
-                            label="GitHub Username"
+                {/* Search Bar */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.2 }}
+                    className="max-w-2xl mx-auto mb-8"
+                >
+                    <div className="relative">
+                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <Search className="h-6 w-6 text-gray-400 animate-pulse" />
+                        </div>
+                        <input
                             type="text"
-                            icon={Github}
-                            placeholder="torvalds"
                             value={githubUsername}
                             onChange={(e) => setGithubUsername(e.target.value)}
                             onKeyPress={(e) => e.key === 'Enter' && handleAnalyze()}
-                            error={error}
-                            required
+                            placeholder="Enter GitHub username..."
+                            className="w-full h-16 pl-12 pr-32 text-lg bg-white dark:bg-gray-900 border-2 border-gray-200 dark:border-gray-800 rounded-2xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all"
                         />
-
-                        <Button
-                            variant="primary"
-                            size="lg"
-                            className="w-full h-12 text-lg shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/30 transition-all transform hover:-translate-y-0.5"
+                        <button
                             onClick={handleAnalyze}
-                            loading={loading}
-                            disabled={!githubUsername.trim()}
+                            disabled={loading || !githubUsername.trim()}
+                            className="absolute inset-y-0 right-0 pr-2 flex items-center"
                         >
-                            Analyze with DevIntel
-                            <ArrowRight className="ml-2 h-5 w-5" />
-                        </Button>
-
-                        <Button
-                            variant="secondary"
-                            size="md"
-                            className="w-full h-12 text-lg border-2 border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600"
-                            onClick={handleCompare}
-                        >
-                            <GitCompare className="mr-2 h-5 w-5" />
-                            Compare GitHub Profiles
-                        </Button>
+                            <div className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2">
+                                {loading ? 'Analyzing...' : 'Analyze'}
+                                <ArrowRight className="h-5 w-5" />
+                            </div>
+                        </button>
                     </div>
+                    {error && (
+                        <p className="mt-2 text-sm text-red-600 dark:text-red-400 text-center">{error}</p>
+                    )}
+                    <p className="mt-4 text-center text-gray-500 dark:text-gray-400 text-sm">
+                        or try: {exampleUsers.map((user, i) => (
+                            <React.Fragment key={user}>
+                                <button
+                                    onClick={() => {
+                                        setGithubUsername(user);
+                                        setTimeout(() => handleAnalyze(), 100);
+                                    }}
+                                    className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                                >
+                                    {user}
+                                </button>
+                                {i < exampleUsers.length - 1 && ' · '}
+                            </React.Fragment>
+                        ))}
+                    </p>
+                </motion.div>
 
+                {/* Three Pillars */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.4 }}
+                    className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto mb-20"
+                >
+                    <PillarCard
+                        icon={<BarChart3 className="h-8 w-8" />}
+                        title="Past"
+                        subtitle="Your Code Timeline"
+                        description="See your evolution. Commits, stars, and contribution patterns mapped across years."
+                    />
+                    <PillarCard
+                        icon={<Dna className="h-8 w-8" />}
+                        title="Present"
+                        subtitle="Developer Identity"
+                        description="AI analyzes your work to identify: Are you a Builder? Architect? Explorer?"
+                    />
+                    <PillarCard
+                        icon={<Rocket className="h-8 w-8" />}
+                        title="Potential"
+                        subtitle="Growth Vectors"
+                        description="Personalized roadmap based on your trajectory and industry trends."
+                    />
+                </motion.div>
 
-                </Card>
-
-                {/* Feature Highlights */}
-                <div className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <div className="text-center space-y-3">
-                        <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-accent-primary/10 dark:bg-accent-primary-dark/10">
-                            <Code className="h-6 w-6 text-accent-primary dark:text-accent-primary-dark" />
-                        </div>
-                        <h3 className="text-h3 font-semibold text-light-text-primary dark:text-dark-text-primary">
-                            Intelligence over statistics
-                        </h3>
-                        <p className="text-body text-light-text-secondary dark:text-dark-text-secondary">
-                            See patterns and insights, not just numbers
-                        </p>
-                    </div>
-
-                    <div className="text-center space-y-3">
-                        <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-accent-secondary/10 dark:bg-accent-secondary-dark/10">
-                            <Trophy className="h-6 w-6 text-accent-secondary dark:text-accent-secondary-dark" />
-                        </div>
-                        <h3 className="text-h3 font-semibold text-light-text-primary dark:text-dark-text-primary">
-                            AI-powered insights
-                        </h3>
-                        <p className="text-body text-light-text-secondary dark:text-dark-text-secondary">
-                            Get personalized recommendations for growth
-                        </p>
-                    </div>
-
-                    <div className="text-center space-y-3">
-                        <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-accent-warning/10">
-                            <FileText className="h-6 w-6 text-accent-warning" />
-                        </div>
-                        <h3 className="text-h3 font-semibold text-light-text-primary dark:text-dark-text-primary">
-                            Growth recommendations
-                        </h3>
-                        <p className="text-body text-light-text-secondary dark:text-dark-text-secondary">
-                            Actionable steps to improve your developer profile
-                        </p>
-                    </div>
-                </div>
+                {/* Scroll Indicator */}
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.6, delay: 0.6 }}
+                    className="text-center"
+                >
+                    <p className="text-gray-500 dark:text-gray-400 text-sm mb-4">
+                        Scroll for live examples ↓
+                    </p>
+                </motion.div>
             </div>
         </div>
+    );
+}
+
+function PillarCard({ icon, title, subtitle, description }) {
+    return (
+        <motion.div
+            whileHover={{ y: -4 }}
+            className="p-8 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl hover:shadow-lg transition-all"
+        >
+            <div className="flex items-center gap-3 mb-4">
+                <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl text-blue-600 dark:text-blue-400">
+                    {icon}
+                </div>
+                <div>
+                    <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{title}</h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">{subtitle}</p>
+                </div>
+            </div>
+            <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
+                {description}
+            </p>
+        </motion.div>
     );
 }

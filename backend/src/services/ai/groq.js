@@ -72,7 +72,43 @@ async function generateBatch(prompts) {
     return results;
 }
 
+/**
+ * Stream AI content using Groq (for real-time responses)
+ */
+async function* streamContent(prompt, options = {}) {
+    try {
+        const stream = await groq.chat.completions.create({
+            messages: [
+                {
+                    role: 'system',
+                    content: options.systemMessage || 'You are an expert developer intelligence analyst. Provide concise, professional, and accurate insights based on GitHub data.'
+                },
+                {
+                    role: 'user',
+                    content: prompt
+                }
+            ],
+            model: options.model || 'llama-3.3-70b-versatile',
+            temperature: options.temperature || 0.7,
+            max_tokens: options.max_tokens || 500,
+            top_p: 1,
+            stream: true
+        });
+
+        for await (const chunk of stream) {
+            const content = chunk.choices[0]?.delta?.content || '';
+            if (content) {
+                yield content;
+            }
+        }
+    } catch (error) {
+        console.error('Groq streaming error:', error.message);
+        throw error;
+    }
+}
+
 module.exports = {
     generateContent,
-    generateBatch
+    generateBatch,
+    streamContent
 };
