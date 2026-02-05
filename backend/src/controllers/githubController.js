@@ -5,7 +5,7 @@ const { generateGitHubInsights } = require('../services/ai/insights');
 
 /**
  * POST /api/github/analyze
- * Analyze a GitHub user and store results
+ * Analyze a GitHub user and return fresh results (no caching)
  */
 async function analyzeUser(req, res, next) {
     try {
@@ -19,52 +19,34 @@ async function analyzeUser(req, res, next) {
 
         const username = githubUsername.toLowerCase().trim();
 
-        // Check if we have recent cached data
-        const existingData = await GitHubData.findOne({
-            username,
-            expiresAt: { $gt: new Date() }
-        });
-
-        if (existingData) {
-            console.log(`Returning cached data for ${username}`);
-            return res.json({
-                success: true,
-                data: existingData,
-                cached: true
-            });
-        }
-
-        // Analyze GitHub user
+        // Always analyze fresh - no caching
         console.log(`Analyzing GitHub user: ${username}`);
         const analyzedData = await analyzeGitHubUser(username);
 
-        // Generate AI insights
+        // Generate AI insights with gamification
+        console.log('Generating enhanced AI insights...');
         const aiInsights = await generateGitHubInsights({
             ...analyzedData,
             username
         });
 
-        // Find or create user (upsert to avoid duplicate key errors)
-        const user = await User.findOneAndUpdate(
-            { githubUsername: username },
-            { githubUsername: username },
-            { upsert: true, new: true, setDefaultsOnInsert: true }
-        );
+        console.log('✅ Analysis complete with gamification!');
+        console.log(`   Level: ${aiInsights.gamification.level.level}`);
+        console.log(`   Achievements: ${aiInsights.gamification.achievements.length}`);
 
-        // Store GitHub data
-        const githubData = await GitHubData.create({
-            userId: user._id,
+        // Return fresh data directly (no database storage)
+        const responseData = {
             username,
             profile: analyzedData.profile,
             repositories: analyzedData.repositories,
             contributions: analyzedData.contributions,
             metrics: analyzedData.metrics,
             aiInsights
-        });
+        };
 
         res.json({
             success: true,
-            data: githubData,
+            data: responseData,
             cached: false
         });
 
@@ -75,26 +57,34 @@ async function analyzeUser(req, res, next) {
 
 /**
  * GET /api/github/:username
- * Get cached GitHub data for a user
+ * Analyze and return GitHub data (no caching)
  */
 async function getUser(req, res, next) {
     try {
         const username = req.params.username.toLowerCase().trim();
 
-        const githubData = await GitHubData.findOne({
-            username,
-            expiresAt: { $gt: new Date() }
-        }).sort({ createdAt: -1 });
+        // Just analyze fresh every time
+        console.log(`Analyzing GitHub user: ${username}`);
+        const analyzedData = await analyzeGitHubUser(username);
 
-        if (!githubData) {
-            const error = new Error(`No data found for GitHub user '${username}'. Please analyze first.`);
-            error.statusCode = 404;
-            throw error;
-        }
+        // Generate AI insights
+        const aiInsights = await generateGitHubInsights({
+            ...analyzedData,
+            username
+        });
+
+        const responseData = {
+            username,
+            profile: analyzedData.profile,
+            repositories: analyzedData.repositories,
+            contributions: analyzedData.contributions,
+            metrics: analyzedData.metrics,
+            aiInsights
+        };
 
         res.json({
             success: true,
-            data: githubData
+            data: responseData
         });
 
     } catch (error) {
@@ -104,49 +94,12 @@ async function getUser(req, res, next) {
 
 /**
  * POST /api/github/refresh/:username
- * Force refresh GitHub data
+ * Same as getUser - always fresh
  */
 async function refreshUser(req, res, next) {
-    try {
-        const username = req.params.username.toLowerCase().trim();
-
-        // Delete old data
-        await GitHubData.deleteMany({ username });
-
-        // Re-analyze
-        const analyzedData = await analyzeGitHubUser(username);
-        const aiInsights = await generateGitHubInsights({
-            ...analyzedData,
-            username
-        });
-
-        // Find or create user (upsert to avoid duplicate key errors)
-        const user = await User.findOneAndUpdate(
-            { githubUsername: username },
-            { githubUsername: username },
-            { upsert: true, new: true, setDefaultsOnInsert: true }
-        );
-
-        // Store new data
-        const githubData = await GitHubData.create({
-            userId: user._id,
-            username,
-            profile: analyzedData.profile,
-            repositories: analyzedData.repositories,
-            contributions: analyzedData.contributions,
-            metrics: analyzedData.metrics,
-            aiInsights
-        });
-
-        res.json({
-            success: true,
-            data: githubData,
-            refreshed: true
-        });
-
-    } catch (error) {
-        next(error);
-    }
+    // Just call getUser since we're always fresh now
+    req.params.username = req.params.username;
+    return getUser(req, res, next);
 }
 
 module.exports = {
