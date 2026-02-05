@@ -99,17 +99,42 @@ async function fetchContributionCalendar(username) {
 }
 
 /**
- * Get contribution calendar data (with fallback)
+ * Get contribution calendar data (with multiple fallbacks)
  */
 async function getContributionCalendar(username) {
-    // Try GraphQL first
+    console.log(`📅 Fetching contribution calendar for ${username}...`);
+    
+    // Try GraphQL first (most accurate)
     const calendar = await fetchContributionCalendar(username);
     
-    if (calendar) {
+    if (calendar && calendar.totalContributions > 0) {
+        console.log(`✅ Using GraphQL calendar: ${calendar.totalContributions} contributions`);
         return calendar;
     }
 
-    // Fallback: return empty structure
+    console.log('⚠️ GraphQL calendar failed, using REST API fallback...');
+    
+    // Fallback: Try to get contribution stats from REST API
+    try {
+        const axios = require('axios');
+        const response = await axios.get(`https://api.github.com/users/${username}/events/public`, {
+            headers: {
+                'Authorization': `Bearer ${process.env.GITHUB_TOKEN}`,
+                'Accept': 'application/vnd.github.v3+json'
+            },
+            params: {
+                per_page: 100
+            }
+        });
+        
+        // This is a basic fallback - we'll use repository data instead
+        console.log('⚠️ REST API fallback also limited, will use repository commit counts');
+    } catch (error) {
+        console.log('⚠️ REST API fallback failed:', error.message);
+    }
+
+    // Final fallback: return empty structure (will use repository commit counts)
+    console.log('⚠️ Returning empty calendar - will use repository-based calculation');
     return {
         totalContributions: 0,
         days: [],

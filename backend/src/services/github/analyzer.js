@@ -37,39 +37,53 @@ async function analyzeGitHubUser(username) {
     const ownRepos = rawRepos.filter(repo => !repo.fork);
     console.log(`Found ${ownRepos.length} non-fork repositories`);
 
-    // Analyze ALL repositories (with timeout protection)
-    console.log(`Analyzing ${ownRepos.length} repositories...`);
-    const repositories = await Promise.all(
-        ownRepos.map((repo, index) => {
-            // Add small delay to avoid rate limiting
-            return new Promise(resolve => {
-                setTimeout(async () => {
-                    try {
-                        const analyzed = await analyzeRepository(username, repo);
-                        resolve(analyzed);
-                    } catch (error) {
-                        console.error(`Error analyzing repo ${repo.name}:`, error.message);
-                        // Return basic repo data even if analysis fails
-                        resolve({
-                            name: repo.name,
-                            description: repo.description,
-                            url: repo.html_url,
-                            stars: repo.stargazers_count,
-                            forks: repo.forks_count,
-                            language: repo.language,
-                            createdAt: new Date(repo.created_at),
-                            updatedAt: new Date(repo.updated_at),
-                            pushedAt: new Date(repo.pushed_at),
-                            commitCount: 0,
-                            hasReadme: false
-                        });
-                    }
-                }, index * 50); // 50ms delay between each repo
-            });
-        })
-    );
+    // Analyze ALL repositories (with batching to avoid rate limits)
+    console.log(`📦 Analyzing ${ownRepos.length} repositories...`);
     
-    console.log(`✅ Analyzed ${repositories.length} repositories`);
+    // Process repositories in batches to avoid overwhelming the API
+    const batchSize = 10;
+    const repositories = [];
+    
+    for (let i = 0; i < ownRepos.length; i += batchSize) {
+        const batch = ownRepos.slice(i, i + batchSize);
+        console.log(`   Processing batch ${Math.floor(i/batchSize) + 1}/${Math.ceil(ownRepos.length/batchSize)}...`);
+        
+        const batchResults = await Promise.all(
+            batch.map(async (repo) => {
+                try {
+                    const analyzed = await analyzeRepository(username, repo);
+                    console.log(`   ✅ ${repo.name}: ${analyzed.commitCount || 0} commits`);
+                    return analyzed;
+                } catch (error) {
+                    console.error(`   ❌ Error analyzing repo ${repo.name}:`, error.message);
+                    // Return basic repo data even if analysis fails
+                    return {
+                        name: repo.name,
+                        description: repo.description,
+                        url: repo.html_url,
+                        stars: repo.stargazers_count,
+                        forks: repo.forks_count,
+                        language: repo.language,
+                        createdAt: new Date(repo.created_at),
+                        updatedAt: new Date(repo.updated_at),
+                        pushedAt: new Date(repo.pushed_at),
+                        commitCount: 0,
+                        hasReadme: false
+                    };
+                }
+            })
+        );
+        
+        repositories.push(...batchResults);
+        
+        // Small delay between batches to avoid rate limiting
+        if (i + batchSize < ownRepos.length) {
+            await new Promise(resolve => setTimeout(resolve, 200));
+        }
+    }
+    
+    const totalCommits = repositories.reduce((sum, r) => sum + (r.commitCount || 0), 0);
+    console.log(`✅ Analyzed ${repositories.length} repositories, total commits: ${totalCommits}`);
 
     // Fetch contribution calendar (if available)
     const contributionCalendar = await getContributionCalendar(username);

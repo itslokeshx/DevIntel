@@ -93,7 +93,7 @@ async function fetchRepoLanguages(owner, repo) {
  */
 async function fetchRepoCommitCount(owner, repo) {
     try {
-        // Try to get commit count using Link header (faster)
+        // First, try to get commit count using Link header (fastest method)
         const response = await githubAPI.get(`/repos/${owner}/${repo}/commits`, {
             params: {
                 per_page: 1,
@@ -108,25 +108,34 @@ async function fetchRepoCommitCount(owner, repo) {
             const lastPageMatch = linkHeader.match(/page=(\d+)>; rel="last"/);
             if (lastPageMatch) {
                 const lastPage = parseInt(lastPageMatch[1]);
+                if (lastPage === 1) {
+                    // Only 1 page, return count directly
+                    return response.data.length;
+                }
                 // Get commits from last page to get accurate count
-                const lastPageResponse = await githubAPI.get(`/repos/${owner}/${repo}/commits`, {
-                    params: {
-                        per_page: 100,
-                        page: lastPage
-                    }
-                });
-                const commitsOnLastPage = lastPageResponse.data.length;
-                const totalCommits = (lastPage - 1) * 100 + commitsOnLastPage;
-                return totalCommits;
+                try {
+                    const lastPageResponse = await githubAPI.get(`/repos/${owner}/${repo}/commits`, {
+                        params: {
+                            per_page: 100,
+                            page: lastPage
+                        }
+                    });
+                    const commitsOnLastPage = lastPageResponse.data.length;
+                    const totalCommits = (lastPage - 1) * 100 + commitsOnLastPage;
+                    return totalCommits;
+                } catch (err) {
+                    // If last page fails, estimate from first page
+                    return lastPage * 100; // Estimate
+                }
             }
         }
         
-        // If no Link header, try pagination (limited to 5 pages for speed)
+        // If no Link header, try pagination (limited to 3 pages for speed)
         let commitCount = 0;
         let page = 1;
         let hasMore = true;
         
-        while (hasMore && page <= 5) { // Limit to 5 pages (500 commits) for performance
+        while (hasMore && page <= 3) { // Limit to 3 pages (300 commits) for performance
             const pageResponse = await githubAPI.get(`/repos/${owner}/${repo}/commits`, {
                 params: {
                     per_page: 100,
@@ -146,6 +155,7 @@ async function fetchRepoCommitCount(owner, repo) {
             }
         }
         
+        // If we got 300 commits, there might be more, but we'll use this as estimate
         return commitCount;
     } catch (error) {
         // Final fallback: return 0 if we can't get commits
