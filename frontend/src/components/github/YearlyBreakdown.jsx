@@ -3,7 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
 
 export function YearlyBreakdown({ yearlyBreakdown, contributions }) {
-    const [selectedYear, setSelectedYear] = useState(yearlyBreakdown?.[0]?.year || new Date().getFullYear());
+    const currentYear = new Date().getFullYear();
+    const [selectedYear, setSelectedYear] = useState(yearlyBreakdown?.[0]?.year || currentYear);
     
     if (!yearlyBreakdown || yearlyBreakdown.length === 0) {
         return null;

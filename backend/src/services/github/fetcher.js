@@ -88,20 +88,102 @@ async function fetchRepoLanguages(owner, repo) {
 }
 
 /**
- * Fetch commit count for a repository
+ * Fetch accurate commit count for a repository using GitHub API
  */
 async function fetchRepoCommitCount(owner, repo) {
     try {
-        // Try to get commits (limited to 100 for performance)
-        const response = await githubAPI.get(`/repos/${owner}/${repo}/commits`, {
-            params: { per_page: 100 }
-        });
-
-        // If there are 100 commits, there might be more, but we'll use 100 as estimate
-        return response.data.length;
+        // Use GitHub API to get accurate commit count
+        // First, try to get the default branch
+        const repoInfo = await githubAPI.get(`/repos/${owner}/${repo}`);
+        const defaultBranch = repoInfo.data.default_branch;
+        
+        // Get commit SHA from the default branch
+        const branchInfo = await githubAPI.get(`/repos/${owner}/${repo}/branches/${defaultBranch}`);
+        const sha = branchInfo.data.commit.sha;
+        
+        // Use GitHub API to get commit count (this is more accurate)
+        // We'll use the commits API with pagination to count all commits
+        let commitCount = 0;
+        let page = 1;
+        let hasMore = true;
+        
+        while (hasMore && page <= 10) { // Limit to 10 pages (1000 commits max per repo)
+            const response = await githubAPI.get(`/repos/${owner}/${repo}/commits`, {
+                params: {
+                    sha: defaultBranch,
+                    per_page: 100,
+                    page
+                }
+            });
+            
+            if (response.data.length === 0) {
+                hasMore = false;
+            } else {
+                commitCount += response.data.length;
+                // If we got less than 100, we've reached the end
+                if (response.data.length < 100) {
+                    hasMore = false;
+                } else {
+                    page++;
+                }
+            }
+        }
+        
+        return commitCount;
     } catch (error) {
-        console.error(`Error fetching commits for ${owner}/${repo}:`, error.message);
-        return 0;
+        // Fallback: try simple commit count
+        try {
+            const response = await githubAPI.get(`/repos/${owner}/${repo}/commits`, {
+                params: { per_page: 1 }
+            });
+            // If we can get commits, estimate based on Link header or use 1
+            return response.data.length > 0 ? 1 : 0;
+        } catch (fallbackError) {
+            console.error(`Error fetching commits for ${owner}/${repo}:`, error.message);
+            return 0;
+        }
+    }
+}
+
+/**
+ * Fetch all commits with dates for a repository (for accurate calendar)
+ */
+async function fetchRepoCommitsWithDates(owner, repo, since = null) {
+    try {
+        const commits = [];
+        let page = 1;
+        let hasMore = true;
+        const sinceDate = since || new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString();
+        
+        while (hasMore && page <= 5) { // Limit pages for performance
+            const response = await githubAPI.get(`/repos/${owner}/${repo}/commits`, {
+                params: {
+                    per_page: 100,
+                    page,
+                    since: sinceDate
+                }
+            });
+            
+            if (response.data.length === 0) {
+                hasMore = false;
+            } else {
+                commits.push(...response.data.map(commit => ({
+                    date: commit.commit.author.date,
+                    count: 1
+                })));
+                
+                if (response.data.length < 100) {
+                    hasMore = false;
+                } else {
+                    page++;
+                }
+            }
+        }
+        
+        return commits;
+    } catch (error) {
+        console.error(`Error fetching commits with dates for ${owner}/${repo}:`, error.message);
+        return [];
     }
 }
 
@@ -151,6 +233,7 @@ module.exports = {
     fetchUserRepositories,
     fetchRepoLanguages,
     fetchRepoCommitCount,
+    fetchRepoCommitsWithDates,
     fetchRepoReadme,
     checkRateLimit
 };

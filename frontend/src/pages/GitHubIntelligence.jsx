@@ -10,12 +10,15 @@ import { TechStackDNA } from '../components/github/TechStackDNA';
 import { YearlyBreakdown } from '../components/github/YearlyBreakdown';
 import { DeveloperWrapped } from '../components/github/DeveloperWrapped';
 import { LoadingSkeleton } from '../components/common/LoadingSkeleton';
+import { AllRepositories } from '../components/github/AllRepositories';
+import { DeveloperAnalysis } from '../components/github/DeveloperAnalysis';
 
 export default function GitHubIntelligence() {
     const { username } = useParams();
     const navigate = useNavigate();
     const { profile, loading, error, aiVerdict, aiVerdictStreaming, fetchProfile, streamAIVerdict } = useStore();
     const [localData, setLocalData] = useState(null);
+    const [showAllRepos, setShowAllRepos] = useState(false);
 
     useEffect(() => {
         if (username) {
@@ -274,7 +277,10 @@ export default function GitHubIntelligence() {
                                     </div>
                                 ))}
                                 {repos.length > 3 && (
-                                    <button className="w-full py-3 text-center text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 font-semibold">
+                                    <button 
+                                        onClick={() => setShowAllRepos(true)}
+                                        className="w-full py-3 text-center text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 font-semibold transition-colors"
+                                    >
                                         See all {repos.length} repositories →
                                     </button>
                                 )}
@@ -292,6 +298,22 @@ export default function GitHubIntelligence() {
                         className="mb-16"
                     >
                         <YearlyBreakdown yearlyBreakdown={data.yearlyBreakdown} contributions={data.contributions} />
+                    </motion.div>
+                )}
+
+                {/* Developer Analysis */}
+                {data.metrics && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5, delay: 0.5 }}
+                        className="mb-16"
+                    >
+                        <DeveloperAnalysis 
+                            metrics={data.metrics}
+                            contributions={data.contributions}
+                            repositories={data.repositories}
+                        />
                     </motion.div>
                 )}
 
@@ -349,6 +371,14 @@ export default function GitHubIntelligence() {
                     </SectionCard>
                 </motion.div>
             </div>
+            
+            {/* All Repositories Modal */}
+            {showAllRepos && (
+                <AllRepositories 
+                    repositories={repos} 
+                    onClose={() => setShowAllRepos(false)} 
+                />
+            )}
         </div>
     );
 }

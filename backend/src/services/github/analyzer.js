@@ -29,16 +29,17 @@ async function analyzeGitHubUser(username) {
     // Fetch profile
     const profile = await fetchUserProfile(username);
 
-    // Fetch repositories
+    // Fetch ALL repositories (no limit)
     const rawRepos = await fetchUserRepositories(username);
     console.log(`Found ${rawRepos.length} repositories`);
 
     // Filter out forks (optional - can be configured)
     const ownRepos = rawRepos.filter(repo => !repo.fork);
+    console.log(`Found ${ownRepos.length} non-fork repositories`);
 
-    // Analyze each repository
+    // Analyze ALL repositories (not just first 50)
     const repositories = await Promise.all(
-        ownRepos.slice(0, 50).map(repo => analyzeRepository(username, repo)) // Limit to 50 repos for performance
+        ownRepos.map(repo => analyzeRepository(username, repo))
     );
 
     // Fetch contribution calendar (if available)
@@ -71,8 +72,13 @@ async function analyzeGitHubUser(username) {
     // Assess documentation habits
     const documentationHabits = assessDocHabits(repositories);
 
-    // Calculate yearly breakdown
+    // Calculate yearly breakdown with accurate data
     const yearlyBreakdown = calculateYearlyBreakdown(repositories, contributions);
+
+    console.log(`✅ Analysis complete for ${username}:`);
+    console.log(`   Total repos: ${repositories.length}`);
+    console.log(`   Total commits: ${contributions.totalCommits}`);
+    console.log(`   Dev Score: ${devScore}/100`);
 
     return {
         profile,
@@ -82,6 +88,7 @@ async function analyzeGitHubUser(username) {
             devScore,
             consistencyScore,
             impactScore,
+            qualityScore,
             primaryTechIdentity,
             skills,
             languageStats, // Add properly formatted language stats
@@ -445,44 +452,74 @@ function calculateLanguageStats(repositories, skills) {
 }
 
 /**
- * Calculate yearly breakdown
+ * Calculate yearly breakdown with accurate commit data
  */
 function calculateYearlyBreakdown(repositories, contributions) {
     const yearMap = {};
     const currentYear = new Date().getFullYear();
+    const startYear = currentYear === 2026 ? 2025 : Math.max(currentYear - 3, 2020); // Show last 3-4 years
     
-    // Initialize years from account creation to current year
-    if (repositories.length > 0) {
-        const firstRepo = repositories.reduce((oldest, r) => 
-            r.createdAt < oldest.createdAt ? r : oldest, repositories[0]
-        );
-        const startYear = firstRepo.createdAt.getFullYear();
-        
-        for (let year = startYear; year <= currentYear; year++) {
-            yearMap[year] = {
-                year,
-                repos: 0,
-                commits: 0,
-                stars: 0,
-                topLanguage: null,
-                streak: 0
-            };
-        }
+    // Initialize years from startYear to currentYear
+    for (let year = startYear; year <= currentYear; year++) {
+        yearMap[year] = {
+            year,
+            repos: 0,
+            commits: 0,
+            stars: 0,
+            topLanguage: null,
+            streak: 0,
+            monthlyCommits: []
+        };
     }
     
-    // Aggregate data by year
+    // Aggregate repository data by creation year
     repositories.forEach(repo => {
         const year = repo.createdAt.getFullYear();
         if (yearMap[year]) {
             yearMap[year].repos += 1;
             yearMap[year].stars += (repo.stars || 0);
-            yearMap[year].commits += (repo.commitCount || 0);
         }
     });
     
+    // Use real calendar data for commits if available
+    if (contributions?.calendar && contributions.calendar.length > 0) {
+        contributions.calendar.forEach(day => {
+            const date = new Date(day.date);
+            const year = date.getFullYear();
+            const month = date.getMonth() + 1;
+            
+            if (yearMap[year]) {
+                yearMap[year].commits += day.count;
+                
+                // Track monthly commits
+                const monthKey = `${year}-${String(month).padStart(2, '0')}`;
+                const existingMonth = yearMap[year].monthlyCommits.find(m => m.month === monthKey);
+                if (existingMonth) {
+                    existingMonth.commits += day.count;
+                } else {
+                    yearMap[year].monthlyCommits.push({
+                        month: monthKey,
+                        commits: day.count
+                    });
+                }
+            }
+        });
+    } else {
+        // Fallback: distribute commits from repositories
+        repositories.forEach(repo => {
+            const year = repo.createdAt.getFullYear();
+            if (yearMap[year] && repo.commitCount) {
+                yearMap[year].commits += repo.commitCount;
+            }
+        });
+    }
+    
     // Find top language per year
     Object.keys(yearMap).forEach(year => {
-        const yearRepos = repositories.filter(r => r.createdAt.getFullYear() === parseInt(year));
+        const yearRepos = repositories.filter(r => {
+            const repoYear = r.createdAt.getFullYear();
+            return repoYear === parseInt(year);
+        });
         const langCount = {};
         yearRepos.forEach(r => {
             if (r.language) {
@@ -493,15 +530,42 @@ function calculateYearlyBreakdown(repositories, contributions) {
         yearMap[year].topLanguage = topLang ? topLang[0] : null;
     });
     
-    // Calculate streaks per year (simplified)
-    Object.keys(yearMap).forEach(year => {
-        const yearRepos = repositories.filter(r => {
-            const repoYear = r.pushedAt ? r.pushedAt.getFullYear() : r.createdAt.getFullYear();
-            return repoYear === parseInt(year);
+    // Calculate streaks per year from calendar data
+    if (contributions?.calendar) {
+        Object.keys(yearMap).forEach(year => {
+            const yearDays = contributions.calendar.filter(d => {
+                const dYear = new Date(d.date).getFullYear();
+                return dYear === parseInt(year);
+            });
+            
+            if (yearDays.length > 0) {
+                let streak = 0;
+                let maxStreak = 0;
+                let tempStreak = 0;
+                
+                // Sort by date descending
+                const sortedDays = [...yearDays].sort((a, b) => new Date(b.date) - new Date(a.date));
+                
+                sortedDays.forEach(day => {
+                    if (day.count > 0) {
+                        tempStreak++;
+                        maxStreak = Math.max(maxStreak, tempStreak);
+                        if (streak === 0 || tempStreak === streak + 1) {
+                            streak = tempStreak;
+                        }
+                    } else {
+                        tempStreak = 0;
+                    }
+                });
+                
+                yearMap[year].streak = maxStreak;
+            }
         });
-        if (yearRepos.length > 0) {
-            yearMap[year].streak = contributions.currentStreak || 0;
-        }
+    }
+    
+    // Sort monthly commits
+    Object.keys(yearMap).forEach(year => {
+        yearMap[year].monthlyCommits.sort((a, b) => a.month.localeCompare(b.month));
     });
     
     return Object.values(yearMap).sort((a, b) => b.year - a.year);

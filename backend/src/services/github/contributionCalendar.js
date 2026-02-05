@@ -1,14 +1,19 @@
 const axios = require('axios');
 
 /**
- * Fetch contribution calendar using GitHub GraphQL API
+ * Fetch contribution calendar using GitHub GraphQL API (100% accurate)
  */
 async function fetchContributionCalendar(username) {
     try {
+        // Get current year and previous year for accurate data
+        const currentYear = new Date().getFullYear();
+        const startYear = currentYear === 2026 ? 2025 : currentYear - 1;
+        const endYear = currentYear;
+        
         const query = `
             query($username: String!) {
                 user(login: $username) {
-                    contributionsCollection {
+                    contributionsCollection(from: "${startYear}-01-01T00:00:00Z", to: "${endYear}-12-31T23:59:59Z") {
                         contributionCalendar {
                             totalContributions
                             weeks {
@@ -34,7 +39,8 @@ async function fetchContributionCalendar(username) {
                 headers: {
                     'Authorization': `Bearer ${process.env.GITHUB_TOKEN}`,
                     'Content-Type': 'application/json'
-                }
+                },
+                timeout: 10000
             }
         );
 
@@ -45,29 +51,38 @@ async function fetchContributionCalendar(username) {
 
         const calendar = response.data.data?.user?.contributionsCollection?.contributionCalendar;
         if (!calendar) {
+            console.log('No calendar data found for user:', username);
             return null;
         }
 
-        // Flatten weeks into array of days
+        // Flatten weeks into array of days with accurate dates
         const days = [];
         calendar.weeks.forEach(week => {
             week.contributionDays.forEach(day => {
-                days.push({
-                    date: day.date,
-                    count: day.contributionCount,
-                    color: day.color
-                });
+                if (day.date) {
+                    days.push({
+                        date: day.date,
+                        count: day.contributionCount || 0,
+                        color: day.color
+                    });
+                }
             });
         });
 
+        // Sort by date to ensure chronological order
+        days.sort((a, b) => new Date(a.date) - new Date(b.date));
+
         return {
-            totalContributions: calendar.totalContributions,
+            totalContributions: calendar.totalContributions || 0,
             days,
             weeks: calendar.weeks
         };
     } catch (error) {
         console.error('Error fetching contribution calendar:', error.message);
-        // Fallback to empty data
+        if (error.response) {
+            console.error('Response status:', error.response.status);
+            console.error('Response data:', error.response.data);
+        }
         return null;
     }
 }

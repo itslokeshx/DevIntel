@@ -120,7 +120,7 @@ export function DeveloperWrapped({ wrappedData, contributions, repositories, use
             </div>
             
             <div className="relative z-10">
-                <h3 className="text-3xl font-bold mb-8 text-center">🎁 Your 2024 Wrapped</h3>
+                <h3 className="text-3xl font-bold mb-8 text-center">🎁 Your {new Date().getFullYear() === 2026 ? '2025' : new Date().getFullYear() - 1} Wrapped</h3>
                 
                 {/* Slide container */}
                 <div className="relative h-96 mb-8">

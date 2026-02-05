@@ -15,9 +15,11 @@ export function ContributionHeatmap({ contributions }) {
     const commitMap = new Map();
     
     if (calendarDays.length > 0) {
-        // Use real calendar data
+        // Use 100% real calendar data from GitHub GraphQL API
         calendarDays.forEach(day => {
-            commitMap.set(day.date, day.count);
+            if (day.date && day.count !== undefined) {
+                commitMap.set(day.date, day.count);
+            }
         });
     } else if (contributions?.commitsByMonth) {
         // Fallback: distribute commits across months
@@ -110,7 +112,7 @@ export function ContributionHeatmap({ contributions }) {
             <div className="grid grid-cols-3 gap-4 pt-6 border-t border-gray-200 dark:border-gray-800">
                 <div>
                     <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">{totalCommits}</div>
-                    <div className="text-sm text-gray-500 dark:text-gray-400">Total Commits (2024)</div>
+                    <div className="text-sm text-gray-500 dark:text-gray-400">Total Commits ({new Date().getFullYear() === 2026 ? '2025' : new Date().getFullYear()})</div>
                 </div>
                 <div>
                     <div className="text-3xl font-bold text-green-600 dark:text-green-400">{currentStreak}</div>

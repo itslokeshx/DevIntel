@@ -242,13 +242,13 @@ export default function GitHubComparison() {
                                     <Code2 className="w-6 h-6" />
                                     🎯 TECH STACK OVERLAP
                                 </h2>
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                     <div className="text-center">
-                                        <h4 className="font-semibold text-blue-400 mb-4 text-lg">Only {userA}</h4>
-                                        <div className="flex flex-wrap gap-2 justify-center min-h-[100px]">
+                                        <h4 className="font-semibold text-blue-400 mb-3 text-base">Only {userA}</h4>
+                                        <div className="flex flex-wrap gap-1.5 justify-center min-h-[80px]">
                                             {(data.comparison.techStack.uniqueA || []).length > 0 ? (
-                                                (data.comparison.techStack.uniqueA || []).slice(0, 8).map(tech => (
-                                                    <span key={tech} className="bg-blue-500/20 text-blue-300 px-3 py-1 rounded-full text-sm">
+                                                (data.comparison.techStack.uniqueA || []).slice(0, 10).map(tech => (
+                                                    <span key={tech} className="bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded-md text-xs">
                                                         {tech}
                                                     </span>
                                                 ))
@@ -259,11 +259,11 @@ export default function GitHubComparison() {
                                     </div>
                                     
                                     <div className="text-center border-l border-r border-gray-200 dark:border-gray-800 px-4">
-                                        <h4 className="font-semibold text-yellow-400 mb-4 text-lg">Shared Technologies</h4>
-                                        <div className="flex flex-wrap gap-2 justify-center min-h-[100px]">
+                                        <h4 className="font-semibold text-yellow-400 mb-3 text-base">Shared</h4>
+                                        <div className="flex flex-wrap gap-1.5 justify-center min-h-[80px]">
                                             {(data.comparison.techStack.shared || []).length > 0 ? (
-                                                (data.comparison.techStack.shared || []).slice(0, 8).map(tech => (
-                                                    <span key={tech} className="bg-yellow-500/20 text-yellow-300 px-3 py-1 rounded-full text-sm font-bold">
+                                                (data.comparison.techStack.shared || []).slice(0, 10).map(tech => (
+                                                    <span key={tech} className="bg-yellow-500/20 text-yellow-300 px-2 py-0.5 rounded-md text-xs font-semibold">
                                                         {tech}
                                                     </span>
                                                 ))
@@ -271,17 +271,17 @@ export default function GitHubComparison() {
                                                 <span className="text-gray-400 text-sm">None</span>
                                             )}
                                         </div>
-                                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-4">
+                                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-3">
                                             <span className="font-semibold">{data.comparison.techStack.overlapPercentage || 0}%</span> overlap
                                         </p>
                                     </div>
                                     
                                     <div className="text-center">
-                                        <h4 className="font-semibold text-purple-400 mb-4 text-lg">Only {userB}</h4>
-                                        <div className="flex flex-wrap gap-2 justify-center min-h-[100px]">
+                                        <h4 className="font-semibold text-purple-400 mb-3 text-base">Only {userB}</h4>
+                                        <div className="flex flex-wrap gap-1.5 justify-center min-h-[80px]">
                                             {(data.comparison.techStack.uniqueB || []).length > 0 ? (
-                                                (data.comparison.techStack.uniqueB || []).slice(0, 8).map(tech => (
-                                                    <span key={tech} className="bg-purple-500/20 text-purple-300 px-3 py-1 rounded-full text-sm">
+                                                (data.comparison.techStack.uniqueB || []).slice(0, 10).map(tech => (
+                                                    <span key={tech} className="bg-purple-500/20 text-purple-300 px-2 py-0.5 rounded-md text-xs">
                                                         {tech}
                                                     </span>
                                                 ))
@@ -289,6 +289,39 @@ export default function GitHubComparison() {
                                                 <span className="text-gray-400 text-sm">None</span>
                                             )}
                                         </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                        
+                        {/* Additional Comparison Metrics */}
+                        {data.comparison && (
+                            <div className="p-8 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800">
+                                <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6 text-center">📈 ADDITIONAL METRICS</h2>
+                                <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                                    <div className="text-center">
+                                        <div className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-1">
+                                            <CountUp end={data.comparison.consistencyScore?.userA || data.comparison.metrics?.consistencyScore?.userA || 0} duration={1.5} />
+                                        </div>
+                                        <div className="text-xs text-gray-600 dark:text-gray-400">{userA} Consistency</div>
+                                    </div>
+                                    <div className="text-center">
+                                        <div className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-1">
+                                            <CountUp end={data.comparison.consistencyScore?.userB || data.comparison.metrics?.consistencyScore?.userB || 0} duration={1.5} />
+                                        </div>
+                                        <div className="text-xs text-gray-600 dark:text-gray-400">{userB} Consistency</div>
+                                    </div>
+                                    <div className="text-center">
+                                        <div className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-1">
+                                            <CountUp end={data.comparison.impactScore?.userA || data.comparison.metrics?.impactScore?.userA || 0} duration={1.5} />
+                                        </div>
+                                        <div className="text-xs text-gray-600 dark:text-gray-400">{userA} Impact</div>
+                                    </div>
+                                    <div className="text-center">
+                                        <div className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-1">
+                                            <CountUp end={data.comparison.impactScore?.userB || data.comparison.metrics?.impactScore?.userB || 0} duration={1.5} />
+                                        </div>
+                                        <div className="text-xs text-gray-600 dark:text-gray-400">{userB} Impact</div>
                                     </div>
                                 </div>
                             </div>
