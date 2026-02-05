@@ -9,6 +9,7 @@ import { ContributionHeatmap } from '../components/github/ContributionHeatmap';
 import { TechStackDNA } from '../components/github/TechStackDNA';
 import { YearlyBreakdown } from '../components/github/YearlyBreakdown';
 import { DeveloperWrapped } from '../components/github/DeveloperWrapped';
+import { LoadingSkeleton } from '../components/common/LoadingSkeleton';
 
 export default function GitHubIntelligence() {
     const { username } = useParams();
@@ -42,10 +43,22 @@ export default function GitHubIntelligence() {
     const data = localData || profile;
     if (!data) {
         return (
-            <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex items-center justify-center">
-                <div className="text-center">
-                    <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                    <p className="text-gray-600 dark:text-gray-400">Analyzing @{username}'s developer DNA...</p>
+            <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
+                <div className="max-w-6xl mx-auto px-6 py-12">
+                    <div className="text-center mb-12">
+                        <motion.div
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"
+                        />
+                        <p className="text-gray-600 dark:text-gray-400 text-lg">Analyzing @{username}'s developer DNA...</p>
+                        <p className="text-gray-500 dark:text-gray-500 text-sm mt-2">This may take a few moments</p>
+                    </div>
+                    <div className="space-y-8">
+                        <LoadingSkeleton type="profile" />
+                        <LoadingSkeleton type="card" count={2} />
+                        <LoadingSkeleton type="heatmap" />
+                    </div>
                 </div>
             </div>
         );
