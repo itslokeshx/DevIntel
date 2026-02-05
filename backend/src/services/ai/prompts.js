@@ -508,6 +508,56 @@ FORMAT: 4 paragraphs, plain text, 150-200 words total
 Your comparison:`;
 }
 
+/**
+ * PREMIUM: Enhanced Tech Stack Forecast (6-month prediction)
+ */
+function getTechStackForecastPrompt(languageStats, repositories) {
+    const topLanguages = languageStats.slice(0, 5).map(l => ({
+        name: l.name,
+        percentage: l.percentage,
+        repos: l.repos
+    }));
+    
+    const recentRepos = repositories
+        .filter(r => {
+            const daysSinceUpdate = Math.floor((Date.now() - new Date(r.updatedAt).getTime()) / (1000 * 60 * 60 * 24));
+            return daysSinceUpdate < 180; // Last 6 months
+        })
+        .slice(0, 10);
+    
+    const recentLanguages = {};
+    recentRepos.forEach(repo => {
+        if (repo.language) {
+            recentLanguages[repo.language] = (recentLanguages[repo.language] || 0) + 1;
+        }
+    });
+    
+    return `You are a tech industry analyst predicting developer technology trends.
+
+CURRENT TECH STACK:
+${topLanguages.map(l => `- ${l.name}: ${l.percentage}% of repos (${l.repos} projects)`).join('\n')}
+
+RECENT ACTIVITY (Last 6 months):
+${Object.entries(recentLanguages).map(([lang, count]) => `- ${lang}: ${count} new/updated projects`).join('\n')}
+
+TASK:
+Provide a 6-month technology forecast with:
+1. Which languages are trending UP (and by how much %)
+2. Which languages are trending DOWN
+3. Emerging technologies they should consider
+4. Specific actionable recommendations
+
+FORMAT:
+- Use specific percentages (e.g., "TypeScript +30%")
+- Mention 2-3 emerging technologies
+- Give 1-2 concrete action items
+
+TONE: Professional, data-driven, encouraging
+LENGTH: 3-4 sentences
+
+Your forecast:`;
+}
+
 module.exports = {
     // Enhanced prompts
     getDeveloperPersonalityPrompt,
@@ -523,6 +573,7 @@ module.exports = {
     getYearWrappedPrompt,
     getRepoStorytellingPrompt,
     getComparisonVerdictPrompt,
+    getTechStackForecastPrompt,
 
     // Legacy prompts
     getRepoSummaryPrompt,

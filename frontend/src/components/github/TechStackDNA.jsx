@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { TrendingUp } from 'lucide-react';
+import { TrendingUp, Loader2 } from 'lucide-react';
 
 const languageColors = {
     'JavaScript': '#f7df1e',
@@ -25,7 +25,35 @@ const languageColors = {
     'MATLAB': '#e16737'
 };
 
-export function TechStackDNA({ languageStats }) {
+export function TechStackDNA({ languageStats, repositories }) {
+    const [forecast, setForecast] = useState(null);
+    const [loadingForecast, setLoadingForecast] = useState(false);
+    
+    useEffect(() => {
+        if (languageStats && languageStats.length > 0) {
+            fetchForecast();
+        }
+    }, [languageStats]);
+    
+    const fetchForecast = async () => {
+        setLoadingForecast(true);
+        try {
+            // This would call your backend API for AI forecast
+            // For now, we'll use a simple client-side prediction
+            setTimeout(() => {
+                const topLang = languageStats[0]?.name;
+                setForecast(
+                    topLang === 'TypeScript' 
+                        ? 'TypeScript usage trending +30% based on recent project patterns. Python dominance stable. Consider exploring Go or Rust for systems work.'
+                        : `${topLang} remains your dominant stack. Consider exploring complementary technologies for full-stack capabilities.`
+                );
+                setLoadingForecast(false);
+            }, 1000);
+        } catch (err) {
+            setLoadingForecast(false);
+        }
+    };
+    
     if (!languageStats || languageStats.length === 0) {
         return (
             <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-8">
@@ -91,22 +119,31 @@ export function TechStackDNA({ languageStats }) {
             </div>
             
             {/* AI Prediction */}
-            <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-800">
+            <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 }}
+                className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-800"
+            >
                 <div className="flex items-start gap-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
                     <TrendingUp className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-1 flex-shrink-0" />
-                    <div>
+                    <div className="flex-1">
                         <div className="font-semibold text-blue-900 dark:text-blue-300 mb-1">
                             🔮 6-Month Forecast
                         </div>
-                        <div className="text-sm text-gray-700 dark:text-gray-400">
-                            {sortedLanguages.length > 0 && sortedLanguages[0].name === 'TypeScript' 
-                                ? 'TypeScript usage trending +30% based on recent project patterns. Python dominance stable. Consider exploring Go or Rust for systems work.'
-                                : `${sortedLanguages[0]?.name || 'Primary language'} remains your dominant stack. Consider exploring complementary technologies for full-stack capabilities.`
-                            }
-                        </div>
+                        {loadingForecast ? (
+                            <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                                <Loader2 className="w-4 h-4 animate-spin" />
+                                <span>Analyzing trends...</span>
+                            </div>
+                        ) : (
+                            <div className="text-sm text-gray-700 dark:text-gray-400">
+                                {forecast || `${sortedLanguages[0]?.name || 'Primary language'} remains your dominant stack. Consider exploring complementary technologies for full-stack capabilities.`}
+                            </div>
+                        )}
                     </div>
                 </div>
-            </div>
+            </motion.div>
         </div>
     );
 }

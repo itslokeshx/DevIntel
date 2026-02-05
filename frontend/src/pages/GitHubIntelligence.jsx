@@ -199,7 +199,7 @@ export default function GitHubIntelligence() {
                         transition={{ duration: 0.5, delay: 0.4 }}
                         className="mb-16"
                     >
-                        <TechStackDNA languageStats={data.metrics.languageStats} />
+                        <TechStackDNA languageStats={data.metrics.languageStats} repositories={data.repositories} />
                     </motion.div>
                 )}
 
@@ -293,6 +293,7 @@ export default function GitHubIntelligence() {
                         wrappedData={data.wrappedData}
                         contributions={data.contributions}
                         repositories={data.repositories}
+                        username={username}
                     />
                 </motion.div>
 

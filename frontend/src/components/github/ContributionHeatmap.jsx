@@ -3,6 +3,9 @@ import { motion } from 'framer-motion';
 import { format, startOfYear, eachDayOfInterval, getDay, subWeeks } from 'date-fns';
 
 export function ContributionHeatmap({ contributions }) {
+    // Use real calendar data if available
+    const calendarDays = contributions?.calendar || [];
+    
     // Generate last 52 weeks of data
     const today = new Date();
     const startDate = subWeeks(today, 52);
@@ -10,9 +13,15 @@ export function ContributionHeatmap({ contributions }) {
     
     // Create a map of dates to commit counts
     const commitMap = new Map();
-    if (contributions?.commitsByMonth) {
+    
+    if (calendarDays.length > 0) {
+        // Use real calendar data
+        calendarDays.forEach(day => {
+            commitMap.set(day.date, day.count);
+        });
+    } else if (contributions?.commitsByMonth) {
+        // Fallback: distribute commits across months
         contributions.commitsByMonth.forEach(({ month, count }) => {
-            // Distribute commits across days in that month (simplified)
             const [year, monthNum] = month.split('-').map(Number);
             const daysInMonth = new Date(year, monthNum, 0).getDate();
             const commitsPerDay = Math.round(count / daysInMonth);

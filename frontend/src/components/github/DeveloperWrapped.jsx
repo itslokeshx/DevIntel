@@ -1,9 +1,29 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Share2, Copy, Check } from 'lucide-react';
 
-export function DeveloperWrapped({ wrappedData, contributions, repositories }) {
+export function DeveloperWrapped({ wrappedData, contributions, repositories, username }) {
     const [currentSlide, setCurrentSlide] = useState(0);
+    const [copied, setCopied] = useState(false);
+    const [showShareMenu, setShowShareMenu] = useState(false);
+    const shareMenuRef = useRef(null);
+    
+    // Close share menu when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (shareMenuRef.current && !shareMenuRef.current.contains(event.target)) {
+                setShowShareMenu(false);
+            }
+        };
+        
+        if (showShareMenu) {
+            document.addEventListener('mousedown', handleClickOutside);
+        }
+        
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [showShareMenu]);
     
     if (!wrappedData && !contributions && !repositories) {
         return null;
@@ -147,10 +167,78 @@ export function DeveloperWrapped({ wrappedData, contributions, repositories }) {
                 </div>
                 
                 {/* Share button */}
-                <div className="flex justify-center">
-                    <button className="bg-white text-purple-900 px-8 py-3 rounded-full font-semibold hover:scale-105 transition-transform">
-                        Share Your Wrapped 📸
+                <div className="flex justify-center relative" ref={shareMenuRef}>
+                    <button
+                        onClick={() => setShowShareMenu(!showShareMenu)}
+                        className="bg-white text-purple-900 px-8 py-3 rounded-full font-semibold hover:scale-105 transition-transform flex items-center gap-2"
+                    >
+                        <Share2 className="w-5 h-5" />
+                        Share Your Wrapped
                     </button>
+                    
+                    <AnimatePresence>
+                        {showShareMenu && (
+                            <motion.div
+                                initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                animate={{ opacity: 1, y: 0, scale: 1 }}
+                                exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                className="absolute top-full mt-2 bg-white dark:bg-gray-900 rounded-xl shadow-xl border border-gray-200 dark:border-gray-800 p-4 min-w-[200px] z-50"
+                            >
+                            <div className="space-y-2">
+                                <button
+                                    onClick={async () => {
+                                        const url = `${window.location.origin}/github/${username}`;
+                                        try {
+                                            await navigator.clipboard.writeText(url);
+                                            setCopied(true);
+                                            setTimeout(() => setCopied(false), 2000);
+                                        } catch (err) {
+                                            console.error('Failed to copy:', err);
+                                        }
+                                    }}
+                                    className="w-full flex items-center gap-2 px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+                                >
+                                    {copied ? (
+                                        <>
+                                            <Check className="w-4 h-4 text-green-600" />
+                                            <span className="text-sm">Copied!</span>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Copy className="w-4 h-4" />
+                                            <span className="text-sm">Copy Link</span>
+                                        </>
+                                    )}
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        const text = `Check out my 2024 Developer Wrapped! 🎁\n${window.location.origin}/github/${username}`;
+                                        const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
+                                        window.open(twitterUrl, '_blank');
+                                    }}
+                                    className="w-full flex items-center gap-2 px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+                                >
+                                    <span className="text-sm">Share on Twitter</span>
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        const url = `${window.location.origin}/github/${username}`;
+                                        if (navigator.share) {
+                                            navigator.share({
+                                                title: 'My 2024 Developer Wrapped',
+                                                text: 'Check out my developer stats!',
+                                                url: url
+                                            });
+                                        }
+                                    }}
+                                    className="w-full flex items-center gap-2 px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+                                >
+                                    <span className="text-sm">Native Share</span>
+                                </button>
+                            </div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
                 </div>
             </div>
         </div>

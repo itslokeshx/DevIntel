@@ -18,6 +18,7 @@ const {
     fetchRepoCommitCount,
     fetchRepoReadme
 } = require('./fetcher');
+const { getContributionCalendar } = require('./contributionCalendar');
 
 /**
  * Analyze a GitHub user's complete profile
@@ -40,8 +41,11 @@ async function analyzeGitHubUser(username) {
         ownRepos.slice(0, 50).map(repo => analyzeRepository(username, repo)) // Limit to 50 repos for performance
     );
 
+    // Fetch contribution calendar (if available)
+    const contributionCalendar = await getContributionCalendar(username);
+    
     // Calculate contribution metrics
-    const contributions = calculateContributions(repositories);
+    const contributions = calculateContributions(repositories, contributionCalendar);
 
     // Infer skills from repositories
     const skills = inferSkills(repositories);
@@ -145,23 +149,40 @@ async function analyzeRepository(owner, repo) {
 /**
  * Calculate contribution metrics from repositories
  */
-function calculateContributions(repositories) {
+function calculateContributions(repositories, contributionCalendar = null) {
+    // Use real calendar data if available
+    if (contributionCalendar && contributionCalendar.days) {
+        const totalCommits = contributionCalendar.totalContributions || 0;
+        
+        // Group by month from calendar data
+        const commitsByMonth = groupCommitsByMonthFromCalendar(contributionCalendar.days);
+        
+        // Calculate streaks from calendar
+        const { longestStreak, currentStreak } = calculateStreaksFromCalendar(contributionCalendar.days);
+        
+        return {
+            totalCommits,
+            commitsByMonth,
+            longestStreak,
+            currentStreak,
+            averageCommitsPerDay: parseFloat((totalCommits / 365).toFixed(2)),
+            busiestDay: findBusiestDay(contributionCalendar.days),
+            busiestMonth: commitsByMonth.length > 0 ? commitsByMonth[0].month : 'N/A',
+            inactiveGaps: [],
+            calendar: contributionCalendar.days // Include raw calendar data
+        };
+    }
+    
+    // Fallback to repository-based calculation
     const totalCommits = repositories.reduce((sum, r) => sum + (r.commitCount || 0), 0);
-
-    // Group commits by month (simplified - based on repo updates)
     const commitsByMonth = groupCommitsByMonth(repositories);
-
-    // Calculate streaks (simplified version)
     const { longestStreak, currentStreak } = calculateStreaks(repositories);
-
-    // Calculate average commits per day
+    
     const oldestRepo = repositories.reduce((oldest, r) =>
         r.createdAt < oldest ? r.createdAt : oldest, new Date()
     );
     const daysSinceStart = daysBetween(oldestRepo, new Date());
     const averageCommitsPerDay = daysSinceStart > 0 ? totalCommits / daysSinceStart : 0;
-
-    // Find inactive gaps
     const inactiveGaps = findInactiveGaps(repositories);
 
     return {
@@ -170,10 +191,60 @@ function calculateContributions(repositories) {
         longestStreak,
         currentStreak,
         averageCommitsPerDay: parseFloat(averageCommitsPerDay.toFixed(2)),
-        busiestDay: 'N/A', // Would need detailed commit data
+        busiestDay: 'N/A',
         busiestMonth: commitsByMonth.length > 0 ? commitsByMonth[0].month : 'N/A',
         inactiveGaps
     };
+}
+
+function groupCommitsByMonthFromCalendar(days) {
+    const monthMap = new Map();
+    
+    days.forEach(day => {
+        const date = new Date(day.date);
+        const month = date.toISOString().substring(0, 7); // YYYY-MM
+        monthMap.set(month, (monthMap.get(month) || 0) + day.count);
+    });
+    
+    return Array.from(monthMap.entries())
+        .map(([month, count]) => ({ month, count }))
+        .sort((a, b) => b.count - a.count);
+}
+
+function calculateStreaksFromCalendar(days) {
+    let currentStreak = 0;
+    let longestStreak = 0;
+    let tempStreak = 0;
+    
+    // Sort by date (newest first)
+    const sortedDays = [...days].sort((a, b) => new Date(b.date) - new Date(a.date));
+    
+    sortedDays.forEach(day => {
+        if (day.count > 0) {
+            tempStreak++;
+            longestStreak = Math.max(longestStreak, tempStreak);
+            if (currentStreak === 0 || tempStreak === currentStreak + 1) {
+                currentStreak = tempStreak;
+            }
+        } else {
+            tempStreak = 0;
+        }
+    });
+    
+    return { longestStreak, currentStreak };
+}
+
+function findBusiestDay(days) {
+    const dayOfWeek = [0, 0, 0, 0, 0, 0, 0]; // Sunday to Saturday
+    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    
+    days.forEach(day => {
+        const date = new Date(day.date);
+        dayOfWeek[date.getDay()] += day.count;
+    });
+    
+    const maxIndex = dayOfWeek.indexOf(Math.max(...dayOfWeek));
+    return dayNames[maxIndex];
 }
 
 /**
