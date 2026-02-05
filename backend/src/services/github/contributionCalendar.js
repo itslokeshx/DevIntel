@@ -10,10 +10,11 @@ async function fetchContributionCalendar(username) {
         const startYear = currentYear === 2026 ? 2025 : currentYear - 1;
         const endYear = currentYear;
         
+        // Use variables in GraphQL query for better error handling
         const query = `
-            query($username: String!) {
+            query($username: String!, $from: DateTime!, $to: DateTime!) {
                 user(login: $username) {
-                    contributionsCollection(from: "${startYear}-01-01T00:00:00Z", to: "${endYear}-12-31T23:59:59Z") {
+                    contributionsCollection(from: $from, to: $to) {
                         contributionCalendar {
                             totalContributions
                             weeks {
@@ -28,19 +29,25 @@ async function fetchContributionCalendar(username) {
                 }
             }
         `;
+        
+        const variables = {
+            username: username,
+            from: `${startYear}-01-01T00:00:00Z`,
+            to: `${endYear}-12-31T23:59:59Z`
+        };
 
         const response = await axios.post(
             'https://api.github.com/graphql',
             {
                 query,
-                variables: { username }
+                variables
             },
             {
                 headers: {
                     'Authorization': `Bearer ${process.env.GITHUB_TOKEN}`,
                     'Content-Type': 'application/json'
                 },
-                timeout: 10000
+                timeout: 15000
             }
         );
 
@@ -57,17 +64,21 @@ async function fetchContributionCalendar(username) {
 
         // Flatten weeks into array of days with accurate dates
         const days = [];
-        calendar.weeks.forEach(week => {
-            week.contributionDays.forEach(day => {
-                if (day.date) {
-                    days.push({
-                        date: day.date,
-                        count: day.contributionCount || 0,
-                        color: day.color
+        if (calendar.weeks && Array.isArray(calendar.weeks)) {
+            calendar.weeks.forEach(week => {
+                if (week.contributionDays && Array.isArray(week.contributionDays)) {
+                    week.contributionDays.forEach(day => {
+                        if (day && day.date) {
+                            days.push({
+                                date: day.date,
+                                count: day.contributionCount || 0,
+                                color: day.color
+                            });
+                        }
                     });
                 }
             });
-        });
+        }
 
         // Sort by date to ensure chronological order
         days.sort((a, b) => new Date(a.date) - new Date(b.date));

@@ -37,10 +37,39 @@ async function analyzeGitHubUser(username) {
     const ownRepos = rawRepos.filter(repo => !repo.fork);
     console.log(`Found ${ownRepos.length} non-fork repositories`);
 
-    // Analyze ALL repositories (not just first 50)
+    // Analyze ALL repositories (with timeout protection)
+    console.log(`Analyzing ${ownRepos.length} repositories...`);
     const repositories = await Promise.all(
-        ownRepos.map(repo => analyzeRepository(username, repo))
+        ownRepos.map((repo, index) => {
+            // Add small delay to avoid rate limiting
+            return new Promise(resolve => {
+                setTimeout(async () => {
+                    try {
+                        const analyzed = await analyzeRepository(username, repo);
+                        resolve(analyzed);
+                    } catch (error) {
+                        console.error(`Error analyzing repo ${repo.name}:`, error.message);
+                        // Return basic repo data even if analysis fails
+                        resolve({
+                            name: repo.name,
+                            description: repo.description,
+                            url: repo.html_url,
+                            stars: repo.stargazers_count,
+                            forks: repo.forks_count,
+                            language: repo.language,
+                            createdAt: new Date(repo.created_at),
+                            updatedAt: new Date(repo.updated_at),
+                            pushedAt: new Date(repo.pushed_at),
+                            commitCount: 0,
+                            hasReadme: false
+                        });
+                    }
+                }, index * 50); // 50ms delay between each repo
+            });
+        })
     );
+    
+    console.log(`✅ Analyzed ${repositories.length} repositories`);
 
     // Fetch contribution calendar (if available)
     const contributionCalendar = await getContributionCalendar(username);
@@ -157,9 +186,15 @@ async function analyzeRepository(owner, repo) {
  * Calculate contribution metrics from repositories
  */
 function calculateContributions(repositories, contributionCalendar = null) {
-    // Use real calendar data if available
-    if (contributionCalendar && contributionCalendar.days) {
+    console.log('Calculating contributions...');
+    console.log('Calendar data available:', contributionCalendar ? 'Yes' : 'No');
+    console.log('Calendar days count:', contributionCalendar?.days?.length || 0);
+    console.log('Calendar total:', contributionCalendar?.totalContributions || 0);
+    
+    // Use real calendar data if available and has data
+    if (contributionCalendar && contributionCalendar.days && contributionCalendar.days.length > 0) {
         const totalCommits = contributionCalendar.totalContributions || 0;
+        console.log('Using calendar data, total commits:', totalCommits);
         
         // Group by month from calendar data
         const commitsByMonth = groupCommitsByMonthFromCalendar(contributionCalendar.days);
@@ -180,13 +215,16 @@ function calculateContributions(repositories, contributionCalendar = null) {
         };
     }
     
-    // Fallback to repository-based calculation
+    // Fallback to repository-based calculation (IMPORTANT: Use this if calendar fails)
+    console.log('Using repository-based calculation as fallback');
     const totalCommits = repositories.reduce((sum, r) => sum + (r.commitCount || 0), 0);
+    console.log('Total commits from repos:', totalCommits);
+    
     const commitsByMonth = groupCommitsByMonth(repositories);
     const { longestStreak, currentStreak } = calculateStreaks(repositories);
     
     const oldestRepo = repositories.reduce((oldest, r) =>
-        r.createdAt < oldest ? r.createdAt : oldest, new Date()
+        r.createdAt < oldest ? r.createdAt : oldest, repositories.length > 0 ? repositories[0].createdAt : new Date()
     );
     const daysSinceStart = daysBetween(oldestRepo, new Date());
     const averageCommitsPerDay = daysSinceStart > 0 ? totalCommits / daysSinceStart : 0;
@@ -200,7 +238,8 @@ function calculateContributions(repositories, contributionCalendar = null) {
         averageCommitsPerDay: parseFloat(averageCommitsPerDay.toFixed(2)),
         busiestDay: 'N/A',
         busiestMonth: commitsByMonth.length > 0 ? commitsByMonth[0].month : 'N/A',
-        inactiveGaps
+        inactiveGaps,
+        calendar: [] // Empty calendar for fallback
     };
 }
 
