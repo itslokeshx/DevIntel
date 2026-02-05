@@ -186,15 +186,19 @@ async function analyzeRepository(owner, repo) {
  * Calculate contribution metrics from repositories
  */
 function calculateContributions(repositories, contributionCalendar = null) {
-    console.log('Calculating contributions...');
-    console.log('Calendar data available:', contributionCalendar ? 'Yes' : 'No');
-    console.log('Calendar days count:', contributionCalendar?.days?.length || 0);
-    console.log('Calendar total:', contributionCalendar?.totalContributions || 0);
+    console.log('📊 Calculating contributions...');
+    console.log('   Calendar data available:', contributionCalendar ? 'Yes' : 'No');
+    console.log('   Calendar days count:', contributionCalendar?.days?.length || 0);
+    console.log('   Calendar total:', contributionCalendar?.totalContributions || 0);
     
-    // Use real calendar data if available and has data
-    if (contributionCalendar && contributionCalendar.days && contributionCalendar.days.length > 0) {
-        const totalCommits = contributionCalendar.totalContributions || 0;
-        console.log('Using calendar data, total commits:', totalCommits);
+    // Calculate repository-based commits first (always do this as fallback)
+    const repoCommits = repositories.reduce((sum, r) => sum + (r.commitCount || 0), 0);
+    console.log('   Total commits from repos:', repoCommits);
+    
+    // Use real calendar data if available and has meaningful data
+    if (contributionCalendar && contributionCalendar.days && contributionCalendar.days.length > 0 && contributionCalendar.totalContributions > 0) {
+        const totalCommits = contributionCalendar.totalContributions;
+        console.log('✅ Using calendar data, total commits:', totalCommits);
         
         // Group by month from calendar data
         const commitsByMonth = groupCommitsByMonthFromCalendar(contributionCalendar.days);
@@ -215,20 +219,24 @@ function calculateContributions(repositories, contributionCalendar = null) {
         };
     }
     
-    // Fallback to repository-based calculation (IMPORTANT: Use this if calendar fails)
-    console.log('Using repository-based calculation as fallback');
-    const totalCommits = repositories.reduce((sum, r) => sum + (r.commitCount || 0), 0);
-    console.log('Total commits from repos:', totalCommits);
+    // Fallback to repository-based calculation (CRITICAL: Use repo data when calendar fails)
+    console.log('⚠️ Using repository-based calculation as fallback');
+    console.log('   Repository commit sum:', repoCommits);
     
+    const totalCommits = repoCommits;
     const commitsByMonth = groupCommitsByMonth(repositories);
     const { longestStreak, currentStreak } = calculateStreaks(repositories);
     
-    const oldestRepo = repositories.reduce((oldest, r) =>
-        r.createdAt < oldest ? r.createdAt : oldest, repositories.length > 0 ? repositories[0].createdAt : new Date()
-    );
+    const oldestRepo = repositories.length > 0 
+        ? repositories.reduce((oldest, r) => r.createdAt < oldest ? r.createdAt : oldest, repositories[0].createdAt)
+        : new Date();
     const daysSinceStart = daysBetween(oldestRepo, new Date());
     const averageCommitsPerDay = daysSinceStart > 0 ? totalCommits / daysSinceStart : 0;
     const inactiveGaps = findInactiveGaps(repositories);
+
+    console.log('   Final total commits:', totalCommits);
+    console.log('   Current streak:', currentStreak);
+    console.log('   Longest streak:', longestStreak);
 
     return {
         totalCommits,
@@ -258,23 +266,63 @@ function groupCommitsByMonthFromCalendar(days) {
 }
 
 function calculateStreaksFromCalendar(days) {
-    let currentStreak = 0;
-    let longestStreak = 0;
-    let tempStreak = 0;
+    if (!days || days.length === 0) {
+        return { longestStreak: 0, currentStreak: 0 };
+    }
     
     // Sort by date (newest first)
     const sortedDays = [...days].sort((a, b) => new Date(b.date) - new Date(a.date));
     
+    let currentStreak = 0;
+    let longestStreak = 0;
+    let tempStreak = 0;
+    
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    // Calculate current streak (consecutive days from today backwards)
+    let expectedDate = today;
+    for (let i = 0; i < sortedDays.length; i++) {
+        const day = sortedDays[i];
+        const dayDate = new Date(day.date);
+        dayDate.setHours(0, 0, 0, 0);
+        
+        // Check if this day matches expected date (consecutive)
+        const daysDiff = Math.floor((expectedDate.getTime() - dayDate.getTime()) / (1000 * 60 * 60 * 24));
+        
+        if (daysDiff === 0 && day.count > 0) {
+            // This is the expected day and has commits
+            currentStreak++;
+            expectedDate = new Date(dayDate);
+            expectedDate.setDate(expectedDate.getDate() - 1);
+        } else if (daysDiff > 0) {
+            // Gap found, streak broken
+            break;
+        } else if (daysDiff < 0) {
+            // This day is in the future, skip
+            continue;
+        }
+    }
+    
+    // Calculate longest streak across all days
+    tempStreak = 0;
+    let prevDate = null;
     sortedDays.forEach(day => {
+        const dayDate = new Date(day.date);
+        dayDate.setHours(0, 0, 0, 0);
+        
         if (day.count > 0) {
-            tempStreak++;
-            longestStreak = Math.max(longestStreak, tempStreak);
-            if (currentStreak === 0 || tempStreak === currentStreak + 1) {
-                currentStreak = tempStreak;
+            if (prevDate && Math.floor((prevDate.getTime() - dayDate.getTime()) / (1000 * 60 * 60 * 24)) === 1) {
+                // Consecutive day
+                tempStreak++;
+            } else {
+                tempStreak = 1;
             }
+            longestStreak = Math.max(longestStreak, tempStreak);
         } else {
             tempStreak = 0;
         }
+        prevDate = dayDate;
     });
     
     return { longestStreak, currentStreak };
@@ -365,27 +413,68 @@ function groupCommitsByMonth(repositories) {
 }
 
 function calculateStreaks(repositories) {
-    // Simplified streak calculation based on repo activity
+    // Better streak calculation based on repo activity
     const sortedRepos = repositories
         .filter(r => r.pushedAt)
         .sort((a, b) => b.pushedAt - a.pushedAt);
 
+    if (sortedRepos.length === 0) {
+        return { longestStreak: 0, currentStreak: 0 };
+    }
+
     let currentStreak = 0;
     let longestStreak = 0;
-
-    sortedRepos.forEach((repo, index) => {
-        const daysSinceUpdate = daysBetween(repo.pushedAt, new Date());
-
-        if (daysSinceUpdate < 30) {
-            currentStreak = Math.max(currentStreak, 30 - daysSinceUpdate);
-        }
-
-        if (index > 0) {
-            const daysBetweenRepos = daysBetween(sortedRepos[index - 1].pushedAt, repo.pushedAt);
-            if (daysBetweenRepos < 30) {
-                longestStreak = Math.max(longestStreak, 30);
+    let tempStreak = 0;
+    
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    // Calculate current streak (days since last commit)
+    const mostRecentRepo = sortedRepos[0];
+    const daysSinceLastCommit = daysBetween(mostRecentRepo.pushedAt, today);
+    
+    if (daysSinceLastCommit <= 1) {
+        // Had commits today or yesterday, start counting
+        currentStreak = 1;
+        let expectedDate = new Date(mostRecentRepo.pushedAt);
+        expectedDate.setHours(0, 0, 0, 0);
+        expectedDate.setDate(expectedDate.getDate() - 1);
+        
+        // Count backwards for consecutive days
+        for (let i = 1; i < sortedRepos.length; i++) {
+            const repo = sortedRepos[i];
+            const repoDate = new Date(repo.pushedAt);
+            repoDate.setHours(0, 0, 0, 0);
+            
+            const daysDiff = Math.floor((expectedDate.getTime() - repoDate.getTime()) / (1000 * 60 * 60 * 24));
+            if (daysDiff === 0) {
+                currentStreak++;
+                expectedDate.setDate(expectedDate.getDate() - 1);
+            } else if (daysDiff > 0) {
+                break; // Gap found
             }
         }
+    }
+    
+    // Calculate longest streak
+    let prevDate = null;
+    sortedRepos.forEach(repo => {
+        const repoDate = new Date(repo.pushedAt);
+        repoDate.setHours(0, 0, 0, 0);
+        
+        if (prevDate) {
+            const daysDiff = Math.floor((prevDate.getTime() - repoDate.getTime()) / (1000 * 60 * 60 * 24));
+            if (daysDiff <= 1) {
+                tempStreak++;
+            } else {
+                tempStreak = 1;
+            }
+        } else {
+            tempStreak = 1;
+        }
+        
+        longestStreak = Math.max(longestStreak, tempStreak);
+        prevDate = repoDate;
     });
 
     return { longestStreak, currentStreak };

@@ -43,8 +43,15 @@ async function analyzeUser(req, res, next) {
             repositories: analyzedData.repositories,
             contributions: analyzedData.contributions,
             metrics: analyzedData.metrics,
+            yearlyBreakdown: analyzedData.yearlyBreakdown, // Include yearly breakdown
             aiInsights
         };
+
+        console.log('📊 Final data summary:');
+        console.log(`   Repos: ${responseData.repositories.length}`);
+        console.log(`   Total commits: ${responseData.contributions.totalCommits}`);
+        console.log(`   Current streak: ${responseData.contributions.currentStreak}`);
+        console.log(`   Calendar days: ${responseData.contributions.calendar?.length || 0}`);
 
         res.json({
             success: true,
@@ -81,8 +88,14 @@ async function getUser(req, res, next) {
             repositories: analyzedData.repositories,
             contributions: analyzedData.contributions,
             metrics: analyzedData.metrics,
+            yearlyBreakdown: analyzedData.yearlyBreakdown, // Include yearly breakdown
             aiInsights
         };
+
+        console.log('📊 Final data summary:');
+        console.log(`   Repos: ${responseData.repositories.length}`);
+        console.log(`   Total commits: ${responseData.contributions.totalCommits}`);
+        console.log(`   Current streak: ${responseData.contributions.currentStreak}`);
 
         res.json({
             success: true,
