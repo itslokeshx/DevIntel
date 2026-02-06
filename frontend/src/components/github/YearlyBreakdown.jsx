@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   BarChart,
@@ -11,45 +11,82 @@ import {
 
 export function YearlyBreakdown({ yearlyBreakdown, contributions }) {
   const currentYear = new Date().getFullYear();
+  const validYears = useMemo(
+    () => yearlyBreakdown?.filter((y) => y.year >= 2020 && y.year <= currentYear) || [],
+    [yearlyBreakdown, currentYear],
+  );
   const [selectedYear, setSelectedYear] = useState(
-    yearlyBreakdown?.[0]?.year || currentYear,
+    validYears?.[0]?.year || currentYear,
   );
 
-  if (!yearlyBreakdown || yearlyBreakdown.length === 0) {
+  if (!validYears || validYears.length === 0) {
     return null;
   }
 
+  // "All Time" aggregation
+  const allTimeData = useMemo(() => {
+    const totals = validYears.reduce(
+      (acc, y) => ({
+        year: "all",
+        repos: acc.repos + y.repos,
+        commits: acc.commits + y.commits,
+        stars: acc.stars + y.stars,
+        streak: Math.max(acc.streak, y.streak),
+        topLanguage: null,
+        monthlyCommits: [],
+      }),
+      { repos: 0, commits: 0, stars: 0, streak: 0 },
+    );
+    return totals;
+  }, [validYears]);
+
   const currentYearData =
-    yearlyBreakdown.find((y) => y.year === selectedYear) || yearlyBreakdown[0];
+    selectedYear === "all"
+      ? allTimeData
+      : validYears.find((y) => y.year === selectedYear) || validYears[0];
 
   // Generate monthly data for selected year
-  const monthlyCommits =
-    contributions?.commitsByMonth
-      ?.filter(({ month }) => month.startsWith(selectedYear.toString()))
-      .map(({ month, count }) => ({
-        month: new Date(month + "-01").toLocaleDateString("en-US", {
-          month: "short",
-        }),
-        commits: count,
-      })) || [];
+  const monthlyCommits = useMemo(() => {
+    if (selectedYear === "all") return [];
+    return (
+      contributions?.commitsByMonth
+        ?.filter(({ month }) => month.startsWith(selectedYear.toString()))
+        .map(({ month, count }) => ({
+          month: new Date(month + "-01").toLocaleDateString("en-US", {
+            month: "short",
+          }),
+          commits: count,
+        })) || []
+    );
+  }, [selectedYear, contributions]);
+
+  const CustomTooltip = ({ active, payload, label }) => {
+    if (!active || !payload?.[0]) return null;
+    return (
+      <div className="bg-gray-900 text-white text-xs px-3 py-2 rounded-lg shadow-lg border border-gray-700">
+        <span className="font-bold">{payload[0].value}</span> commits in{" "}
+        <span className="font-medium">{label}</span>
+      </div>
+    );
+  };
 
   return (
-    <div className="bg-white dark:bg-gray-900 rounded-[20px] border border-gray-200 dark:border-gray-800 p-10">
-      <h3 className="text-heading-lg font-bold text-gray-900 dark:text-white mb-6">
-        📜 Developer Timeline
+    <div className="bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-900/50 rounded-[24px] border border-gray-200 dark:border-gray-800 p-8 md:p-10 shadow-lg">
+      <h3 className="text-heading-lg font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-3">
+        <span className="text-2xl">📜</span>
+        Developer Timeline
       </h3>
 
-      {/* Year tabs - ENHANCED */}
-      <div className="flex gap-3 mb-8 flex-wrap">
-        {yearlyBreakdown.map(({ year }) => (
+      {/* Year tabs */}
+      <div className="flex gap-2 mb-8 flex-wrap">
+        {validYears.map(({ year }) => (
           <motion.button
             key={year}
             onClick={() => setSelectedYear(year)}
-            whileHover={{ scale: selectedYear === year ? 1.05 : 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            className={`px-8 py-4 rounded-xl font-bold text-lg transition-all ${
+            whileTap={{ scale: 0.97 }}
+            className={`px-5 py-2.5 rounded-xl font-semibold text-sm transition-all ${
               selectedYear === year
-                ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-2xl scale-105"
+                ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg"
                 : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"
             }`}
           >
@@ -58,11 +95,10 @@ export function YearlyBreakdown({ yearlyBreakdown, contributions }) {
         ))}
         <motion.button
           onClick={() => setSelectedYear("all")}
-          whileHover={{ scale: selectedYear === "all" ? 1.05 : 1.02 }}
-          whileTap={{ scale: 0.98 }}
-          className={`px-8 py-4 rounded-xl font-bold text-lg transition-all ${
+          whileTap={{ scale: 0.97 }}
+          className={`px-5 py-2.5 rounded-xl font-semibold text-sm transition-all ${
             selectedYear === "all"
-              ? "bg-gradient-to-r from-gray-600 to-gray-700 text-white shadow-2xl scale-105"
+              ? "bg-gradient-to-r from-gray-700 to-gray-800 text-white shadow-lg"
               : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"
           }`}
         >
@@ -74,86 +110,106 @@ export function YearlyBreakdown({ yearlyBreakdown, contributions }) {
       <AnimatePresence mode="wait">
         <motion.div
           key={selectedYear}
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -20 }}
-          transition={{ duration: 0.3 }}
+          exit={{ opacity: 0, y: -12 }}
+          transition={{ duration: 0.25 }}
         >
           <div className="space-y-6">
             {/* Main metrics grid */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-xl p-6">
-                <div className="text-4xl font-bold text-blue-600 dark:text-blue-400">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-5 border border-blue-100 dark:border-blue-800/30">
+                <div className="text-3xl font-extrabold text-blue-600 dark:text-blue-400">
                   {currentYearData.repos}
                 </div>
-                <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                <div className="text-xs font-medium text-gray-600 dark:text-gray-400 mt-1">
                   Repositories
                 </div>
               </div>
-              <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 rounded-xl p-6">
-                <div className="text-4xl font-bold text-green-600 dark:text-green-400">
-                  {currentYearData.commits}
+              <div className="bg-green-50 dark:bg-green-900/20 rounded-xl p-5 border border-green-100 dark:border-green-800/30">
+                <div className="text-3xl font-extrabold text-green-600 dark:text-green-400">
+                  {currentYearData.commits?.toLocaleString()}
                 </div>
-                <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                <div className="text-xs font-medium text-gray-600 dark:text-gray-400 mt-1">
                   Commits
                 </div>
               </div>
-              <div className="bg-gradient-to-br from-yellow-50 to-yellow-100 dark:from-yellow-900/20 dark:to-yellow-800/20 rounded-xl p-6">
-                <div className="text-4xl font-bold text-yellow-600 dark:text-yellow-400">
+              <div className="bg-amber-50 dark:bg-amber-900/20 rounded-xl p-5 border border-amber-100 dark:border-amber-800/30">
+                <div className="text-3xl font-extrabold text-amber-600 dark:text-amber-400">
                   {currentYearData.stars}
                 </div>
-                <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                <div className="text-xs font-medium text-gray-600 dark:text-gray-400 mt-1">
                   Stars Earned
                 </div>
               </div>
-              <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 rounded-xl p-6">
-                <div className="text-4xl font-bold text-purple-600 dark:text-purple-400">
+              <div className="bg-purple-50 dark:bg-purple-900/20 rounded-xl p-5 border border-purple-100 dark:border-purple-800/30">
+                <div className="text-3xl font-extrabold text-purple-600 dark:text-purple-400">
                   {currentYearData.streak}
                 </div>
-                <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                <div className="text-xs font-medium text-gray-600 dark:text-gray-400 mt-1">
                   Best Streak
                 </div>
               </div>
             </div>
 
             {/* Story narrative */}
-            <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-6">
-              <h4 className="font-semibold text-lg mb-3 text-gray-900 dark:text-gray-100">
-                📖 {selectedYear} Story
-              </h4>
-              <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-                In {selectedYear}, you launched {currentYearData.repos} projects
-                with {currentYearData.commits} commits.
-                {currentYearData.topLanguage &&
-                  ` Your primary focus was ${currentYearData.topLanguage},`}{" "}
-                demonstrating{" "}
-                {currentYearData.commits > 100 ? "exceptional" : "steady"}
-                consistency.{" "}
-                {currentYearData.streak > 20
-                  ? `A remarkable ${currentYearData.streak}-day streak showed unwavering dedication.`
-                  : ""}
-              </p>
-            </div>
+            {selectedYear !== "all" && (
+              <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-5 border border-gray-100 dark:border-gray-700">
+                <h4 className="font-semibold text-sm mb-2 text-gray-900 dark:text-gray-100">
+                  📖 {selectedYear} Story
+                </h4>
+                <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+                  In {selectedYear}, you launched{" "}
+                  {currentYearData.repos} project{currentYearData.repos !== 1 ? "s" : ""} with{" "}
+                  {currentYearData.commits?.toLocaleString()} commits.
+                  {currentYearData.topLanguage &&
+                    ` Your primary focus was ${currentYearData.topLanguage},`}{" "}
+                  demonstrating{" "}
+                  {currentYearData.commits > 100 ? "exceptional" : "steady"}{" "}
+                  consistency.{" "}
+                  {currentYearData.streak > 20
+                    ? `A remarkable ${currentYearData.streak}-day streak showed unwavering dedication.`
+                    : currentYearData.streak > 0
+                    ? `Your best streak was ${currentYearData.streak} days.`
+                    : ""}
+                </p>
+              </div>
+            )}
 
             {/* Monthly breakdown chart */}
             {monthlyCommits.length > 0 && (
-              <div className="h-64">
+              <div className="h-52">
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={monthlyCommits}>
-                    <XAxis dataKey="month" stroke="#888" />
-                    <YAxis stroke="#888" />
+                  <BarChart data={monthlyCommits} barCategoryGap="20%">
+                    <XAxis
+                      dataKey="month"
+                      stroke="#9ca3af"
+                      fontSize={11}
+                      tickLine={false}
+                      axisLine={false}
+                    />
+                    <YAxis
+                      stroke="#9ca3af"
+                      fontSize={11}
+                      tickLine={false}
+                      axisLine={false}
+                      width={35}
+                    />
                     <Tooltip
-                      contentStyle={{
-                        backgroundColor: "#1f2937",
-                        border: "1px solid #374151",
-                        borderRadius: "8px",
-                      }}
+                      content={<CustomTooltip />}
+                      cursor={{ fill: "transparent" }}
                     />
                     <Bar
                       dataKey="commits"
-                      fill="#3b82f6"
-                      radius={[8, 8, 0, 0]}
+                      fill="url(#barGradient)"
+                      radius={[6, 6, 0, 0]}
                     />
+                    <defs>
+                      <linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#3b82f6" />
+                        <stop offset="100%" stopColor="#8b5cf6" />
+                      </linearGradient>
+                    </defs>
                   </BarChart>
                 </ResponsiveContainer>
               </div>

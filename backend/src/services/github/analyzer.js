@@ -378,29 +378,52 @@ function calculateStreaksFromCalendar(days) {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  // Calculate current streak (consecutive days from today backwards)
+  // Calculate current streak (consecutive days from today or yesterday backwards)
+  // Allow starting from yesterday if today has no commits yet
+  let startedCounting = false;
   let expectedDate = today;
+
   for (let i = 0; i < sortedDays.length; i++) {
     const day = sortedDays[i];
     const dayDate = new Date(day.date);
     dayDate.setHours(0, 0, 0, 0);
 
-    // Check if this day matches expected date (consecutive)
     const daysDiff = Math.floor(
       (expectedDate.getTime() - dayDate.getTime()) / (1000 * 60 * 60 * 24),
     );
 
-    if (daysDiff === 0 && day.count > 0) {
-      // This is the expected day and has commits
-      currentStreak++;
-      expectedDate = new Date(dayDate);
-      expectedDate.setDate(expectedDate.getDate() - 1);
-    } else if (daysDiff > 0) {
-      // Gap found, streak broken
-      break;
-    } else if (daysDiff < 0) {
-      // This day is in the future, skip
-      continue;
+    if (!startedCounting) {
+      // Haven't started counting yet - look for first day with commits
+      if (daysDiff === 0 && day.count > 0) {
+        // Today has commits
+        currentStreak = 1;
+        startedCounting = true;
+        expectedDate = new Date(dayDate);
+        expectedDate.setDate(expectedDate.getDate() - 1);
+      } else if (daysDiff === 1 && day.count > 0) {
+        // Yesterday has commits (today not over yet)
+        currentStreak = 1;
+        startedCounting = true;
+        expectedDate = new Date(dayDate);
+        expectedDate.setDate(expectedDate.getDate() - 1);
+      } else if (daysDiff > 1) {
+        // Gap too large, no current streak
+        break;
+      }
+    } else {
+      // Already counting - check consecutive
+      const newDiff = Math.floor(
+        (expectedDate.getTime() - dayDate.getTime()) / (1000 * 60 * 60 * 24),
+      );
+
+      if (newDiff === 0 && day.count > 0) {
+        currentStreak++;
+        expectedDate = new Date(dayDate);
+        expectedDate.setDate(expectedDate.getDate() - 1);
+      } else if (newDiff > 0) {
+        // Gap found, streak broken
+        break;
+      }
     }
   }
 
@@ -732,8 +755,23 @@ function calculateLanguageStats(repositories, skills) {
 function calculateYearlyBreakdown(repositories, contributions) {
   const yearMap = {};
   const currentYear = new Date().getFullYear();
-  const startYear =
-    currentYear === 2026 ? 2025 : Math.max(currentYear - 3, 2020); // Show last 3-4 years
+
+  // Determine start year from actual repository data
+  let earliestYear = currentYear;
+  repositories.forEach((repo) => {
+    const year = repo.createdAt.getFullYear();
+    if (year < earliestYear) earliestYear = year;
+  });
+
+  // Also check calendar data for earliest year
+  if (contributions?.calendar && contributions.calendar.length > 0) {
+    contributions.calendar.forEach((day) => {
+      const year = new Date(day.date).getFullYear();
+      if (year < earliestYear) earliestYear = year;
+    });
+  }
+
+  const startYear = Math.max(earliestYear, currentYear - 4); // Show up to 5 years
 
   // Initialize years from startYear to currentYear
   for (let year = startYear; year <= currentYear; year++) {

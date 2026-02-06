@@ -117,12 +117,9 @@ export function ContributionHeatmap({ contributions }) {
 
   return (
     <div className="bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-900/50 rounded-[24px] border border-gray-200 dark:border-gray-800 p-8 md:p-10 shadow-lg">
-      <div className="flex items-center justify-between mb-8">
-        <h3 className="text-heading-lg font-bold text-gray-900 dark:text-white">
-          📊 Contribution Activity
-        </h3>
+      <div className="flex items-center justify-end mb-4">
         <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
-          {format(startDate, "MMM yyyy")} - {format(today, "MMM yyyy")}
+          {format(startDate, "MMM yyyy")} — {format(today, "MMM yyyy")}
         </div>
       </div>
 
@@ -159,25 +156,12 @@ export function ContributionHeatmap({ contributions }) {
                   className={`w-[14px] h-[14px] rounded-[3px] ${getColor(day.count)} cursor-pointer transition-all duration-200 relative group`}
                   title={`${formattedDate} (${dayName})\n${day.count} commit${day.count !== 1 ? "s" : ""}`}
                 >
-                  {/* Premium tooltip on hover */}
-                  <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 px-3 py-2.5 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 text-xs rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50 shadow-2xl border border-gray-700 dark:border-gray-300">
-                    <div className="font-semibold text-sm">{formattedDate}</div>
-                    <div className="text-gray-300 dark:text-gray-600 text-xs mb-1">
-                      {dayName}
-                    </div>
-                    <div className="flex items-center gap-1.5 mt-1">
-                      <div
-                        className={`w-2 h-2 rounded-sm ${getColor(day.count)}`}
-                      />
-                      <span className="font-bold text-blue-400 dark:text-blue-600">
-                        {day.count}
-                      </span>{" "}
-                      <span className="text-xs">
-                        commit{day.count !== 1 ? "s" : ""}
-                      </span>
-                    </div>
-                    {/* Tooltip arrow */}
-                    <div className="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-[6px] border-r-[6px] border-t-[6px] border-transparent border-t-gray-900 dark:border-t-gray-100" />
+                  {/* Compact tooltip */}
+                  <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1.5 bg-gray-900 dark:bg-gray-800 text-white text-[10px] rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-150 pointer-events-none whitespace-nowrap z-50 shadow-lg">
+                    <span className="font-semibold">{day.count}</span> commit
+                    {day.count !== 1 ? "s" : ""} ·{" "}
+                    {format(new Date(day.date), "MMM d")}
+                    <div className="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900 dark:border-t-gray-800" />
                   </div>
                 </motion.div>
               );
@@ -218,7 +202,7 @@ export function ContributionHeatmap({ contributions }) {
           <span className="text-lg">📈</span>
           Activity Intensity Over Time
         </h4>
-        <div className="h-28 relative bg-white dark:bg-gray-800/50 rounded-xl p-4 backdrop-blur-sm">
+        <div className="h-28 relative rounded-xl p-4">
           {/* Calculate weekly aggregates */}
           {(() => {
             const weeklyData = [];
