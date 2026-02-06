@@ -492,12 +492,7 @@ This project is licensed under the **MIT License** — see the [LICENSE](LICENSE
 
 <div align="center">
 
-**Built with ❤️ by [Lokesh](https://github.com/itslokeshx)**
-
-[![GitHub](https://img.shields.io/badge/GitHub-itslokeshx-181717?style=for-the-badge&logo=github)](https://github.com/itslokeshx)
-[![Portfolio](https://img.shields.io/badge/Portfolio-Visit-FF6B6B?style=for-the-badge)](https://your-portfolio.com)
-
----
+## **Built with ❤️ by [Lokesh](https://github.com/itslokeshx)**
 
 ### ⭐ Star this repo if you found it helpful!
 

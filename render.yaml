@@ -6,15 +6,19 @@ services:
     buildCommand: npm install
     startCommand: npm start
     envVars:
-      - key: MONGO_URI
+      - key: MONGODB_URI
         sync: false
-      - key: OR_API
+      - key: GITHUB_TOKEN
         sync: false
-      - key: GEMINI_API_KEY
+      - key: GROQ_API_KEY
         sync: false
       - key: FRONTEND_URL
         sync: false
       - key: PORT
         value: 10000
-    plan: free
+      - key: NODE_ENV
+        value: production
+    healthCheckPath: /api/health
     autoDeploy: true
+    # Free tier will still sleep after 15 min inactivity
+    # To prevent sleeping, upgrade to Starter plan ($7/mo) or use external pinger

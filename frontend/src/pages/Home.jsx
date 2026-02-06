@@ -38,7 +38,7 @@ export function Home() {
       </div>
 
       {/* ═══ HERO SECTION ═══ */}
-      <section className="relative max-w-content mx-auto px-4 sm:px-6 lg:px-12 pt-20 sm:pt-24 md:pt-32 pb-6 sm:pb-10 text-center">
+      <section className="relative max-w-content mx-auto px-4 sm:px-6 lg:px-12 pt-20 sm:pt-24 md:pt-20 pb-6 sm:pb-10 text-center">
         {/* Premium Badge */}
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
