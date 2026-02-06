@@ -232,7 +232,7 @@ export default function GitHubComparison() {
 }
 
 // Fighter Card Component
-function FighterCard({ user, color, isWinner }) {
+function FighterCard({ user, score, color, isWinner }) {
     const colorClasses = color === 'blue'
         ? 'from-blue-600 to-blue-800 border-blue-500'
         : 'from-purple-600 to-purple-800 border-purple-500';
@@ -247,7 +247,7 @@ function FighterCard({ user, color, isWinner }) {
                     initial={{ scale: 0, rotate: -45 }}
                     animate={{ scale: 1, rotate: 0 }}
                     transition={{ type: 'spring', bounce: 0.6 }}
-                    className="absolute top-4 right-4 bg-yellow-500 text-black px-3 py-1 rounded-full text-sm font-bold flex items-center gap-1"
+                    className="absolute top-4 right-4 bg-yellow-500 text-black px-3 py-1 rounded-full text-sm font-bold flex items-center gap-1 z-10"
                 >
                     <Trophy className="w-4 h-4" />
                     WINNER
@@ -274,31 +274,63 @@ function FighterCard({ user, color, isWinner }) {
                 )}
             </div>
 
+            {/* Battle Score */}
+            <div className="mb-6 text-center bg-white/20 backdrop-blur-sm rounded-xl p-4 border border-white/30">
+                <div className="text-sm text-white/70 mb-2">Battle Score</div>
+                <div className="text-6xl font-black text-white mb-2">{score?.total || 0}</div>
+                <div className="text-xs text-white/60">/ 100 points</div>
+            </div>
+
+            {/* Score Breakdown */}
+            <div className="space-y-2 mb-4">
+                <div className="text-xs text-white/70 mb-3 text-center font-semibold">Score Breakdown</div>
+                <ScoreBreakdownBar label="Repos" value={score?.breakdown?.repos || 0} max={20} />
+                <ScoreBreakdownBar label="Stars" value={score?.breakdown?.stars || 0} max={25} />
+                <ScoreBreakdownBar label="Commits" value={score?.breakdown?.commits || 0} max={25} />
+                <ScoreBreakdownBar label="Consistency" value={score?.breakdown?.consistency || 0} max={15} />
+                <ScoreBreakdownBar label="Docs" value={score?.breakdown?.docs || 0} max={15} />
+            </div>
+
             {/* Quick stats */}
-            <div className="grid grid-cols-3 gap-4">
-                <div className="text-center bg-white/10 backdrop-blur-sm rounded-lg p-3">
-                    <div className="text-2xl font-bold text-white">{user?.metrics?.devScore || 0}</div>
-                    <div className="text-xs text-white/70">Dev Score</div>
-                </div>
-                <div className="text-center bg-white/10 backdrop-blur-sm rounded-lg p-3">
-                    <div className="text-2xl font-bold text-white">{user?.repositories?.length || 0}</div>
+            <div className="grid grid-cols-3 gap-2 mt-4">
+                <div className="text-center bg-white/10 backdrop-blur-sm rounded-lg p-2">
+                    <div className="text-lg font-bold text-white">{user?.repositories?.length || 0}</div>
                     <div className="text-xs text-white/70">Repos</div>
                 </div>
-                <div className="text-center bg-white/10 backdrop-blur-sm rounded-lg p-3">
-                    <div className="text-2xl font-bold text-white">
+                <div className="text-center bg-white/10 backdrop-blur-sm rounded-lg p-2">
+                    <div className="text-lg font-bold text-white">
                         {user?.repositories?.reduce((sum, r) => sum + (r.stars || 0), 0) || 0}
                     </div>
                     <div className="text-xs text-white/70">Stars</div>
                 </div>
-            </div>
-
-            {/* Commits */}
-            <div className="mt-4 text-center bg-white/10 backdrop-blur-sm rounded-lg p-3">
-                <div className="text-3xl font-bold text-white">
-                    {user?.contributions?.totalCommits?.toLocaleString() || 0}
+                <div className="text-center bg-white/10 backdrop-blur-sm rounded-lg p-2">
+                    <div className="text-lg font-bold text-white">
+                        {Math.floor((user?.contributions?.totalCommits || 0) / 1000)}k
+                    </div>
+                    <div className="text-xs text-white/70">Commits</div>
                 </div>
-                <div className="text-sm text-white/70">Total Commits</div>
             </div>
         </div>
     );
 }
+
+// Score Breakdown Bar Component
+function ScoreBreakdownBar({ label, value, max }) {
+    const percentage = (value / max) * 100;
+
+    return (
+        <div className="flex items-center gap-2">
+            <div className="text-xs text-white/70 w-20">{label}</div>
+            <div className="flex-1 h-2 bg-white/10 rounded-full overflow-hidden">
+                <motion.div
+                    initial={{ width: 0 }}
+                    animate={{ width: `${percentage}%` }}
+                    transition={{ duration: 1, ease: 'easeOut' }}
+                    className="h-full bg-gradient-to-r from-white/60 to-white/90 rounded-full"
+                />
+            </div>
+            <div className="text-xs text-white font-semibold w-8 text-right">{value}/{max}</div>
+        </div>
+    );
+}
+
