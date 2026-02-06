@@ -109,32 +109,32 @@ export default function GitHubIntelligence() {
         <div className="max-w-content mx-auto px-4 sm:px-6 lg:px-12 h-full flex items-center justify-between">
           <button
             onClick={() => navigate("/")}
-            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all"
+            className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all"
           >
-            <ArrowLeft className="w-4 h-4" />
-            Back
+            <ArrowLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            <span className="hidden sm:inline">Back</span>
           </button>
 
-          <span className="text-base font-semibold text-gray-900 dark:text-white">
+          <span className="text-sm sm:text-base font-semibold text-gray-900 dark:text-white truncate max-w-[120px] sm:max-w-none">
             @{username}
           </span>
 
           <button
             onClick={handleRefresh}
             disabled={refreshing}
-            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 hover:text-blue-500 hover:border-blue-500 rounded-lg border border-gray-200 dark:border-gray-700 transition-all disabled:opacity-50"
+            className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 hover:text-blue-500 hover:border-blue-500 rounded-lg border border-gray-200 dark:border-gray-700 transition-all disabled:opacity-50"
           >
             <RefreshCw
-              className={`w-4 h-4 ${refreshing ? "animate-spin" : ""}`}
+              className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${refreshing ? "animate-spin" : ""}`}
             />
-            {refreshing ? "Refreshing..." : "Refresh"}
+            <span className="hidden sm:inline">{refreshing ? "Refreshing..." : "Refresh"}</span>
           </button>
         </div>
       </div>
 
       <div className="max-w-content mx-auto px-4 sm:px-6 lg:px-12 py-8 sm:py-12">
         {/* ═══ HERO CARD ═══ */}
-        <div className="mb-8">
+        <div className="mb-6 sm:mb-8">
           <div className="relative bg-gradient-to-br from-white via-gray-50/30 to-white dark:from-gray-900 dark:via-gray-800/30 dark:to-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl sm:rounded-3xl p-5 sm:p-10 md:p-14 shadow-sm overflow-hidden">
             {/* Subtle decorative pattern */}
             <div className="absolute inset-0 opacity-[0.02] dark:opacity-[0.03]">
@@ -236,7 +236,7 @@ export default function GitHubIntelligence() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="mb-12"
+          className="mb-6 sm:mb-10"
         >
           <div
             className="relative bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-blue-950/30 dark:via-purple-950/30 dark:to-pink-950/30 border-2 border-blue-200 dark:border-blue-800/50 rounded-2xl sm:rounded-[20px] p-4 sm:p-8 md:p-10 overflow-hidden animate-gradient"

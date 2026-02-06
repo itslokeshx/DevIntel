@@ -38,7 +38,7 @@ export function Home() {
       </div>
 
       {/* ═══ HERO SECTION ═══ */}
-      <section className="relative max-w-content mx-auto px-4 sm:px-6 lg:px-12 pt-20 sm:pt-32 md:pt-40 pb-16 sm:pb-30 text-center">
+      <section className="relative max-w-content mx-auto px-4 sm:px-6 lg:px-12 pt-12 sm:pt-20 md:pt-24 pb-12 sm:pb-20 text-center">
         {/* Headline */}
         <motion.h1
           initial={{ opacity: 0, y: 20 }}
@@ -119,7 +119,7 @@ export function Home() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.3 }}
-          className="text-sm text-center mb-16 sm:mb-32"
+          className="text-sm text-center mb-10 sm:mb-16"
         >
           <span className="text-gray-400 mr-3">Try:</span>
           {exampleUsers.map((user, i) => (
@@ -142,7 +142,7 @@ export function Home() {
       </section>
 
       {/* ═══ FEATURE CARDS ═══ */}
-      <section className="max-w-content mx-auto px-4 sm:px-6 lg:px-12 mb-20">
+      <section className="max-w-content mx-auto px-4 sm:px-6 lg:px-12 mb-12 sm:mb-16">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-8">
           <FeatureCard
             icon={<Zap className="w-9 h-9 text-white" />}
@@ -169,7 +169,7 @@ export function Home() {
       </section>
 
       {/* ═══ SOCIAL PROOF ═══ */}
-      <section className="max-w-[800px] mx-auto px-4 sm:px-6 lg:px-12 mb-20">
+      <section className="max-w-[800px] mx-auto px-4 sm:px-6 lg:px-12 mb-12 sm:mb-16">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -203,7 +203,7 @@ export function Home() {
       </section>
 
       {/* ═══ FINAL CTA ═══ */}
-      <section className="max-w-[1000px] mx-auto px-4 sm:px-6 lg:px-12 mb-20">
+      <section className="max-w-[1000px] mx-auto px-4 sm:px-6 lg:px-12 mb-12 sm:mb-16">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
