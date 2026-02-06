@@ -69,12 +69,31 @@ export default function GitHubComparison() {
   const scoreA = calculateBattleScore(userA);
   const scoreB = calculateBattleScore(userB);
   const battleResult = determineBattleWinner(scoreA.total, scoreB.total);
+  const aiComparison = comparison?.aiInsights || null;
+  const aiWinner = aiComparison?.winner || null;
+  const aiWinnerName =
+    aiWinner === "A"
+      ? userA?.profile?.name || userA?.username
+      : aiWinner === "B"
+        ? userB?.profile?.name || userB?.username
+        : "Tie";
+
+  const repoCountA =
+    comparison?.totalProjects?.userA ||
+    comparison?.totalRepos?.userA ||
+    userA?.repositories?.length ||
+    0;
+  const repoCountB =
+    comparison?.totalProjects?.userB ||
+    comparison?.totalRepos?.userB ||
+    userB?.repositories?.length ||
+    0;
 
   const metrics = [
     {
       label: "Repositories",
-      valueA: comparison?.totalRepos?.userA || 0,
-      valueB: comparison?.totalRepos?.userB || 0,
+      valueA: repoCountA,
+      valueB: repoCountB,
     },
     {
       label: "Stars Earned",
@@ -90,6 +109,26 @@ export default function GitHubComparison() {
       label: "Dev Score",
       valueA: comparison?.devScore?.userA || 0,
       valueB: comparison?.devScore?.userB || 0,
+    },
+    {
+      label: "Consistency",
+      valueA: comparison?.consistencyScore?.userA || 0,
+      valueB: comparison?.consistencyScore?.userB || 0,
+    },
+    {
+      label: "Impact",
+      valueA: comparison?.impactScore?.userA || 0,
+      valueB: comparison?.impactScore?.userB || 0,
+    },
+    {
+      label: "Current Streak",
+      valueA: comparison?.currentStreak?.userA || 0,
+      valueB: comparison?.currentStreak?.userB || 0,
+    },
+    {
+      label: "Doc Quality",
+      valueA: Math.round(comparison?.avgDocQuality?.userA || 0),
+      valueB: Math.round(comparison?.avgDocQuality?.userB || 0),
     },
   ];
 
@@ -127,25 +166,88 @@ export default function GitHubComparison() {
       <div className="max-w-5xl mx-auto px-6 py-12 space-y-12">
         {/* AI Referee Verdict */}
         <AnimatePresence>
-          {revealStage >= 1 && aiInsights?.comparison && (
+          {revealStage >= 1 &&
+            (aiComparison?.verdict || aiInsights?.comparison) && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+              >
+                <div className="bg-gray-900 dark:bg-gray-800 rounded-[20px] p-8 md:p-10">
+                  <div className="flex items-start gap-4">
+                    <span className="text-3xl flex-shrink-0">🧑‍⚖️</span>
+                    <div className="flex-1">
+                      <h3 className="text-lg font-bold text-white mb-3">
+                        AI Referee Verdict
+                      </h3>
+                      <div className="text-gray-300 leading-relaxed">
+                        <StreamingAIVerdict
+                          text={aiComparison?.verdict || aiInsights?.comparison}
+                          onComplete={() =>
+                            setTimeout(() => setRevealStage(2), 500)
+                          }
+                        />
+                      </div>
+                      {aiComparison?.winner && (
+                        <div className="mt-4 text-sm text-gray-200">
+                          <span className="font-semibold text-white">
+                            AI Winner:
+                          </span>{" "}
+                          <span className="text-amber-300">{aiWinnerName}</span>
+                          {aiComparison?.winReason && (
+                            <span className="text-gray-400">
+                              {" "}
+                              — {aiComparison.winReason}
+                            </span>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+        </AnimatePresence>
+
+        {/* Clear Winner Declaration */}
+        <AnimatePresence>
+          {revealStage >= 1 && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.15 }}
             >
-              <div className="bg-gray-900 dark:bg-gray-800 rounded-[20px] p-8 md:p-10">
-                <div className="flex items-start gap-4">
-                  <span className="text-3xl flex-shrink-0">🧑‍⚖️</span>
-                  <div className="flex-1">
-                    <h3 className="text-lg font-bold text-white mb-3">
-                      AI Referee Verdict
-                    </h3>
-                    <div className="text-gray-300 leading-relaxed">
-                      <StreamingAIVerdict
-                        text={aiInsights.comparison}
-                        onComplete={() =>
-                          setTimeout(() => setRevealStage(2), 500)
-                        }
-                      />
+              <div className="bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900 rounded-[20px] border border-gray-200 dark:border-gray-800 p-8 md:p-10">
+                <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+                  <div>
+                    <div className="text-sm font-semibold text-gray-500 dark:text-gray-400">
+                      Declared Winner
+                    </div>
+                    <div className="text-3xl font-black text-gray-900 dark:text-white mt-1">
+                      {aiWinner && aiWinner !== "TIE"
+                        ? aiWinnerName
+                        : battleResult.winner === "TIE"
+                          ? "Tie"
+                          : battleResult.winner === "A"
+                            ? userA?.profile?.name || userA?.username
+                            : userB?.profile?.name || userB?.username}
+                    </div>
+                    <div className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+                      {aiComparison?.winReason || battleResult.description}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2">
+                      <span className="w-3 h-3 rounded-full bg-blue-500" />
+                      <span className="text-sm text-gray-600 dark:text-gray-400">
+                        @{userA?.username}
+                      </span>
+                    </div>
+                    <span className="text-gray-300 dark:text-gray-600">VS</span>
+                    <div className="flex items-center gap-2">
+                      <span className="w-3 h-3 rounded-full bg-purple-500" />
+                      <span className="text-sm text-gray-600 dark:text-gray-400">
+                        @{userB?.username}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -181,6 +283,52 @@ export default function GitHubComparison() {
                     score={scoreB.total}
                     isWinner={battleResult.winner === "B"}
                     color="#a855f7"
+                  />
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Profile Highlights */}
+        <AnimatePresence>
+          {revealStage >= 1 && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+            >
+              <div className="bg-white dark:bg-gray-900 rounded-[20px] border border-gray-200 dark:border-gray-800 p-8 md:p-10">
+                <div className="flex items-center justify-between mb-6">
+                  <h3 className="text-heading-lg font-bold text-gray-900 dark:text-white">
+                    Profile Highlights
+                  </h3>
+                  <div className="text-xs text-gray-500 dark:text-gray-400">
+                    Signals: repos, stars, commits, consistency, impact, docs
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <QuickStatsCard
+                    accent="blue"
+                    title={userA?.profile?.name || userA?.username}
+                    username={userA?.username}
+                    avatar={`https://github.com/${userA?.username}.png`}
+                    stats={buildQuickStats(
+                      userA,
+                      repoCountA,
+                      comparison?.totalStars?.userA || 0,
+                    )}
+                  />
+                  <QuickStatsCard
+                    accent="purple"
+                    title={userB?.profile?.name || userB?.username}
+                    username={userB?.username}
+                    avatar={`https://github.com/${userB?.username}.png`}
+                    stats={buildQuickStats(
+                      userB,
+                      repoCountB,
+                      comparison?.totalStars?.userB || 0,
+                    )}
                   />
                 </div>
               </div>
@@ -523,4 +671,100 @@ function ScoreRing({ username, score, isWinner, color }) {
       </span>
     </div>
   );
+}
+
+function buildQuickStats(user, repoCount, totalStars) {
+  return [
+    {
+      label: "Followers",
+      value: user?.profile?.followers ?? 0,
+      isNumber: true,
+    },
+    {
+      label: "Following",
+      value: user?.profile?.following ?? 0,
+      isNumber: true,
+    },
+    {
+      label: "Primary Tech",
+      value: user?.metrics?.primaryTechIdentity || "N/A",
+      isNumber: false,
+    },
+    {
+      label: "Top Language",
+      value: getTopLanguage(user) || "N/A",
+      isNumber: false,
+    },
+    { label: "Repos", value: repoCount, isNumber: true },
+    { label: "Stars", value: totalStars, isNumber: true },
+  ];
+}
+
+function getTopLanguage(user) {
+  const stats = user?.metrics?.languageStats;
+  if (!Array.isArray(stats) || stats.length === 0) return null;
+  const sorted = [...stats].sort(
+    (a, b) => (b.count || b.repos || 0) - (a.count || a.repos || 0),
+  );
+  return sorted[0]?.name || null;
+}
+
+function QuickStatsCard({ accent, title, username, avatar, stats }) {
+  const accentClasses =
+    accent === "purple"
+      ? "border-purple-200 dark:border-purple-800/40"
+      : "border-blue-200 dark:border-blue-800/40";
+
+  const dotClass = accent === "purple" ? "bg-purple-500" : "bg-blue-500";
+
+  return (
+    <div
+      className={`rounded-2xl border ${accentClasses} p-6 bg-gray-50 dark:bg-gray-800/50`}
+    >
+      <div className="flex items-center gap-4 mb-5">
+        <img
+          src={avatar}
+          alt={username}
+          className="w-12 h-12 rounded-full border border-white dark:border-gray-800"
+        />
+        <div>
+          <div className="flex items-center gap-2">
+            <span className={`w-2 h-2 rounded-full ${dotClass}`} />
+            <span className="font-semibold text-gray-900 dark:text-white">
+              {title}
+            </span>
+          </div>
+          <div className="text-xs text-gray-500 dark:text-gray-400">
+            @{username}
+          </div>
+        </div>
+        <span className={`ml-auto w-2.5 h-2.5 rounded-full ${dotClass}`} />
+      </div>
+      <div className="grid grid-cols-2 gap-4">
+        {stats.map((stat) => (
+          <StatItem key={stat.label} stat={stat} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function StatItem({ stat }) {
+  return (
+    <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3">
+      <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">
+        {stat.label}
+      </div>
+      <div className="text-sm font-semibold text-gray-900 dark:text-white">
+        <StatValue value={stat.value} isNumber={stat.isNumber} />
+      </div>
+    </div>
+  );
+}
+
+function StatValue({ value, isNumber }) {
+  if (isNumber) {
+    return <CountUp end={Number(value) || 0} duration={1} separator="," />;
+  }
+  return <span className="truncate block">{value}</span>;
 }

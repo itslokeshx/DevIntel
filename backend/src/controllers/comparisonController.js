@@ -10,7 +10,7 @@ const { generateContent } = require("../services/ai/groq");
 const cache = require("../services/cache/kv");
 
 // Helper to get or analyze user data
-async function ensureUserData(username) {
+async function ensureUserData(username, options = {}) {
   // 1. Try to find in DB
   let data = await GitHubData.findOne({
     username: username.toLowerCase().trim(),
@@ -22,13 +22,16 @@ async function ensureUserData(username) {
 
   // 2. If not found or expired, analyze
   console.log(`Analyzing GitHub user for comparison: ${username}`);
-  const analyzedData = await analyzeGitHubUser(username, { maxRepos: 120 });
+  const analyzedData = await analyzeGitHubUser(username, options);
 
-  // Generate AI insights
-  const aiInsights = await generateGitHubInsights({
-    ...analyzedData,
-    username,
-  });
+  // Generate AI insights unless skipped for speed
+  let aiInsights = null;
+  if (!options.skipInsights) {
+    aiInsights = await generateGitHubInsights({
+      ...analyzedData,
+      username,
+    });
+  }
 
   // Find or create user
   const user = await User.findOneAndUpdate(
@@ -87,8 +90,8 @@ exports.compareUsers = async (req, res) => {
 
     // Ensure we have data for both users
     const [userAData, userBData] = await Promise.all([
-      ensureUserData(usernameA),
-      ensureUserData(usernameB),
+      ensureUserData(usernameA, { maxRepos: 60, skipInsights: true }),
+      ensureUserData(usernameB, { maxRepos: 60, skipInsights: true }),
     ]);
 
     if (!userAData || !userBData) {
