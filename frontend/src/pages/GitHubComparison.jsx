@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Sparkles, Trophy, Zap, GitBranch, Star, Code2, Activity } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { ArrowLeft, GitBranch, Star, Code2, Trophy } from 'lucide-react';
 import { comparisonAPI } from '../services/api';
 import { RacingBars } from '../components/comparison/RacingBars';
 import { TechVennDiagram } from '../components/comparison/TechVennDiagram';
@@ -11,7 +11,6 @@ import { StreamingAIVerdict } from '../components/comparison/StreamingAIVerdict'
 import { WinnerAnnouncement } from '../components/comparison/WinnerAnnouncement';
 import { calculateBattleScore, determineBattleWinner } from '../utils/battleScore';
 import { CompactAchievementBadges } from '../components/gamification/AchievementBadges';
-import { GlobalRankingTease } from '../components/gamification/GlobalRankingTease';
 
 export default function GitHubComparison() {
     const navigate = useNavigate();
@@ -28,8 +27,6 @@ export default function GitHubComparison() {
             setShowBattleStart(false);
 
             const response = await comparisonAPI.compare(fighterA, fighterB);
-            console.log('📊 Comparison API Response:', response);
-
             setData(response.data || response);
             setLoading(false);
         } catch (err) {
@@ -46,28 +43,17 @@ export default function GitHubComparison() {
         setError(null);
     };
 
-    // Show battle setup if no data
     if (showBattleStart && !data) {
-        return <BattleArenaSetup onBattleStart={handleBattleStart} />;
+        return <BattleArenaSetup onBattleStart={handleBattleStart} loading={loading} />;
     }
 
-    // Loading state
     if (loading) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-black flex items-center justify-center">
-                <motion.div
-                    initial={{ opacity: 0, scale: 0.5 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="text-center"
-                >
-                    <motion.div
-                        animate={{ rotate: 360 }}
-                        transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                        className="w-24 h-24 border-4 border-blue-500 border-t-transparent rounded-full mx-auto mb-6"
-                    />
-                    <h2 className="text-3xl font-bold text-white mb-2">Analyzing Fighters...</h2>
-                    <p className="text-gray-400">Crunching the numbers</p>
-                </motion.div>
+            <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+                <div className="text-center space-y-4">
+                    <div className="w-12 h-12 border-4 border-gray-900 dark:border-white border-t-transparent rounded-full animate-spin mx-auto" />
+                    <p className="text-gray-600 dark:text-gray-400 font-medium">Analyzing profiles...</p>
+                </div>
             </div>
         );
     }
@@ -75,151 +61,132 @@ export default function GitHubComparison() {
     if (!data) return null;
 
     const { userA, userB, comparison, aiInsights } = data;
-
-    // Calculate battle scores
     const scoreA = calculateBattleScore(userA);
     const scoreB = calculateBattleScore(userB);
     const battleResult = determineBattleWinner(scoreA.total, scoreB.total);
-
-    // Extract tech stacks
     const techStackA = userA?.repositories?.map(r => r.language).filter(Boolean) || [];
     const techStackB = userB?.repositories?.map(r => r.language).filter(Boolean) || [];
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-black text-white">
-            {/* Header */}
-            <div className="sticky top-0 z-50 bg-gray-900/90 backdrop-blur-lg border-b border-gray-800">
-                <div className="max-w-7xl mx-auto px-6 py-4">
-                    <div className="flex items-center justify-between">
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors">
+            {/* Header - Clean Glassmorphism */}
+            <div className="sticky top-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-800">
+                <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+                    <div className="flex items-center gap-4">
                         <button
                             onClick={() => navigate('/')}
-                            className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
+                            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
                         >
-                            <ArrowLeft className="w-4 h-4" />
-                            Home
+                            <ArrowLeft className="w-5 h-5" />
                         </button>
-                        <h1 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
-                            ⚔️ BATTLE ARENA
-                        </h1>
-                        <button
-                            onClick={handleNewBattle}
-                            className="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-lg font-semibold transition-all"
-                        >
-                            New Battle
-                        </button>
+                        <h1 className="text-lg font-semibold">Comparison Report</h1>
                     </div>
+                    <button
+                        onClick={handleNewBattle}
+                        className="px-4 py-2 text-sm font-medium bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-lg hover:opacity-90 transition-opacity"
+                    >
+                        New Comparison
+                    </button>
                 </div>
             </div>
 
-            <div className="max-w-7xl mx-auto px-6 py-12 space-y-12">
-                {/* Fighter Profiles */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="grid grid-cols-1 lg:grid-cols-2 gap-8"
-                >
-                    {/* Fighter A */}
-                    <FighterCard
+            <div className="max-w-7xl mx-auto px-6 py-8 space-y-8">
+                {/* Profiles Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <ProfileCard
                         user={userA}
                         score={scoreA}
-                        color="blue"
                         isWinner={battleResult.winner === 'A'}
+                        highlight="blue"
                     />
-
-                    {/* Fighter B */}
-                    <FighterCard
+                    <ProfileCard
                         user={userB}
                         score={scoreB}
-                        color="purple"
                         isWinner={battleResult.winner === 'B'}
+                        highlight="purple"
                     />
-                </motion.div>
+                </div>
 
-                {/* AI Verdict with Streaming */}
+                {/* AI Analysis - Clean Card */}
                 {aiInsights?.comparison && (
-                    <StreamingAIVerdict
-                        text={aiInsights.comparison}
-                        onComplete={() => setStreamingComplete(true)}
-                    />
-                )}
-
-                {/* Head-to-Head Metrics */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.3 }}
-                    className="bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-2xl p-8"
-                >
-                    <h2 className="text-3xl font-bold mb-8 text-center">📊 HEAD-TO-HEAD METRICS</h2>
-                    <div className="space-y-8">
-                        <RacingBars
-                            label="Dev Score"
-                            valueA={comparison?.devScore?.userA || 0}
-                            valueB={comparison?.devScore?.userB || 0}
-                            userA={userA?.username}
-                            userB={userB?.username}
-                            icon={Trophy}
-                        />
-                        <RacingBars
-                            label="Repositories"
-                            valueA={comparison?.totalRepos?.userA || 0}
-                            valueB={comparison?.totalRepos?.userB || 0}
-                            userA={userA?.username}
-                            userB={userB?.username}
-                            icon={GitBranch}
-                        />
-                        <RacingBars
-                            label="Total Stars"
-                            valueA={comparison?.totalStars?.userA || 0}
-                            valueB={comparison?.totalStars?.userB || 0}
-                            userA={userA?.username}
-                            userB={userB?.username}
-                            icon={Star}
-                        />
-                        <RacingBars
-                            label="Total Commits"
-                            valueA={comparison?.totalCommits?.userA || 0}
-                            valueB={comparison?.totalCommits?.userB || 0}
-                            userA={userA?.username}
-                            userB={userB?.username}
-                            icon={Code2}
+                    <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-8 shadow-sm">
+                        <StreamingAIVerdict
+                            text={aiInsights.comparison}
+                            onComplete={() => setStreamingComplete(true)}
                         />
                     </div>
-                </motion.div>
+                )}
 
-                {/* Tech Stack Venn Diagram */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.4 }}
-                    className="bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-2xl p-8"
-                >
-                    <h2 className="text-3xl font-bold mb-8 text-center">🎯 TECH STACK OVERLAP</h2>
-                    <TechVennDiagram
-                        techStackA={techStackA}
-                        techStackB={techStackB}
-                        userA={userA?.username}
-                        userB={userB?.username}
-                    />
-                </motion.div>
+                {/* Grid Layout for Visualizations */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* Metrics Comparison */}
+                    <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6 shadow-sm">
+                        <h3 className="text-lg font-semibold mb-6">Key Metrics</h3>
+                        <div className="space-y-6">
+                            <RacingBars
+                                label="Dev Score"
+                                valueA={comparison?.devScore?.userA || 0}
+                                valueB={comparison?.devScore?.userB || 0}
+                                userA={userA?.username}
+                                userB={userB?.username}
+                                icon={Trophy}
+                            />
+                            <RacingBars
+                                label="Repositories"
+                                valueA={comparison?.totalRepos?.userA || 0}
+                                valueB={comparison?.totalRepos?.userB || 0}
+                                userA={userA?.username}
+                                userB={userB?.username}
+                                icon={GitBranch}
+                            />
+                            <RacingBars
+                                label="Total Stars"
+                                valueA={comparison?.totalStars?.userA || 0}
+                                valueB={comparison?.totalStars?.userB || 0}
+                                userA={userA?.username}
+                                userB={userB?.username}
+                                icon={Star}
+                            />
+                            <RacingBars
+                                label="Total Commits"
+                                valueA={comparison?.totalCommits?.userA || 0}
+                                valueB={comparison?.totalCommits?.userB || 0}
+                                userA={userA?.username}
+                                userB={userB?.username}
+                                icon={Code2}
+                            />
+                        </div>
+                    </div>
 
-                {/* Activity Radar Chart */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.5 }}
-                    className="bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-2xl p-8"
-                >
-                    <h2 className="text-3xl font-bold mb-8 text-center">📈 ACTIVITY ANALYSIS</h2>
-                    <ActivityRadarChart
-                        userAData={userA}
-                        userBData={userB}
-                        userA={userA?.username}
-                        userB={userB?.username}
-                    />
-                </motion.div>
+                    {/* Tech Stack */}
+                    <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6 shadow-sm flex flex-col">
+                        <h3 className="text-lg font-semibold mb-6">Tech Overlap</h3>
+                        <div className="flex-1 flex items-center justify-center">
+                            <TechVennDiagram
+                                techStackA={techStackA}
+                                techStackB={techStackB}
+                                userA={userA?.username}
+                                userB={userB?.username}
+                            />
+                        </div>
+                    </div>
 
-                {/* Winner Announcement with Confetti */}
+                    {/* Radar Chart - Full Width on Mobile, Half on Desktop */}
+                    <div className="md:col-span-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6 shadow-sm">
+                        <div className="flex items-center justify-between mb-6">
+                            <h3 className="text-lg font-semibold">Activity Profile</h3>
+                        </div>
+                        <div className="h-[400px] flex items-center justify-center">
+                            <ActivityRadarChart
+                                userAData={userA}
+                                userBData={userB}
+                                userA={userA?.username}
+                                userB={userB?.username}
+                            />
+                        </div>
+                    </div>
+                </div>
+
                 {streamingComplete && (
                     <WinnerAnnouncement
                         winner={battleResult.winner}
@@ -233,113 +200,57 @@ export default function GitHubComparison() {
     );
 }
 
-// Fighter Card Component
-function FighterCard({ user, score, color, isWinner }) {
-    const colorClasses = color === 'blue'
-        ? 'from-blue-600 to-blue-800 border-blue-500'
-        : 'from-purple-600 to-purple-800 border-purple-500';
-
-    const ringColor = color === 'blue' ? 'border-blue-500' : 'border-purple-500';
+function ProfileCard({ user, score, isWinner, highlight }) {
+    const borderColor = isWinner
+        ? highlight === 'blue' ? 'border-blue-500' : 'border-purple-500'
+        : 'border-transparent';
 
     return (
-        <div className={`relative bg-gradient-to-br ${colorClasses} border-2 rounded-2xl p-6 overflow-hidden`}>
-            {/* Winner badge */}
+        <div className={`relative bg-white dark:bg-gray-800 rounded-xl p-6 border-2 ${borderColor} shadow-sm transition-all`}>
             {isWinner && (
-                <motion.div
-                    initial={{ scale: 0, rotate: -45 }}
-                    animate={{ scale: 1, rotate: 0 }}
-                    transition={{ type: 'spring', bounce: 0.6 }}
-                    className="absolute top-4 right-4 bg-yellow-500 text-black px-3 py-1 rounded-full text-sm font-bold flex items-center gap-1 z-10"
-                >
-                    <Trophy className="w-4 h-4" />
+                <div className="absolute top-4 right-4 flex items-center gap-1 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 px-3 py-1 rounded-full text-xs font-bold">
+                    <Trophy className="w-3 h-3" />
                     WINNER
-                </motion.div>
+                </div>
             )}
 
-            {/* Avatar */}
-            <div className="flex justify-center mb-4">
-                <div className={`w-32 h-32 rounded-full border-4 ${ringColor} overflow-hidden bg-gray-900`}>
-                    <img
-                        src={`https://github.com/${user?.username}.png`}
-                        alt={user?.username}
-                        className="w-full h-full object-cover"
-                    />
-                </div>
-            </div>
-
-            {/* User info */}
-            <div className="text-center mb-6">
-                <h3 className="text-2xl font-bold text-white mb-1">{user?.profile?.name || user?.username}</h3>
-                <p className="text-white/70">@{user?.username}</p>
-                {user?.profile?.bio && (
-                    <p className="text-sm text-white/60 mt-2 line-clamp-2">{user?.profile?.bio}</p>
-                )}
-
-                {/* Achievements */}
-                {user?.achievements && user.achievements.length > 0 && (
-                    <div className="mt-3">
-                        <CompactAchievementBadges achievements={user.achievements} maxDisplay={3} />
-                    </div>
-                )}
-            </div>
-
-            {/* Battle Score */}
-            <div className="mb-6 text-center bg-white/20 backdrop-blur-sm rounded-xl p-4 border border-white/30">
-                <div className="text-sm text-white/70 mb-2">Battle Score</div>
-                <div className="text-6xl font-black text-white mb-2">{score?.total || 0}</div>
-                <div className="text-xs text-white/60">/ 100 points</div>
-            </div>
-
-            {/* Score Breakdown */}
-            <div className="space-y-2 mb-4">
-                <div className="text-xs text-white/70 mb-3 text-center font-semibold">Score Breakdown</div>
-                <ScoreBreakdownBar label="Repos" value={score?.breakdown?.repos || 0} max={20} />
-                <ScoreBreakdownBar label="Stars" value={score?.breakdown?.stars || 0} max={25} />
-                <ScoreBreakdownBar label="Commits" value={score?.breakdown?.commits || 0} max={25} />
-                <ScoreBreakdownBar label="Consistency" value={score?.breakdown?.consistency || 0} max={15} />
-                <ScoreBreakdownBar label="Docs" value={score?.breakdown?.docs || 0} max={15} />
-            </div>
-
-            {/* Quick stats */}
-            <div className="grid grid-cols-3 gap-2 mt-4">
-                <div className="text-center bg-white/10 backdrop-blur-sm rounded-lg p-2">
-                    <div className="text-lg font-bold text-white">{user?.repositories?.length || 0}</div>
-                    <div className="text-xs text-white/70">Repos</div>
-                </div>
-                <div className="text-center bg-white/10 backdrop-blur-sm rounded-lg p-2">
-                    <div className="text-lg font-bold text-white">
-                        {user?.repositories?.reduce((sum, r) => sum + (r.stars || 0), 0) || 0}
-                    </div>
-                    <div className="text-xs text-white/70">Stars</div>
-                </div>
-                <div className="text-center bg-white/10 backdrop-blur-sm rounded-lg p-2">
-                    <div className="text-lg font-bold text-white">
-                        {Math.floor((user?.contributions?.totalCommits || 0) / 1000)}k
-                    </div>
-                    <div className="text-xs text-white/70">Commits</div>
-                </div>
-            </div>
-        </div>
-    );
-}
-
-// Score Breakdown Bar Component
-function ScoreBreakdownBar({ label, value, max }) {
-    const percentage = (value / max) * 100;
-
-    return (
-        <div className="flex items-center gap-2">
-            <div className="text-xs text-white/70 w-20">{label}</div>
-            <div className="flex-1 h-2 bg-white/10 rounded-full overflow-hidden">
-                <motion.div
-                    initial={{ width: 0 }}
-                    animate={{ width: `${percentage}%` }}
-                    transition={{ duration: 1, ease: 'easeOut' }}
-                    className="h-full bg-gradient-to-r from-white/60 to-white/90 rounded-full"
+            <div className="flex items-start gap-4">
+                <img
+                    src={`https://github.com/${user?.username}.png`}
+                    alt={user?.username}
+                    className="w-20 h-20 rounded-full border-2 border-gray-100 dark:border-gray-700"
                 />
+                <div className="flex-1">
+                    <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">{user?.profile?.name || user?.username}</h2>
+                    <p className="text-gray-500 dark:text-gray-400 text-sm">@{user?.username}</p>
+
+                    {user?.achievements?.length > 0 && (
+                        <div className="mt-3">
+                            <CompactAchievementBadges achievements={user.achievements} maxDisplay={3} />
+                        </div>
+                    )}
+                </div>
+                <div className="text-right">
+                    <div className="text-3xl font-bold text-gray-900 dark:text-gray-100">{score?.total || 0}</div>
+                    <div className="text-xs text-gray-500 uppercase tracking-wide">Score</div>
+                </div>
             </div>
-            <div className="text-xs text-white font-semibold w-8 text-right">{value}/{max}</div>
+
+            <div className="mt-6 grid grid-cols-2 gap-2">
+                <StatBox label="Repos" value={user?.repositories?.length || 0} />
+                <StatBox label="Stars" value={user?.repositories?.reduce((sum, r) => sum + (r.stars || 0), 0) || 0} />
+                <StatBox label="Commits" value={Math.floor((user?.contributions?.totalCommits || 0) / 1000) + 'k'} />
+                <StatBox label="Followers" value={user?.profile?.followers || 0} />
+            </div>
         </div>
     );
 }
 
+function StatBox({ label, value }) {
+    return (
+        <div className="bg-gray-50 dark:bg-gray-900/50 rounded-lg p-3 text-center">
+            <div className="font-semibold text-gray-900 dark:text-gray-100">{value}</div>
+            <div className="text-xs text-gray-500 dark:text-gray-400">{label}</div>
+        </div>
+    );
+}
