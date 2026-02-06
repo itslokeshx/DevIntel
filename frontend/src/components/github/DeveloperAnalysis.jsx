@@ -13,7 +13,11 @@ export function DeveloperAnalysis({ metrics, contributions, repositories }) {
   if (!metrics) return null;
 
   const radarData = [
-    { metric: "Consistency", value: metrics.consistencyScore || 0, fullMark: 100 },
+    {
+      metric: "Consistency",
+      value: metrics.consistencyScore || 0,
+      fullMark: 100,
+    },
     { metric: "Impact", value: metrics.impactScore || 0, fullMark: 100 },
     { metric: "Quality", value: metrics.qualityScore || 0, fullMark: 100 },
     {
@@ -36,7 +40,7 @@ export function DeveloperAnalysis({ metrics, contributions, repositories }) {
   const devScore = metrics.devScore || 0;
 
   return (
-    <div className="bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-900/50 rounded-[24px] border border-gray-200 dark:border-gray-800 p-6 sm:p-8 md:p-10 shadow-lg">
+    <div className="bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-900/50 rounded-2xl sm:rounded-[24px] border border-gray-200 dark:border-gray-800 p-4 sm:p-8 md:p-10 shadow-lg">
       <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-6 sm:mb-8 flex items-center gap-3">
         <span className="text-2xl sm:text-3xl">📊</span>
         Developer Analysis
@@ -86,17 +90,27 @@ export function DeveloperAnalysis({ metrics, contributions, repositories }) {
           <div className="relative z-10">
             <div className="flex items-center gap-2 mb-5">
               <Award className="w-5 h-5" />
-              <h4 className="text-base sm:text-lg font-bold">Developer Score</h4>
+              <h4 className="text-base sm:text-lg font-bold">
+                Developer Score
+              </h4>
             </div>
 
             <div className="flex items-end gap-2 mb-3">
-              <div className="text-5xl sm:text-6xl font-extrabold">{devScore}</div>
-              <div className="text-2xl sm:text-3xl font-bold text-white/70 mb-1">/100</div>
+              <div className="text-5xl sm:text-6xl font-extrabold">
+                {devScore}
+              </div>
+              <div className="text-2xl sm:text-3xl font-bold text-white/70 mb-1">
+                /100
+              </div>
             </div>
 
             <div className="mb-5">
-              <div className="text-lg sm:text-xl font-semibold mb-1">{getScoreLabel(devScore)}</div>
-              <div className="text-xs sm:text-sm text-white/80">{getScoreDescription(devScore)}</div>
+              <div className="text-lg sm:text-xl font-semibold mb-1">
+                {getScoreLabel(devScore)}
+              </div>
+              <div className="text-xs sm:text-sm text-white/80">
+                {getScoreDescription(devScore)}
+              </div>
             </div>
 
             <div className="h-2 bg-white/20 rounded-full overflow-hidden">
@@ -158,7 +172,8 @@ export function DeveloperAnalysis({ metrics, contributions, repositories }) {
           <p className="text-xs sm:text-sm text-green-700 dark:text-green-400 font-medium leading-relaxed">
             {metrics.documentationHabits === "excellent" && "⭐ Excellent"}
             {metrics.documentationHabits === "good" && "✅ Good"}
-            {metrics.documentationHabits === "inconsistent" && "⚠️ Inconsistent"}
+            {metrics.documentationHabits === "inconsistent" &&
+              "⚠️ Inconsistent"}
             {metrics.documentationHabits === "poor" && "📝 Needs work"}
           </p>
         </div>
@@ -174,8 +189,12 @@ export function DeveloperAnalysis({ metrics, contributions, repositories }) {
           </div>
           <p className="text-xs sm:text-sm text-amber-700 dark:text-amber-400 font-medium leading-relaxed">
             {metrics.impactScore >= 80 && "🚀 High impact"}
-            {metrics.impactScore >= 60 && metrics.impactScore < 80 && "⚡ Solid"}
-            {metrics.impactScore >= 40 && metrics.impactScore < 60 && "📈 Growing"}
+            {metrics.impactScore >= 60 &&
+              metrics.impactScore < 80 &&
+              "⚡ Solid"}
+            {metrics.impactScore >= 40 &&
+              metrics.impactScore < 60 &&
+              "📈 Growing"}
             {metrics.impactScore < 40 && "🌱 Building"}
           </p>
         </div>

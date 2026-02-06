@@ -28,7 +28,7 @@ export function DeveloperSignature({
   );
 
   return (
-    <div className="bg-gradient-to-br from-white via-purple-50/30 to-blue-50/30 dark:from-gray-900 dark:via-purple-900/10 dark:to-blue-900/10 rounded-[24px] border border-purple-200 dark:border-purple-800/30 p-5 sm:p-8 md:p-10 shadow-xl">
+    <div className="bg-gradient-to-br from-white via-purple-50/30 to-blue-50/30 dark:from-gray-900 dark:via-purple-900/10 dark:to-blue-900/10 rounded-2xl sm:rounded-[24px] border border-purple-200 dark:border-purple-800/30 p-4 sm:p-8 md:p-10 shadow-xl">
       {/* Header */}
       <div className="mb-10">
         <div className="flex items-center gap-3 mb-3">

@@ -56,7 +56,7 @@ export function TechStackDNA({ languageStats, repositories }) {
 
   if (!languageStats || languageStats.length === 0) {
     return (
-      <div className="bg-white dark:bg-gray-900 rounded-[20px] border border-gray-200 dark:border-gray-800 p-4 sm:p-6 md:p-10">
+      <div className="bg-white dark:bg-gray-900 rounded-2xl sm:rounded-[20px] border border-gray-200 dark:border-gray-800 p-4 sm:p-6 md:p-10">
         <h3 className="text-heading-lg font-bold text-gray-900 dark:text-white mb-6">
           🧪 Tech Stack DNA
         </h3>
@@ -77,7 +77,7 @@ export function TechStackDNA({ languageStats, repositories }) {
   );
 
   return (
-    <div className="bg-white dark:bg-gray-900 rounded-[20px] border border-gray-200 dark:border-gray-800 p-4 sm:p-6 md:p-10">
+    <div className="bg-white dark:bg-gray-900 rounded-2xl sm:rounded-[20px] border border-gray-200 dark:border-gray-800 p-4 sm:p-6 md:p-10">
       <div className="flex items-center justify-between mb-4 sm:mb-8">
         <h3 className="text-heading-lg font-bold text-gray-900 dark:text-white">
           🧪 Tech Stack DNA

@@ -94,8 +94,8 @@ export default function LeetCodeSkills() {
             <ArrowLeft className="w-4 h-4" /> Back
           </Button>
           <div className="flex items-center gap-4">
-            <h1 className="text-2xl font-bold flex items-center gap-2 text-light-text-primary dark:text-dark-text-primary">
-              <Code className="w-8 h-8 text-orange-500" />
+            <h1 className="text-xl sm:text-2xl font-bold flex items-center gap-2 text-light-text-primary dark:text-dark-text-primary">
+              <Code className="w-6 h-6 sm:w-8 sm:h-8 text-orange-500" />
               <span className="hidden sm:inline">LeetCode Intelligence:</span>
               <span className="text-orange-600 dark:text-orange-400">
                 {data?.username || username}
@@ -115,20 +115,20 @@ export default function LeetCodeSkills() {
 
         {/* AI Insight Hero */}
         {data?.aiInsights && (
-          <div className="bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-900/20 dark:to-amber-900/20 border border-orange-100 dark:border-orange-800 rounded-xl p-6 mb-8 relative overflow-hidden">
+          <div className="bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-900/20 dark:to-amber-900/20 border border-orange-100 dark:border-orange-800 rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 relative overflow-hidden">
             <div className="absolute top-0 right-0 p-4 opacity-10">
-              <BrainCircuit className="w-32 h-32" />
+              <BrainCircuit className="w-20 h-20 sm:w-32 sm:h-32" />
             </div>
             <div className="relative z-10">
-              <div className="flex items-center gap-2 mb-2">
-                <span className="px-2 py-1 bg-orange-200 dark:bg-orange-800 text-orange-800 dark:text-orange-200 text-xs font-bold rounded uppercase tracking-wide">
+              <div className="flex flex-wrap items-center gap-2 mb-2">
+                <span className="px-2 py-1 bg-orange-200 dark:bg-orange-800 text-orange-800 dark:text-orange-200 text-[10px] sm:text-xs font-bold rounded uppercase tracking-wide">
                   AI Verdict
                 </span>
-                <h2 className="text-lg font-bold text-orange-900 dark:text-orange-100">
+                <h2 className="text-base sm:text-lg font-bold text-orange-900 dark:text-orange-100">
                   {data.aiInsights.developerType}
                 </h2>
               </div>
-              <p className="text-lg text-orange-900 dark:text-orange-100 font-medium mb-4">
+              <p className="text-base sm:text-lg text-orange-900 dark:text-orange-100 font-medium mb-3 sm:mb-4">
                 {data.aiInsights.verdict}
               </p>
 
@@ -162,7 +162,7 @@ export default function LeetCodeSkills() {
         )}
 
         {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-8">
           {/* Left Column: Stats & Badges */}
           <div className="lg:col-span-2 space-y-8">
             <StatsOverview

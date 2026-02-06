@@ -74,7 +74,7 @@ export function YearlyBreakdown({ yearlyBreakdown, contributions }) {
   };
 
   return (
-    <div className="bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-900/50 rounded-[24px] border border-gray-200 dark:border-gray-800 p-4 sm:p-6 md:p-10 shadow-lg">
+    <div className="bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-900/50 rounded-2xl sm:rounded-[24px] border border-gray-200 dark:border-gray-800 p-4 sm:p-6 md:p-10 shadow-lg">
       <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4 sm:mb-6 flex items-center gap-3">
         <span className="text-2xl">📜</span>
         Developer Timeline
@@ -87,7 +87,7 @@ export function YearlyBreakdown({ yearlyBreakdown, contributions }) {
             key={year}
             onClick={() => setSelectedYear(year)}
             whileTap={{ scale: 0.97 }}
-            className={`px-5 py-2.5 rounded-xl font-semibold text-sm transition-all ${
+            className={`px-3 sm:px-5 py-2 sm:py-2.5 rounded-xl font-semibold text-xs sm:text-sm transition-all ${
               selectedYear === year
                 ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg"
                 : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"
@@ -99,7 +99,7 @@ export function YearlyBreakdown({ yearlyBreakdown, contributions }) {
         <motion.button
           onClick={() => setSelectedYear("all")}
           whileTap={{ scale: 0.97 }}
-          className={`px-5 py-2.5 rounded-xl font-semibold text-sm transition-all ${
+          className={`px-3 sm:px-5 py-2 sm:py-2.5 rounded-xl font-semibold text-xs sm:text-sm transition-all ${
             selectedYear === "all"
               ? "bg-gradient-to-r from-gray-700 to-gray-800 text-white shadow-lg"
               : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"
@@ -157,7 +157,7 @@ export function YearlyBreakdown({ yearlyBreakdown, contributions }) {
 
             {/* Story narrative */}
             {selectedYear !== "all" && (
-              <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-5 border border-gray-100 dark:border-gray-700">
+              <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-4 sm:p-5 border border-gray-100 dark:border-gray-700">
                 <h4 className="font-semibold text-sm mb-2 text-gray-900 dark:text-gray-100">
                   📖 {selectedYear} Story
                 </h4>
@@ -181,7 +181,7 @@ export function YearlyBreakdown({ yearlyBreakdown, contributions }) {
 
             {/* Monthly breakdown chart */}
             {monthlyCommits.length > 0 && (
-              <div className="h-52">
+              <div className="h-40 sm:h-52">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={monthlyCommits} barCategoryGap="20%">
                     <XAxis

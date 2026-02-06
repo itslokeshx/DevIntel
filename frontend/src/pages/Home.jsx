@@ -119,7 +119,7 @@ export function Home() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.3 }}
-          className="text-sm text-center mb-32"
+          className="text-sm text-center mb-16 sm:mb-32"
         >
           <span className="text-gray-400 mr-3">Try:</span>
           {exampleUsers.map((user, i) => (
@@ -193,7 +193,7 @@ export function Home() {
             ))}
           </div>
 
-          <h2 className="text-heading-xl font-bold text-gray-900 dark:text-white mb-4">
+          <h2 className="text-2xl sm:text-heading-xl font-bold text-gray-900 dark:text-white mb-4">
             Join 50,000+ Developers
           </h2>
           <p className="text-body-md text-gray-500 dark:text-gray-400">
@@ -212,10 +212,10 @@ export function Home() {
           className="relative bg-gradient-to-r from-blue-500 via-purple-600 to-pink-500 rounded-2xl sm:rounded-3xl p-8 sm:p-16 text-center overflow-hidden animate-gradient"
           style={{ backgroundSize: "200% 200%" }}
         >
-          <h2 className="text-display-md text-white font-bold mb-4 drop-shadow-lg relative z-10">
+          <h2 className="text-2xl sm:text-display-md text-white font-bold mb-3 sm:mb-4 drop-shadow-lg relative z-10">
             Ready to see your developer story?
           </h2>
-          <p className="text-xl text-white/90 mb-8 relative z-10">
+          <p className="text-base sm:text-xl text-white/90 mb-6 sm:mb-8 relative z-10 px-2">
             Uncover insights that will change how you see your work
           </p>
           <button
@@ -223,7 +223,7 @@ export function Home() {
               window.scrollTo({ top: 0, behavior: "smooth" });
               setTimeout(() => document.querySelector("input")?.focus(), 500);
             }}
-            className="relative z-10 bg-white text-blue-600 px-12 py-5 text-lg font-bold rounded-xl shadow-xl hover:scale-105 hover:shadow-2xl active:scale-[0.98] transition-all duration-200"
+            className="relative z-10 bg-white text-blue-600 px-8 sm:px-12 py-4 sm:py-5 text-base sm:text-lg font-bold rounded-xl shadow-xl hover:scale-105 hover:shadow-2xl active:scale-[0.98] transition-all duration-200"
           >
             Analyze Your Profile Now
           </button>
@@ -240,20 +240,20 @@ function FeatureCard({ icon, gradient, title, description, delay }) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-50px" }}
       transition={{ duration: 0.5, delay }}
-      whileHover={{ y: -8 }}
-      className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-[20px] p-6 sm:p-12 text-center hover:shadow-2xl hover:border-blue-500 dark:hover:border-blue-400 transition-all duration-300 group"
+      whileHover={{ y: -4 }}
+      className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-[20px] p-5 sm:p-8 md:p-12 text-center hover:shadow-xl hover:border-blue-500 dark:hover:border-blue-400 transition-all duration-300 group"
     >
       {/* Icon container */}
       <div
-        className={`w-[72px] h-[72px] mx-auto mb-6 rounded-2xl bg-gradient-to-br ${gradient} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300`}
+        className={`w-14 h-14 sm:w-[72px] sm:h-[72px] mx-auto mb-4 sm:mb-6 rounded-xl sm:rounded-2xl bg-gradient-to-br ${gradient} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300`}
       >
         {icon}
       </div>
 
-      <h3 className="text-[22px] font-bold text-gray-900 dark:text-white mb-3">
+      <h3 className="text-lg sm:text-[22px] font-bold text-gray-900 dark:text-white mb-2 sm:mb-3">
         {title}
       </h3>
-      <p className="text-body-md text-gray-500 dark:text-gray-400 leading-relaxed">
+      <p className="text-sm sm:text-body-md text-gray-500 dark:text-gray-400 leading-relaxed">
         {description}
       </p>
     </motion.div>

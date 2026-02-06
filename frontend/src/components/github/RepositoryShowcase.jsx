@@ -26,7 +26,7 @@ export function RepositoryShowcase({ repositories }) {
   const displayRepos = showAll ? rankedRepos : rankedRepos.slice(0, 6);
 
   return (
-    <div className="bg-white dark:bg-gray-900 rounded-[20px] border border-gray-200 dark:border-gray-800 p-4 sm:p-6 md:p-10">
+    <div className="bg-white dark:bg-gray-900 rounded-2xl sm:rounded-[20px] border border-gray-200 dark:border-gray-800 p-4 sm:p-6 md:p-10">
       <div className="flex items-center justify-between mb-4 sm:mb-8">
         <h3 className="text-heading-lg font-bold text-gray-900 dark:text-white">
           🏆 Signature Projects

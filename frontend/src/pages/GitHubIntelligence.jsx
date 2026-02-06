@@ -132,10 +132,10 @@ export default function GitHubIntelligence() {
         </div>
       </div>
 
-      <div className="max-w-content mx-auto px-6 lg:px-12 py-12">
+      <div className="max-w-content mx-auto px-4 sm:px-6 lg:px-12 py-8 sm:py-12">
         {/* ═══ HERO CARD ═══ */}
         <div className="mb-8">
-          <div className="relative bg-gradient-to-br from-white via-gray-50/30 to-white dark:from-gray-900 dark:via-gray-800/30 dark:to-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-8 sm:p-10 md:p-14 shadow-sm overflow-hidden">
+          <div className="relative bg-gradient-to-br from-white via-gray-50/30 to-white dark:from-gray-900 dark:via-gray-800/30 dark:to-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl sm:rounded-3xl p-5 sm:p-10 md:p-14 shadow-sm overflow-hidden">
             {/* Subtle decorative pattern */}
             <div className="absolute inset-0 opacity-[0.02] dark:opacity-[0.03]">
               <div
@@ -155,14 +155,14 @@ export default function GitHubIntelligence() {
                 <img
                   src={data.profile?.avatarUrl}
                   alt={username}
-                  className="relative w-28 h-28 sm:w-36 sm:h-36 rounded-full border-4 border-white dark:border-gray-800 shadow-lg"
+                  className="relative w-24 h-24 sm:w-36 sm:h-36 rounded-full border-4 border-white dark:border-gray-800 shadow-lg"
                 />
               </div>
 
               {/* Name and Title */}
               <div className="space-y-3">
                 <div>
-                  <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-2">
+                  <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-1 sm:mb-2">
                     {data.profile?.name || username}
                   </h1>
                   <p className="text-lg text-gray-500 dark:text-gray-400 font-medium">
@@ -185,15 +185,15 @@ export default function GitHubIntelligence() {
               )}
 
               {/* Metadata Row */}
-              <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-gray-500 dark:text-gray-400">
+              <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-6 text-xs sm:text-sm text-gray-500 dark:text-gray-400">
                 {data.profile?.location && (
-                  <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-100 dark:bg-gray-800 rounded-lg">
-                    <MapPin className="w-4 h-4" />
+                  <div className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 bg-gray-100 dark:bg-gray-800 rounded-lg">
+                    <MapPin className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                     <span>{data.profile.location}</span>
                   </div>
                 )}
-                <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-100 dark:bg-gray-800 rounded-lg">
-                  <Users className="w-4 h-4" />
+                <div className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 bg-gray-100 dark:bg-gray-800 rounded-lg">
+                  <Users className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                   <span>
                     <strong className="text-gray-900 dark:text-white font-semibold">
                       {data.profile?.followers || 0}
@@ -206,8 +206,8 @@ export default function GitHubIntelligence() {
                   </span>
                 </div>
                 {data.profile?.createdAt && (
-                  <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-100 dark:bg-gray-800 rounded-lg">
-                    <Calendar className="w-4 h-4" />
+                  <div className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 bg-gray-100 dark:bg-gray-800 rounded-lg">
+                    <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                     <span>
                       Joined {new Date(data.profile.createdAt).getFullYear()}
                     </span>
@@ -216,14 +216,14 @@ export default function GitHubIntelligence() {
               </div>
 
               {/* Developer Stats Pills */}
-              <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
-                <div className="px-4 py-2 bg-blue-50 dark:bg-blue-950/30 text-blue-700 dark:text-blue-300 rounded-full text-sm font-medium border border-blue-200 dark:border-blue-800/50">
+              <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 pt-2">
+                <div className="px-3 sm:px-4 py-1.5 sm:py-2 bg-blue-50 dark:bg-blue-950/30 text-blue-700 dark:text-blue-300 rounded-full text-xs sm:text-sm font-medium border border-blue-200 dark:border-blue-800/50">
                   {repos.length} Repositories
                 </div>
-                <div className="px-4 py-2 bg-purple-50 dark:bg-purple-950/30 text-purple-700 dark:text-purple-300 rounded-full text-sm font-medium border border-purple-200 dark:border-purple-800/50">
+                <div className="px-3 sm:px-4 py-1.5 sm:py-2 bg-purple-50 dark:bg-purple-950/30 text-purple-700 dark:text-purple-300 rounded-full text-xs sm:text-sm font-medium border border-purple-200 dark:border-purple-800/50">
                   {totalStars} Stars Earned
                 </div>
-                <div className="px-4 py-2 bg-green-50 dark:bg-green-950/30 text-green-700 dark:text-green-300 rounded-full text-sm font-medium border border-green-200 dark:border-green-800/50">
+                <div className="px-3 sm:px-4 py-1.5 sm:py-2 bg-green-50 dark:bg-green-950/30 text-green-700 dark:text-green-300 rounded-full text-xs sm:text-sm font-medium border border-green-200 dark:border-green-800/50">
                   {totalCommits.toLocaleString()} Commits
                 </div>
               </div>
@@ -239,23 +239,23 @@ export default function GitHubIntelligence() {
           className="mb-12"
         >
           <div
-            className="relative bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-blue-950/30 dark:via-purple-950/30 dark:to-pink-950/30 border-2 border-blue-200 dark:border-blue-800/50 rounded-[20px] p-5 sm:p-8 md:p-10 overflow-hidden animate-gradient"
+            className="relative bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-blue-950/30 dark:via-purple-950/30 dark:to-pink-950/30 border-2 border-blue-200 dark:border-blue-800/50 rounded-2xl sm:rounded-[20px] p-4 sm:p-8 md:p-10 overflow-hidden animate-gradient"
             style={{ backgroundSize: "200% 200%" }}
           >
             <div className="flex items-start gap-3 sm:gap-5">
-              <span className="text-3xl sm:text-5xl flex-shrink-0 mt-1">
+              <span className="text-2xl sm:text-5xl flex-shrink-0 mt-1">
                 🧬
               </span>
-              <div className="flex-1">
-                <div className="flex items-center gap-3 mb-2">
-                  <h2 className="text-heading-md font-bold text-gray-900 dark:text-white">
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-3 mb-1 sm:mb-2">
+                  <h2 className="text-lg sm:text-heading-md font-bold text-gray-900 dark:text-white">
                     What Makes You Special?
                   </h2>
                 </div>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mb-3 sm:mb-4">
                   AI-powered insights revealing your unique developer DNA
                 </p>
-                <div className="text-[19px] md:text-body-lg leading-[1.7] text-gray-800 dark:text-gray-200 tracking-[0.01em]">
+                <div className="text-base sm:text-[19px] md:text-body-lg leading-[1.7] text-gray-800 dark:text-gray-200 tracking-[0.01em]">
                   {aiVerdictStreaming ? (
                     <div>
                       <span>{aiVerdict}</span>
@@ -379,7 +379,7 @@ export default function GitHubIntelligence() {
         {/* ═══ ENGAGEMENT SECTION ═══ */}
         <div className="space-y-8 mb-20">
           {/* Compare CTA */}
-          <div className="relative overflow-hidden bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-blue-950/20 dark:via-purple-950/20 dark:to-pink-950/20 rounded-3xl p-8 sm:p-10 border border-blue-200 dark:border-blue-800/50">
+          <div className="relative overflow-hidden bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-blue-950/20 dark:via-purple-950/20 dark:to-pink-950/20 rounded-2xl sm:rounded-3xl p-5 sm:p-8 md:p-10 border border-blue-200 dark:border-blue-800/50">
             <div className="relative z-10 text-center space-y-4">
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/60 dark:bg-gray-900/60 backdrop-blur-sm rounded-full text-sm font-semibold text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700">
                 <Trophy className="w-4 h-4 text-yellow-500" />
@@ -527,10 +527,10 @@ function StatCard({ icon, gradient, value, label, percentile, delay }) {
 
 function SectionCard({ icon, title, children }) {
   return (
-    <div className="p-8 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800">
-      <div className="flex items-center gap-3 mb-6">
+    <div className="p-4 sm:p-8 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800">
+      <div className="flex items-center gap-3 mb-4 sm:mb-6">
         {icon}
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100">
           {title}
         </h2>
       </div>
@@ -541,8 +541,8 @@ function SectionCard({ icon, title, children }) {
 
 function GrowthCard({ number, title, description, action }) {
   return (
-    <div className="p-6 bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800">
-      <div className="flex items-start gap-4">
+    <div className="p-4 sm:p-6 bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800">
+      <div className="flex items-start gap-3 sm:gap-4">
         <span className="text-2xl">{number}</span>
         <div className="flex-1">
           <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">

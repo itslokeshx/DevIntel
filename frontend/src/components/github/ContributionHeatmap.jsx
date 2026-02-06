@@ -116,7 +116,7 @@ export function ContributionHeatmap({ contributions }) {
   const longestStreak = contributions?.longestStreak || 0;
 
   return (
-    <div className="bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-900/50 rounded-[24px] border border-gray-200 dark:border-gray-800 p-4 sm:p-6 md:p-10 shadow-lg">
+    <div className="bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-900/50 rounded-2xl sm:rounded-[24px] border border-gray-200 dark:border-gray-800 p-4 sm:p-6 md:p-10 shadow-lg">
       <div className="flex items-center justify-end mb-4">
         <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
           {format(startDate, "MMM yyyy")} — {format(today, "MMM yyyy")}
@@ -124,38 +124,40 @@ export function ContributionHeatmap({ contributions }) {
       </div>
 
       {/* Heatmap grid - Premium enhanced with smooth rendering */}
-      <div className="flex gap-[3px] mb-6 justify-center max-w-full overflow-hidden">
-        {weeks.map((week, weekIdx) => (
-          <div key={weekIdx} className="flex flex-col gap-[3px]">
-            {week.map((day, dayIdx) => {
-              if (!day.date)
+      <div className="overflow-x-auto -mx-4 sm:-mx-6 md:-mx-10 px-4 sm:px-6 md:px-10 pb-2 mb-6">
+        <div className="flex gap-[2px] sm:gap-[3px] justify-center min-w-fit">
+          {weeks.map((week, weekIdx) => (
+            <div key={weekIdx} className="flex flex-col gap-[2px] sm:gap-[3px]">
+              {week.map((day, dayIdx) => {
+                if (!day.date)
+                  return (
+                    <div
+                      key={dayIdx}
+                      className="w-[10px] h-[10px] sm:w-[14px] sm:h-[14px] md:w-[16px] md:h-[16px]"
+                    />
+                  );
+
+                const formattedDate = format(new Date(day.date), "MMM d, yyyy");
+                const dayName = format(new Date(day.date), "EEEE");
+
                 return (
                   <div
-                    key={dayIdx}
-                    className="w-[14px] h-[14px] sm:w-[16px] sm:h-[16px]"
-                  />
-                );
-
-              const formattedDate = format(new Date(day.date), "MMM d, yyyy");
-              const dayName = format(new Date(day.date), "EEEE");
-
-              return (
-                <div
-                  key={`${weekIdx}-${dayIdx}`}
-                  className={`w-[14px] h-[14px] sm:w-[16px] sm:h-[16px] rounded-[2px] ${getColor(day.count)} cursor-pointer relative group`}
-                >
-                  {/* Compact tooltip */}
-                  <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1.5 bg-gray-900 dark:bg-gray-800 text-white text-[10px] rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-150 pointer-events-none whitespace-nowrap z-50 shadow-lg">
-                    <span className="font-semibold">{day.count}</span> commit
-                    {day.count !== 1 ? "s" : ""} ·{" "}
-                    {format(new Date(day.date), "MMM d")}
-                    <div className="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900 dark:border-t-gray-800" />
+                    key={`${weekIdx}-${dayIdx}`}
+                    className={`w-[10px] h-[10px] sm:w-[14px] sm:h-[14px] md:w-[16px] md:h-[16px] rounded-[2px] ${getColor(day.count)} cursor-pointer relative group`}
+                  >
+                    {/* Compact tooltip */}
+                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1.5 bg-gray-900 dark:bg-gray-800 text-white text-[10px] rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-150 pointer-events-none whitespace-nowrap z-50 shadow-lg">
+                      <span className="font-semibold">{day.count}</span> commit
+                      {day.count !== 1 ? "s" : ""} ·{" "}
+                      {format(new Date(day.date), "MMM d")}
+                      <div className="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900 dark:border-t-gray-800" />
+                    </div>
                   </div>
-                </div>
-              );
-            })}
-          </div>
-        ))}
+                );
+              })}
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Legend - Premium styled */}
@@ -184,7 +186,7 @@ export function ContributionHeatmap({ contributions }) {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
-        className="mb-8 p-6 bg-gradient-to-br from-blue-50/50 to-purple-50/50 dark:from-blue-900/10 dark:to-purple-900/10 rounded-2xl border border-blue-100 dark:border-blue-900/30"
+        className="mb-8 p-4 sm:p-6 bg-gradient-to-br from-blue-50/50 to-purple-50/50 dark:from-blue-900/10 dark:to-purple-900/10 rounded-2xl border border-blue-100 dark:border-blue-900/30"
       >
         <h4 className="text-sm font-bold text-gray-800 dark:text-gray-200 mb-4 flex items-center gap-2">
           <span className="text-lg">📈</span>

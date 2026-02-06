@@ -25,7 +25,10 @@ export function DeveloperWrapped({
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (shareMenuRef.current && !shareMenuRef.current.contains(event.target)) {
+      if (
+        shareMenuRef.current &&
+        !shareMenuRef.current.contains(event.target)
+      ) {
         setShowShareMenu(false);
       }
     };
@@ -53,24 +56,32 @@ export function DeveloperWrapped({
 
   const totalCommits = contributions?.totalCommits || 0;
   const totalRepos = repositories?.length || 0;
-  const totalStars = repositories?.reduce((sum, r) => sum + (r.stars || 0), 0) || 0;
+  const totalStars =
+    repositories?.reduce((sum, r) => sum + (r.stars || 0), 0) || 0;
   const currentStreak = contributions?.currentStreak || 0;
   const longestStreak = contributions?.longestStreak || 0;
 
   // Find actual peak month
-  const sortedMonths = [...(contributions?.commitsByMonth || [])].sort((a, b) => b.count - a.count);
+  const sortedMonths = [...(contributions?.commitsByMonth || [])].sort(
+    (a, b) => b.count - a.count,
+  );
   const peakMonthData = sortedMonths[0];
   const peakMonthLabel = peakMonthData
-    ? new Date(peakMonthData.month + "-01").toLocaleDateString("en-US", { month: "long", year: "numeric" })
+    ? new Date(peakMonthData.month + "-01").toLocaleDateString("en-US", {
+        month: "long",
+        year: "numeric",
+      })
     : "N/A";
   const peakCommits = peakMonthData?.count || 0;
 
-  const topLanguages = repositories
-    ?.reduce((langs, repo) => {
-      if (repo.language && !langs.includes(repo.language)) langs.push(repo.language);
-      return langs;
-    }, [])
-    .slice(0, 5) || [];
+  const topLanguages =
+    repositories
+      ?.reduce((langs, repo) => {
+        if (repo.language && !langs.includes(repo.language))
+          langs.push(repo.language);
+        return langs;
+      }, [])
+      .slice(0, 5) || [];
 
   const slides = [
     {
@@ -78,7 +89,7 @@ export function DeveloperWrapped({
       gradient: "from-blue-600 via-purple-600 to-pink-600",
       content: (
         <div className="space-y-4 w-full max-w-sm mx-auto">
-          <div className="text-5xl sm:text-6xl font-black text-center text-white">
+          <div className="text-4xl sm:text-6xl font-black text-center text-white">
             {totalCommits.toLocaleString()}
           </div>
           <div className="text-lg text-center text-white/90 font-medium">
@@ -97,7 +108,9 @@ export function DeveloperWrapped({
               <div className="text-[10px] text-white/70">Stars</div>
             </div>
             <div className="bg-white/15 rounded-xl p-3 text-center">
-              <div className="text-xl font-bold text-white">{longestStreak}</div>
+              <div className="text-xl font-bold text-white">
+                {longestStreak}
+              </div>
               <div className="text-[10px] text-white/70">Best Streak</div>
             </div>
           </div>
@@ -109,11 +122,13 @@ export function DeveloperWrapped({
       gradient: "from-orange-500 via-red-500 to-pink-600",
       content: (
         <div className="space-y-4 w-full max-w-sm mx-auto text-center">
-          <div className="text-4xl sm:text-5xl font-black text-white">
+          <div className="text-3xl sm:text-5xl font-black text-white">
             {peakMonthLabel}
           </div>
-          <div className="text-sm text-white/80">was your most productive month</div>
-          <div className="text-5xl font-black text-white mt-2">
+          <div className="text-sm text-white/80">
+            was your most productive month
+          </div>
+          <div className="text-4xl sm:text-5xl font-black text-white mt-2">
             {peakCommits} 🔥
           </div>
           <div className="text-sm text-white/70">commits that month</div>
@@ -139,7 +154,9 @@ export function DeveloperWrapped({
                 </span>
               ))
             ) : (
-              <span className="text-white/70 text-sm">No languages detected</span>
+              <span className="text-white/70 text-sm">
+                No languages detected
+              </span>
             )}
           </div>
           <div className="text-sm text-white/80 mt-4">
@@ -165,15 +182,21 @@ export function DeveloperWrapped({
                 <div className="text-[10px] text-white/70">Commits</div>
               </div>
               <div>
-                <div className="text-2xl font-bold text-white">{longestStreak}</div>
+                <div className="text-2xl font-bold text-white">
+                  {longestStreak}
+                </div>
                 <div className="text-[10px] text-white/70">Best Streak</div>
               </div>
               <div>
-                <div className="text-2xl font-bold text-white">{totalRepos}</div>
+                <div className="text-2xl font-bold text-white">
+                  {totalRepos}
+                </div>
                 <div className="text-[10px] text-white/70">Repositories</div>
               </div>
               <div>
-                <div className="text-2xl font-bold text-white">{totalStars}</div>
+                <div className="text-2xl font-bold text-white">
+                  {totalStars}
+                </div>
                 <div className="text-[10px] text-white/70">Stars</div>
               </div>
             </div>
@@ -187,7 +210,8 @@ export function DeveloperWrapped({
   ];
 
   const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % slides.length);
-  const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
+  const prevSlide = () =>
+    setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
 
   const handleShare = (platform) => {
     const url = `${window.location.origin}/github/${username}`;
@@ -195,10 +219,16 @@ export function DeveloperWrapped({
 
     switch (platform) {
       case "twitter":
-        window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text + url)}`, "_blank");
+        window.open(
+          `https://twitter.com/intent/tweet?text=${encodeURIComponent(text + url)}`,
+          "_blank",
+        );
         break;
       case "linkedin":
-        window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`, "_blank");
+        window.open(
+          `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`,
+          "_blank",
+        );
         break;
       case "copy":
         navigator.clipboard.writeText(url);
@@ -207,7 +237,11 @@ export function DeveloperWrapped({
         break;
       default:
         if (navigator.share) {
-          navigator.share({ title: `My ${displayYear} Developer Wrapped`, text, url });
+          navigator.share({
+            title: `My ${displayYear} Developer Wrapped`,
+            text,
+            url,
+          });
         }
     }
     setShowShareMenu(false);
@@ -215,12 +249,14 @@ export function DeveloperWrapped({
 
   return (
     <div
-      className="relative overflow-hidden rounded-[24px] text-white"
+      className="relative overflow-hidden rounded-2xl sm:rounded-[24px] text-white"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
       {/* Dynamic gradient background */}
-      <div className={`absolute inset-0 bg-gradient-to-br ${slides[currentSlide].gradient} transition-all duration-700`} />
+      <div
+        className={`absolute inset-0 bg-gradient-to-br ${slides[currentSlide].gradient} transition-all duration-700`}
+      />
 
       {/* Subtle background decoration */}
       <div className="absolute inset-0 opacity-10">
@@ -306,29 +342,38 @@ export function DeveloperWrapped({
                     className="w-full flex items-center gap-2.5 px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors text-gray-900 dark:text-gray-100"
                   >
                     {copied ? (
-                      <><Check className="w-4 h-4 text-green-600" /><span className="text-xs">Copied!</span></>
+                      <>
+                        <Check className="w-4 h-4 text-green-600" />
+                        <span className="text-xs">Copied!</span>
+                      </>
                     ) : (
-                      <><Copy className="w-4 h-4" /><span className="text-xs">Copy Link</span></>
+                      <>
+                        <Copy className="w-4 h-4" />
+                        <span className="text-xs">Copy Link</span>
+                      </>
                     )}
                   </button>
                   <button
                     onClick={() => handleShare("twitter")}
                     className="w-full flex items-center gap-2.5 px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors text-gray-900 dark:text-gray-100"
                   >
-                    <Twitter className="w-4 h-4" /><span className="text-xs">Twitter</span>
+                    <Twitter className="w-4 h-4" />
+                    <span className="text-xs">Twitter</span>
                   </button>
                   <button
                     onClick={() => handleShare("linkedin")}
                     className="w-full flex items-center gap-2.5 px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors text-gray-900 dark:text-gray-100"
                   >
-                    <Linkedin className="w-4 h-4" /><span className="text-xs">LinkedIn</span>
+                    <Linkedin className="w-4 h-4" />
+                    <span className="text-xs">LinkedIn</span>
                   </button>
                   {typeof navigator !== "undefined" && navigator.share && (
                     <button
                       onClick={() => handleShare("native")}
                       className="w-full flex items-center gap-2.5 px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors text-gray-900 dark:text-gray-100"
                     >
-                      <Share2 className="w-4 h-4" /><span className="text-xs">More</span>
+                      <Share2 className="w-4 h-4" />
+                      <span className="text-xs">More</span>
                     </button>
                   )}
                 </div>
