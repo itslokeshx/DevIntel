@@ -122,6 +122,103 @@ export function ContributionHeatmap({ contributions }) {
                 <span>More</span>
             </div>
 
+            {/* Activity Intensity Timeline */}
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 }}
+                className="mb-6"
+            >
+                <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">📈 Activity Intensity</h4>
+                <div className="h-24 relative">
+                    {/* Calculate weekly aggregates */}
+                    {(() => {
+                        const weeklyData = [];
+                        for (let w = 0; w < Math.min(weeks.length, 52); w++) {
+                            const weekCommits = weeks[w].reduce((sum, day) => sum + (day.count || 0), 0);
+                            weeklyData.push({ week: w, commits: weekCommits });
+                        }
+
+                        const maxCommits = Math.max(...weeklyData.map(d => d.commits), 1);
+                        const peakWeek = weeklyData.reduce((max, d) => d.commits > max.commits ? d : max, weeklyData[0]);
+
+                        return (
+                            <svg className="w-full h-full" viewBox={`0 0 ${weeklyData.length * 8} 100`} preserveAspectRatio="none">
+                                {/* Gradient definition */}
+                                <defs>
+                                    <linearGradient id="activityGradient" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.8" />
+                                        <stop offset="100%" stopColor="#8b5cf6" stopOpacity="0.1" />
+                                    </linearGradient>
+                                </defs>
+
+                                {/* Area fill */}
+                                <motion.path
+                                    d={`
+                                        M 0 100
+                                        ${weeklyData.map((d, i) => {
+                                        const x = i * 8;
+                                        const y = 100 - (d.commits / maxCommits) * 80;
+                                        return `L ${x} ${y}`;
+                                    }).join(' ')}
+                                        L ${weeklyData.length * 8} 100
+                                        Z
+                                    `}
+                                    fill="url(#activityGradient)"
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    transition={{ duration: 1, delay: 0.6 }}
+                                />
+
+                                {/* Line stroke */}
+                                <motion.path
+                                    d={`
+                                        M 0 ${100 - (weeklyData[0].commits / maxCommits) * 80}
+                                        ${weeklyData.slice(1).map((d, i) => {
+                                        const x = (i + 1) * 8;
+                                        const y = 100 - (d.commits / maxCommits) * 80;
+                                        return `L ${x} ${y}`;
+                                    }).join(' ')}
+                                    `}
+                                    stroke="#3b82f6"
+                                    strokeWidth="2"
+                                    fill="none"
+                                    initial={{ pathLength: 0 }}
+                                    animate={{ pathLength: 1 }}
+                                    transition={{ duration: 1.5, delay: 0.7, ease: "easeOut" }}
+                                />
+
+                                {/* Peak marker */}
+                                {peakWeek && peakWeek.commits > 0 && (
+                                    <motion.g
+                                        initial={{ scale: 0 }}
+                                        animate={{ scale: 1 }}
+                                        transition={{ delay: 1.2, type: "spring", stiffness: 200 }}
+                                    >
+                                        <circle
+                                            cx={peakWeek.week * 8}
+                                            cy={100 - (peakWeek.commits / maxCommits) * 80}
+                                            r="3"
+                                            fill="#f59e0b"
+                                            stroke="#fff"
+                                            strokeWidth="1"
+                                        />
+                                    </motion.g>
+                                )}
+                            </svg>
+                        );
+                    })()}
+                </div>
+                <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 mt-2">
+                    <span>52 weeks ago</span>
+                    <span className="flex items-center gap-1">
+                        <div className="w-2 h-2 rounded-full bg-amber-500" />
+                        Peak week
+                    </span>
+                    <span>Today</span>
+                </div>
+            </motion.div>
+
             {/* Stats row */}
             <div className="grid grid-cols-3 gap-4 pt-6 border-t border-gray-200 dark:border-gray-800">
                 <div>
