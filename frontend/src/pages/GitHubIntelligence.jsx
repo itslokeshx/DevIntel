@@ -20,7 +20,7 @@ import { TechStackDNA } from "../components/github/TechStackDNA";
 import { YearlyBreakdown } from "../components/github/YearlyBreakdown";
 import { DeveloperWrapped } from "../components/github/DeveloperWrapped";
 import { RepositoryShowcase } from "../components/github/RepositoryShowcase";
-import { GrowthOpportunities } from "../components/github/GrowthOpportunities";
+import { DeveloperSignature } from "../components/github/DeveloperSignature";
 import { LoadingSkeleton } from "../components/common/LoadingSkeleton";
 import { AllRepositories } from "../components/github/AllRepositories";
 import { DeveloperAnalysis } from "../components/github/DeveloperAnalysis";
@@ -400,17 +400,18 @@ export default function GitHubIntelligence() {
           />
         </motion.div>
 
-        {/* ═══ GROWTH OPPORTUNITIES ═══ */}
+        {/* ═══ DEVELOPER SIGNATURE ═══ */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.7 }}
           className="mb-20"
         >
-          <GrowthOpportunities
-            growthOps={data.insights?.growthOps}
+          <DeveloperSignature
             metrics={data.metrics}
+            contributions={data.contributions}
             repositories={data.repositories}
+            username={username}
           />
         </motion.div>
       </div>
