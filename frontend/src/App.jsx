@@ -7,7 +7,7 @@ import { FocusIndicator } from './components/a11y/FocusIndicator';
 import './styles/globals.css';
 
 // Lazy load pages
-const Home = lazy(() => import('./pages/Home'));
+const Home = lazy(() => import('./pages/Home').then(module => ({ default: module.Home })));
 const GitHubIntelligence = lazy(() => import('./pages/GitHubIntelligence'));
 const GitHubComparison = lazy(() => import('./pages/GitHubComparison'));
 const LeetCodeSkills = lazy(() => import('./pages/LeetCodeSkills'));
