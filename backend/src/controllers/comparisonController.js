@@ -91,7 +91,26 @@ exports.compareUsers = async (req, res) => {
         }
 
         // Generate comparison metrics
+        console.log('📊 Generating comparison metrics...');
+        console.log('UserA data:', {
+            username: userAData.username,
+            repos: userAData.repositories?.length,
+            commits: userAData.contributions?.totalCommits,
+            hasMetrics: !!userAData.metrics
+        });
+        console.log('UserB data:', {
+            username: userBData.username,
+            repos: userBData.repositories?.length,
+            commits: userBData.contributions?.totalCommits,
+            hasMetrics: !!userBData.metrics
+        });
+
         const comparison = generateComparisonMetrics(userAData, userBData);
+        console.log('✅ Comparison metrics generated:', {
+            devScore: comparison.devScore,
+            totalCommits: comparison.totalCommits,
+            totalStars: comparison.totalStars
+        });
 
         // Generate enhanced AI comparative analysis
         const detailedComparison = await generateComparisonInsights(userAData, userBData, comparison);

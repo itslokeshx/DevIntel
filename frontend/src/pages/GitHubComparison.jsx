@@ -17,7 +17,7 @@ export default function GitHubComparison() {
     const handleCompare = async (newUserA = null, newUserB = null) => {
         const usernameA = newUserA || userA.trim();
         const usernameB = newUserB || userB.trim();
-        
+
         if (!usernameA || !usernameB) {
             setError('Both usernames are required');
             return;
@@ -30,6 +30,9 @@ export default function GitHubComparison() {
             setShowNewCompare(false);
 
             const response = await comparisonAPI.compare(usernameA, usernameB);
+            console.log('📊 Comparison API Response:', response);
+            console.log('📊 Response Data:', response.data);
+            console.log('📊 Comparison Metrics:', response.data?.comparison);
             setData(response.data || response);
             setUserA(usernameA);
             setUserB(usernameB);
@@ -170,9 +173,9 @@ export default function GitHubComparison() {
                                 <div className="inline-flex items-center gap-2 px-6 py-3 bg-white dark:bg-gray-900 rounded-full shadow-lg">
                                     <span className="text-2xl">🏆</span>
                                     <span className="font-semibold text-gray-900 dark:text-gray-100">
-                                        {data.comparison?.winner === 'tie' ? 'BOTH LEGENDARY' : 
-                                         data.comparison?.winner ? `Winner: ${data.comparison.winner === 'A' ? userA : userB}` : 
-                                         'Both are valuable developers'}
+                                        {data.comparison?.winner === 'tie' ? 'BOTH LEGENDARY' :
+                                            data.comparison?.winner ? `Winner: ${data.comparison.winner === 'A' ? userA : userB}` :
+                                                'Both are valuable developers'}
                                     </span>
                                 </div>
                             </div>
@@ -257,7 +260,7 @@ export default function GitHubComparison() {
                                             )}
                                         </div>
                                     </div>
-                                    
+
                                     <div className="text-center border-l border-r border-gray-200 dark:border-gray-800 px-4">
                                         <h4 className="font-semibold text-yellow-400 mb-3 text-base">Shared</h4>
                                         <div className="flex flex-wrap gap-1.5 justify-center min-h-[80px]">
@@ -275,7 +278,7 @@ export default function GitHubComparison() {
                                             <span className="font-semibold">{data.comparison.techStack.overlapPercentage || 0}%</span> overlap
                                         </p>
                                     </div>
-                                    
+
                                     <div className="text-center">
                                         <h4 className="font-semibold text-purple-400 mb-3 text-base">Only {userB}</h4>
                                         <div className="flex flex-wrap gap-1.5 justify-center min-h-[80px]">
@@ -293,7 +296,7 @@ export default function GitHubComparison() {
                                 </div>
                             </div>
                         )}
-                        
+
                         {/* Additional Comparison Metrics */}
                         {data.comparison && (
                             <div className="p-8 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800">
@@ -345,7 +348,7 @@ function ProfileCard({ profile, username, comparison, side, color }) {
         stars: comparison?.totalStars?.userB || comparison?.metrics?.totalStars?.userB || 0,
         commits: comparison?.totalCommits?.userB || comparison?.metrics?.totalCommits?.userB || 0,
     };
-    
+
     // Fallback to profile data if metrics are zero
     if (userMetrics.repos === 0 && profile?.publicRepos) {
         userMetrics.repos = profile.publicRepos;
@@ -357,8 +360,8 @@ function ProfileCard({ profile, username, comparison, side, color }) {
         userMetrics.commits = profile.contributions.totalCommits || 0;
     }
 
-    const colorClasses = color === 'blue' 
-        ? 'border-blue-500 bg-blue-50/50 dark:bg-blue-900/10' 
+    const colorClasses = color === 'blue'
+        ? 'border-blue-500 bg-blue-50/50 dark:bg-blue-900/10'
         : 'border-purple-500 bg-purple-50/50 dark:bg-purple-900/10';
 
     return (
