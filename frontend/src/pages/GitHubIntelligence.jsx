@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import CountUp from 'react-countup';
-import { ArrowLeft, RefreshCw, Link as LinkIcon, Star, GitFork, Code2, TrendingUp, Calendar, Sparkles, Target, Building2 } from 'lucide-react';
+import { ArrowLeft, RefreshCw, Link as LinkIcon, Star, GitFork, Code2, TrendingUp, Calendar, Sparkles, Target, Building2, Users } from 'lucide-react';
 import { githubAPI } from '../services/api';
 import useStore from '../store';
 import { ContributionHeatmap } from '../components/github/ContributionHeatmap';
@@ -33,7 +33,7 @@ export default function GitHubIntelligence() {
             const data = response.data || response;
             setLocalData(data);
             useStore.getState().setProfile(data);
-            
+
             // Start streaming AI verdict
             if (data) {
                 streamAIVerdict(username, data);
@@ -102,54 +102,127 @@ export default function GitHubIntelligence() {
             </div>
 
             <div className="max-w-6xl mx-auto px-6 py-12">
-                {/* Hero Section: THE IDENTITY */}
+                {/* Hero Section: THE IDENTITY - PREMIUM DESIGN */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5 }}
                     className="mb-16"
                 >
-                    <div className="p-12 bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-950 rounded-2xl border border-gray-200 dark:border-gray-800">
-                        <div className="flex items-start gap-8">
-                            <div className="relative">
-                                {/* Animated gradient ring */}
-                                <motion.div 
-                                    className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 opacity-20"
+                    <div className="relative p-12 bg-gradient-to-br from-gray-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-950 dark:to-blue-950 rounded-3xl border border-gray-200 dark:border-gray-800 overflow-hidden">
+                        {/* Animated mesh gradient background */}
+                        <div className="absolute inset-0 opacity-30 pointer-events-none">
+                            <motion.div
+                                className="absolute inset-0 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20"
+                                animate={{
+                                    backgroundPosition: ['0% 50%', '100% 50%', '0% 50%']
+                                }}
+                                transition={{
+                                    duration: 10,
+                                    repeat: Infinity,
+                                    ease: "linear"
+                                }}
+                                style={{ backgroundSize: '200% 200%' }}
+                            />
+                        </div>
+
+                        <div className="relative flex items-start gap-8">
+                            {/* Avatar with pulsing glow ring - PREMIUM */}
+                            <motion.div
+                                className="relative"
+                                initial={{ scale: 0 }}
+                                animate={{ scale: 1 }}
+                                transition={{ type: "spring", bounce: 0.5, delay: 0.1 }}
+                            >
+                                {/* Pulsing glow effect */}
+                                <motion.div
+                                    className="absolute -inset-4 rounded-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 opacity-20 blur-xl"
+                                    animate={{
+                                        scale: [1, 1.1, 1],
+                                        opacity: [0.2, 0.3, 0.2]
+                                    }}
+                                    transition={{
+                                        duration: 3,
+                                        repeat: Infinity,
+                                        ease: "easeInOut"
+                                    }}
+                                />
+                                {/* Rotating ring */}
+                                <motion.div
+                                    className="absolute -inset-2 rounded-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 opacity-30"
                                     animate={{ rotate: 360 }}
                                     transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
                                 />
                                 <img
                                     src={data.profile?.avatarUrl}
                                     alt={username}
-                                    className="relative w-40 h-40 rounded-full border-4 border-blue-500/10"
+                                    className="relative w-48 h-48 rounded-full border-4 border-white dark:border-gray-900 shadow-2xl"
                                 />
-                            </div>
+                            </motion.div>
+
+                            {/* Profile info with stagger animation - PREMIUM */}
                             <div className="flex-1">
-                                <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+                                <motion.h1
+                                    className="text-6xl font-bold text-gray-900 dark:text-gray-100 mb-3 tracking-tight"
+                                    initial={{ opacity: 0, x: -20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{ delay: 0.2 }}
+                                >
                                     {data.profile?.name || username}
-                                </h1>
-                                <p className="text-xl text-gray-600 dark:text-gray-400 mb-4">
+                                </motion.h1>
+                                <motion.p
+                                    className="text-2xl text-gray-600 dark:text-gray-400 mb-6"
+                                    initial={{ opacity: 0, x: -20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{ delay: 0.3 }}
+                                >
                                     @{username}
-                                </p>
-                                <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-full text-sm font-semibold mb-4">
-                                    <Building2 className="w-4 h-4" />
+                                </motion.p>
+
+                                {/* Archetype badge with gradient - PREMIUM */}
+                                <motion.div
+                                    className="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full text-lg font-bold shadow-lg mb-6"
+                                    initial={{ opacity: 0, scale: 0.8 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    transition={{ delay: 0.4, type: "spring", bounce: 0.5 }}
+                                    whileHover={{ scale: 1.05 }}
+                                >
+                                    <Building2 className="w-5 h-5" />
                                     {data.metrics?.primaryTechIdentity || 'Full-Stack Developer'}
-                                </div>
+                                </motion.div>
+
                                 {data.profile?.bio && (
-                                    <p className="text-lg text-gray-600 dark:text-gray-300 italic mb-4">
+                                    <motion.p
+                                        className="text-xl text-gray-700 dark:text-gray-300 italic max-w-2xl mb-6 leading-relaxed"
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        transition={{ delay: 0.5 }}
+                                    >
                                         "{data.profile.bio}"
-                                    </p>
+                                    </motion.p>
                                 )}
-                                <div className="flex items-center gap-6 text-sm text-gray-600 dark:text-gray-400">
-                                    <span>{data.profile?.followers || 0} followers</span>
-                                    <span>{data.profile?.following || 0} following</span>
+
+                                <motion.div
+                                    className="flex items-center gap-6 text-sm text-gray-600 dark:text-gray-400"
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    transition={{ delay: 0.6 }}
+                                >
+                                    <span className="flex items-center gap-2">
+                                        <Users className="w-4 h-4" />
+                                        <strong>{data.profile?.followers || 0}</strong> followers
+                                    </span>
+                                    <span className="flex items-center gap-2">
+                                        <strong>{data.profile?.following || 0}</strong> following
+                                    </span>
                                     {data.profile?.createdAt && (
-                                        <span className="flex items-center gap-1">
+                                        <span className="flex items-center gap-2">
                                             <Calendar className="w-4 h-4" />
-                                            Joined {new Date(data.profile.createdAt).getFullYear()} · Active for {Math.floor((Date.now() - new Date(data.profile.createdAt).getTime()) / (1000 * 60 * 60 * 24 * 365))} year{Math.floor((Date.now() - new Date(data.profile.createdAt).getTime()) / (1000 * 60 * 60 * 24 * 365)) !== 1 ? 's' : ''}
+                                            Joined {new Date(data.profile.createdAt).getFullYear()} ·
+                                            <strong>{Math.floor((Date.now() - new Date(data.profile.createdAt).getTime()) / (1000 * 60 * 60 * 24 * 365))}</strong> year{Math.floor((Date.now() - new Date(data.profile.createdAt).getTime()) / (1000 * 60 * 60 * 24 * 365)) !== 1 ? 's' : ''} active
                                         </span>
                                     )}
-                                </div>
+                                </motion.div>
                             </div>
                         </div>
                     </div>
@@ -277,7 +350,7 @@ export default function GitHubIntelligence() {
                                     </div>
                                 ))}
                                 {repos.length > 3 && (
-                                    <button 
+                                    <button
                                         onClick={() => setShowAllRepos(true)}
                                         className="w-full py-3 text-center text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 font-semibold transition-colors"
                                     >
@@ -309,7 +382,7 @@ export default function GitHubIntelligence() {
                         transition={{ duration: 0.5, delay: 0.5 }}
                         className="mb-16"
                     >
-                        <DeveloperAnalysis 
+                        <DeveloperAnalysis
                             metrics={data.metrics}
                             contributions={data.contributions}
                             repositories={data.repositories}
@@ -324,7 +397,7 @@ export default function GitHubIntelligence() {
                     transition={{ duration: 0.5, delay: 0.6 }}
                     className="mb-16"
                 >
-                    <DeveloperWrapped 
+                    <DeveloperWrapped
                         wrappedData={data.wrappedData}
                         contributions={data.contributions}
                         repositories={data.repositories}
@@ -371,12 +444,12 @@ export default function GitHubIntelligence() {
                     </SectionCard>
                 </motion.div>
             </div>
-            
+
             {/* All Repositories Modal */}
             {showAllRepos && (
-                <AllRepositories 
-                    repositories={repos} 
-                    onClose={() => setShowAllRepos(false)} 
+                <AllRepositories
+                    repositories={repos}
+                    onClose={() => setShowAllRepos(false)}
                 />
             )}
         </div>

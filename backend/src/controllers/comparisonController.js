@@ -4,6 +4,7 @@ const ComparisonCache = require('../models/ComparisonCache');
 const { analyzeGitHubUser } = require('../services/github/analyzer');
 const { generateGitHubInsights, generateComparisonInsights } = require('../services/ai/insights');
 const { generateContent } = require('../services/ai/groq');
+const cache = require('../services/cache/kv');
 
 // Helper to get or analyze user data
 async function ensureUserData(username) {

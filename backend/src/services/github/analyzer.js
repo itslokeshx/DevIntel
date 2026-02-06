@@ -39,15 +39,15 @@ async function analyzeGitHubUser(username) {
 
     // Analyze ALL repositories (with batching to avoid rate limits)
     console.log(`📦 Analyzing ${ownRepos.length} repositories...`);
-    
+
     // Process repositories in batches to avoid overwhelming the API
     const batchSize = 10;
     const repositories = [];
-    
+
     for (let i = 0; i < ownRepos.length; i += batchSize) {
         const batch = ownRepos.slice(i, i + batchSize);
-        console.log(`   Processing batch ${Math.floor(i/batchSize) + 1}/${Math.ceil(ownRepos.length/batchSize)}...`);
-        
+        console.log(`   Processing batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(ownRepos.length / batchSize)}...`);
+
         const batchResults = await Promise.all(
             batch.map(async (repo) => {
                 try {
@@ -73,21 +73,21 @@ async function analyzeGitHubUser(username) {
                 }
             })
         );
-        
+
         repositories.push(...batchResults);
-        
+
         // Small delay between batches to avoid rate limiting
         if (i + batchSize < ownRepos.length) {
             await new Promise(resolve => setTimeout(resolve, 200));
         }
     }
-    
+
     const totalCommits = repositories.reduce((sum, r) => sum + (r.commitCount || 0), 0);
     console.log(`✅ Analyzed ${repositories.length} repositories, total commits: ${totalCommits}`);
 
     // Fetch contribution calendar (if available)
     const contributionCalendar = await getContributionCalendar(username);
-    
+
     // Calculate contribution metrics
     const contributions = calculateContributions(repositories, contributionCalendar);
 
@@ -204,22 +204,22 @@ function calculateContributions(repositories, contributionCalendar = null) {
     console.log('   Calendar data available:', contributionCalendar ? 'Yes' : 'No');
     console.log('   Calendar days count:', contributionCalendar?.days?.length || 0);
     console.log('   Calendar total:', contributionCalendar?.totalContributions || 0);
-    
+
     // Calculate repository-based commits first (always do this as fallback)
     const repoCommits = repositories.reduce((sum, r) => sum + (r.commitCount || 0), 0);
     console.log('   Total commits from repos:', repoCommits);
-    
+
     // Use real calendar data if available and has meaningful data
     if (contributionCalendar && contributionCalendar.days && contributionCalendar.days.length > 0 && contributionCalendar.totalContributions > 0) {
         const totalCommits = contributionCalendar.totalContributions;
         console.log('✅ Using calendar data, total commits:', totalCommits);
-        
+
         // Group by month from calendar data
         const commitsByMonth = groupCommitsByMonthFromCalendar(contributionCalendar.days);
-        
+
         // Calculate streaks from calendar
         const { longestStreak, currentStreak } = calculateStreaksFromCalendar(contributionCalendar.days);
-        
+
         return {
             totalCommits,
             commitsByMonth,
@@ -232,16 +232,16 @@ function calculateContributions(repositories, contributionCalendar = null) {
             calendar: contributionCalendar.days // Include raw calendar data
         };
     }
-    
+
     // Fallback to repository-based calculation (CRITICAL: Use repo data when calendar fails)
     console.log('⚠️ Using repository-based calculation as fallback');
     console.log('   Repository commit sum:', repoCommits);
-    
+
     const totalCommits = repoCommits;
     const commitsByMonth = groupCommitsByMonth(repositories);
     const { longestStreak, currentStreak } = calculateStreaks(repositories);
-    
-    const oldestRepo = repositories.length > 0 
+
+    const oldestRepo = repositories.length > 0
         ? repositories.reduce((oldest, r) => r.createdAt < oldest ? r.createdAt : oldest, repositories[0].createdAt)
         : new Date();
     const daysSinceStart = daysBetween(oldestRepo, new Date());
@@ -267,13 +267,13 @@ function calculateContributions(repositories, contributionCalendar = null) {
 
 function groupCommitsByMonthFromCalendar(days) {
     const monthMap = new Map();
-    
+
     days.forEach(day => {
         const date = new Date(day.date);
         const month = date.toISOString().substring(0, 7); // YYYY-MM
         monthMap.set(month, (monthMap.get(month) || 0) + day.count);
     });
-    
+
     return Array.from(monthMap.entries())
         .map(([month, count]) => ({ month, count }))
         .sort((a, b) => b.count - a.count);
@@ -283,27 +283,27 @@ function calculateStreaksFromCalendar(days) {
     if (!days || days.length === 0) {
         return { longestStreak: 0, currentStreak: 0 };
     }
-    
+
     // Sort by date (newest first)
     const sortedDays = [...days].sort((a, b) => new Date(b.date) - new Date(a.date));
-    
+
     let currentStreak = 0;
     let longestStreak = 0;
     let tempStreak = 0;
-    
+
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    
+
     // Calculate current streak (consecutive days from today backwards)
     let expectedDate = today;
     for (let i = 0; i < sortedDays.length; i++) {
         const day = sortedDays[i];
         const dayDate = new Date(day.date);
         dayDate.setHours(0, 0, 0, 0);
-        
+
         // Check if this day matches expected date (consecutive)
         const daysDiff = Math.floor((expectedDate.getTime() - dayDate.getTime()) / (1000 * 60 * 60 * 24));
-        
+
         if (daysDiff === 0 && day.count > 0) {
             // This is the expected day and has commits
             currentStreak++;
@@ -317,14 +317,14 @@ function calculateStreaksFromCalendar(days) {
             continue;
         }
     }
-    
+
     // Calculate longest streak across all days
     tempStreak = 0;
     let prevDate = null;
     sortedDays.forEach(day => {
         const dayDate = new Date(day.date);
         dayDate.setHours(0, 0, 0, 0);
-        
+
         if (day.count > 0) {
             if (prevDate && Math.floor((prevDate.getTime() - dayDate.getTime()) / (1000 * 60 * 60 * 24)) === 1) {
                 // Consecutive day
@@ -338,19 +338,19 @@ function calculateStreaksFromCalendar(days) {
         }
         prevDate = dayDate;
     });
-    
+
     return { longestStreak, currentStreak };
 }
 
 function findBusiestDay(days) {
     const dayOfWeek = [0, 0, 0, 0, 0, 0, 0]; // Sunday to Saturday
     const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    
+
     days.forEach(day => {
         const date = new Date(day.date);
         dayOfWeek[date.getDay()] += day.count;
     });
-    
+
     const maxIndex = dayOfWeek.indexOf(Math.max(...dayOfWeek));
     return dayNames[maxIndex];
 }
@@ -439,27 +439,27 @@ function calculateStreaks(repositories) {
     let currentStreak = 0;
     let longestStreak = 0;
     let tempStreak = 0;
-    
+
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    
+
     // Calculate current streak (days since last commit)
     const mostRecentRepo = sortedRepos[0];
     const daysSinceLastCommit = daysBetween(mostRecentRepo.pushedAt, today);
-    
+
     if (daysSinceLastCommit <= 1) {
         // Had commits today or yesterday, start counting
         currentStreak = 1;
         let expectedDate = new Date(mostRecentRepo.pushedAt);
         expectedDate.setHours(0, 0, 0, 0);
         expectedDate.setDate(expectedDate.getDate() - 1);
-        
+
         // Count backwards for consecutive days
         for (let i = 1; i < sortedRepos.length; i++) {
             const repo = sortedRepos[i];
             const repoDate = new Date(repo.pushedAt);
             repoDate.setHours(0, 0, 0, 0);
-            
+
             const daysDiff = Math.floor((expectedDate.getTime() - repoDate.getTime()) / (1000 * 60 * 60 * 24));
             if (daysDiff === 0) {
                 currentStreak++;
@@ -469,13 +469,13 @@ function calculateStreaks(repositories) {
             }
         }
     }
-    
+
     // Calculate longest streak
     let prevDate = null;
     sortedRepos.forEach(repo => {
         const repoDate = new Date(repo.pushedAt);
         repoDate.setHours(0, 0, 0, 0);
-        
+
         if (prevDate) {
             const daysDiff = Math.floor((prevDate.getTime() - repoDate.getTime()) / (1000 * 60 * 60 * 24));
             if (daysDiff <= 1) {
@@ -486,7 +486,7 @@ function calculateStreaks(repositories) {
         } else {
             tempStreak = 1;
         }
-        
+
         longestStreak = Math.max(longestStreak, tempStreak);
         prevDate = repoDate;
     });
@@ -558,7 +558,7 @@ function calculateLanguageStats(repositories, skills) {
     // Count repos per language
     const langCount = {};
     const langBytes = {};
-    
+
     repositories.forEach(repo => {
         if (repo.language) {
             langCount[repo.language] = (langCount[repo.language] || 0) + 1;
@@ -569,27 +569,35 @@ function calculateLanguageStats(repositories, skills) {
             });
         }
     });
-    
+
     const totalRepos = repositories.length;
     const totalBytes = Object.values(langBytes).reduce((sum, bytes) => sum + bytes, 0);
-    
-    // Create stats array
-    const stats = Object.entries(langCount).map(([name, count]) => {
-        const bytes = langBytes[name] || 0;
-        const percentage = totalRepos > 0 ? (count / totalRepos) * 100 : 0;
-        const bytesPercentage = totalBytes > 0 ? (bytes / totalBytes) * 100 : 0;
-        
-        return {
-            name,
-            count,
-            repos: count,
-            percentage: Math.round(percentage * 10) / 10,
-            bytes,
-            bytesPercentage: Math.round(bytesPercentage * 10) / 10,
-            totalBytes: bytes
-        };
-    });
-    
+
+    // Create stats array with validation
+    const stats = Object.entries(langCount)
+        .map(([name, count]) => {
+            const bytes = langBytes[name] || 0;
+            const percentage = totalRepos > 0 ? (count / totalRepos) * 100 : 0;
+            const bytesPercentage = totalBytes > 0 ? (bytes / totalBytes) * 100 : 0;
+
+            // Validate to prevent NaN
+            if (isNaN(percentage) || isNaN(bytesPercentage) || !name) {
+                console.warn(`[Language Stats] Invalid entry detected:`, { name, count, bytes, percentage, bytesPercentage });
+                return null;
+            }
+
+            return {
+                name,
+                count,
+                repos: count,
+                percentage: Math.round(percentage * 10) / 10,
+                bytes,
+                bytesPercentage: Math.round(bytesPercentage * 10) / 10,
+                totalBytes: bytes
+            };
+        })
+        .filter(stat => stat !== null); // Remove invalid entries
+
     return stats.sort((a, b) => b.count - a.count);
 }
 
@@ -600,7 +608,7 @@ function calculateYearlyBreakdown(repositories, contributions) {
     const yearMap = {};
     const currentYear = new Date().getFullYear();
     const startYear = currentYear === 2026 ? 2025 : Math.max(currentYear - 3, 2020); // Show last 3-4 years
-    
+
     // Initialize years from startYear to currentYear
     for (let year = startYear; year <= currentYear; year++) {
         yearMap[year] = {
@@ -613,7 +621,7 @@ function calculateYearlyBreakdown(repositories, contributions) {
             monthlyCommits: []
         };
     }
-    
+
     // Aggregate repository data by creation year
     repositories.forEach(repo => {
         const year = repo.createdAt.getFullYear();
@@ -622,17 +630,17 @@ function calculateYearlyBreakdown(repositories, contributions) {
             yearMap[year].stars += (repo.stars || 0);
         }
     });
-    
+
     // Use real calendar data for commits if available
     if (contributions?.calendar && contributions.calendar.length > 0) {
         contributions.calendar.forEach(day => {
             const date = new Date(day.date);
             const year = date.getFullYear();
             const month = date.getMonth() + 1;
-            
+
             if (yearMap[year]) {
                 yearMap[year].commits += day.count;
-                
+
                 // Track monthly commits
                 const monthKey = `${year}-${String(month).padStart(2, '0')}`;
                 const existingMonth = yearMap[year].monthlyCommits.find(m => m.month === monthKey);
@@ -655,7 +663,7 @@ function calculateYearlyBreakdown(repositories, contributions) {
             }
         });
     }
-    
+
     // Find top language per year
     Object.keys(yearMap).forEach(year => {
         const yearRepos = repositories.filter(r => {
@@ -671,7 +679,7 @@ function calculateYearlyBreakdown(repositories, contributions) {
         const topLang = Object.entries(langCount).sort((a, b) => b[1] - a[1])[0];
         yearMap[year].topLanguage = topLang ? topLang[0] : null;
     });
-    
+
     // Calculate streaks per year from calendar data
     if (contributions?.calendar) {
         Object.keys(yearMap).forEach(year => {
@@ -679,15 +687,15 @@ function calculateYearlyBreakdown(repositories, contributions) {
                 const dYear = new Date(d.date).getFullYear();
                 return dYear === parseInt(year);
             });
-            
+
             if (yearDays.length > 0) {
                 let streak = 0;
                 let maxStreak = 0;
                 let tempStreak = 0;
-                
+
                 // Sort by date descending
                 const sortedDays = [...yearDays].sort((a, b) => new Date(b.date) - new Date(a.date));
-                
+
                 sortedDays.forEach(day => {
                     if (day.count > 0) {
                         tempStreak++;
@@ -699,17 +707,17 @@ function calculateYearlyBreakdown(repositories, contributions) {
                         tempStreak = 0;
                     }
                 });
-                
+
                 yearMap[year].streak = maxStreak;
             }
         });
     }
-    
+
     // Sort monthly commits
     Object.keys(yearMap).forEach(year => {
         yearMap[year].monthlyCommits.sort((a, b) => a.month.localeCompare(b.month));
     });
-    
+
     return Object.values(yearMap).sort((a, b) => b.year - a.year);
 }
 

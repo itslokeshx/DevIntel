@@ -3,6 +3,7 @@ const GitHubData = require('../models/GitHubData');
 const { analyzeGitHubUser } = require('../services/github/analyzer');
 const { generateGitHubInsights } = require('../services/ai/insights');
 const { streamContent } = require('../services/ai/groq');
+const cache = require('../services/cache/kv');
 const { getAIVerdictPrompt } = require('../services/ai/prompts');
 
 /**
@@ -11,55 +12,80 @@ const { getAIVerdictPrompt } = require('../services/ai/prompts');
  */
 async function analyzeUser(req, res, next) {
     try {
-        const { githubUsername } = req.body;
+        const username = req.body.githubUsername?.toLowerCase().trim();
 
-        if (!githubUsername) {
-            const error = new Error('GitHub username is required');
-            error.statusCode = 400;
-            throw error;
+        if (!username) {
+            return res.status(400).json({
+                success: false,
+                error: { message: 'GitHub username is required' }
+            });
         }
 
-        const username = githubUsername.toLowerCase().trim();
+        console.log(`[Analyze Request] ${username}`);
 
-        // Always analyze fresh - no caching
-        console.log(`Analyzing GitHub user: ${username}`);
-        const analyzedData = await analyzeGitHubUser(username);
+        // Check GitHub data cache (5 min TTL)
+        const githubCacheKey = cache.constructor.githubProfileKey(username);
+        let analyzedData = await cache.get(githubCacheKey);
+        let githubCached = false;
 
-        // Generate AI insights with gamification
-        console.log('Generating enhanced AI insights...');
-        const aiInsights = await generateGitHubInsights({
-            ...analyzedData,
-            username
-        });
+        if (!analyzedData) {
+            console.log(`[GitHub] Fetching fresh data for ${username}`);
+            analyzedData = await analyzeGitHubUser(username);
+            await cache.set(githubCacheKey, analyzedData, 300); // 5 min
+        } else {
+            githubCached = true;
+            console.log(`[GitHub] Using cached data for ${username}`);
+        }
 
-        console.log('✅ Analysis complete with gamification!');
-        console.log(`   Level: ${aiInsights.gamification.level.level}`);
-        console.log(`   Achievements: ${aiInsights.gamification.achievements.length}`);
+        // Check AI insights cache (24 hr TTL)
+        const aiCacheKey = cache.constructor.aiInsightsKey(username);
+        let aiInsights = await cache.get(aiCacheKey);
+        let aiCached = false;
 
-        // Return fresh data directly (no database storage)
+        if (!aiInsights) {
+            console.log(`[AI] Generating fresh insights for ${username}`);
+            aiInsights = await generateGitHubInsights({
+                ...analyzedData,
+                username
+            });
+            await cache.set(aiCacheKey, aiInsights, 86400); // 24 hr
+        } else {
+            aiCached = true;
+            console.log(`[AI] Using cached insights for ${username}`);
+        }
+
+        // Log cache statistics
+        const stats = cache.getStats();
+        console.log(`[Cache Stats] Hits: ${stats.hits}, Misses: ${stats.misses}, Hit Rate: ${stats.hitRate}`);
+
+        // Return data with cache info
         const responseData = {
             username,
             profile: analyzedData.profile,
             repositories: analyzedData.repositories,
             contributions: analyzedData.contributions,
             metrics: analyzedData.metrics,
-            yearlyBreakdown: analyzedData.yearlyBreakdown, // Include yearly breakdown
+            yearlyBreakdown: analyzedData.yearlyBreakdown,
             aiInsights
         };
 
-        console.log('📊 Final data summary:');
+        console.log('📊 Data summary:');
         console.log(`   Repos: ${responseData.repositories.length}`);
         console.log(`   Total commits: ${responseData.contributions.totalCommits}`);
         console.log(`   Current streak: ${responseData.contributions.currentStreak}`);
-        console.log(`   Calendar days: ${responseData.contributions.calendar?.length || 0}`);
 
         res.json({
             success: true,
             data: responseData,
-            cached: false
+            cache: {
+                github: githubCached,
+                ai: aiCached,
+                stats: stats
+            }
         });
 
     } catch (error) {
+        console.error('Error analyzing GitHub user:', error);
         next(error);
     }
 }
