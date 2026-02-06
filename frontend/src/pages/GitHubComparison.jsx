@@ -143,7 +143,7 @@ export default function GitHubComparison() {
     <div className="min-h-screen bg-white dark:bg-gray-950">
       {/* Enhanced Sticky Sub-header */}
       <div className="sticky top-[72px] z-50 bg-white/95 dark:bg-gray-950/95 backdrop-blur-2xl border-b-2 border-gray-200/80 dark:border-gray-800/80 shadow-lg shadow-gray-200/50 dark:shadow-gray-900/50">
-        <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <button
             onClick={() => navigate("/compare")}
             className="flex items-center gap-2 px-3 py-2 text-sm font-semibold text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all duration-200"
@@ -175,7 +175,7 @@ export default function GitHubComparison() {
         </div>
       </div>
 
-      <div className="max-w-5xl mx-auto px-6 py-12 space-y-8">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-12 space-y-6 sm:space-y-8">
         {/* 1. Overall Scores with Circular Progress */}
         <AnimatePresence>
           {revealStage >= 1 && (
@@ -184,7 +184,7 @@ export default function GitHubComparison() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
             >
-              <div className="relative overflow-hidden bg-gradient-to-br from-white via-blue-50/30 to-purple-50/30 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900 rounded-[24px] border border-gray-200/80 dark:border-gray-800 shadow-lg p-10 md:p-14">
+              <div className="relative overflow-hidden bg-gradient-to-br from-white via-blue-50/30 to-purple-50/30 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900 rounded-[24px] border border-gray-200/80 dark:border-gray-800 shadow-lg p-5 sm:p-10 md:p-14">
                 {/* Premium background pattern */}
                 <div className="absolute inset-0 opacity-[0.015] dark:opacity-[0.03]">
                   <div
@@ -205,7 +205,7 @@ export default function GitHubComparison() {
                         BATTLE RESULTS
                       </span>
                     </div>
-                    <h3 className="text-4xl md:text-5xl font-black text-gray-900 dark:text-white mb-2">
+                    <h3 className="text-2xl sm:text-4xl md:text-5xl font-black text-gray-900 dark:text-white mb-2">
                       Overall Score
                     </h3>
                     <p className="text-sm text-gray-500 dark:text-gray-400">
@@ -213,7 +213,7 @@ export default function GitHubComparison() {
                     </p>
                   </div>
 
-                  <div className="flex items-center justify-center gap-12 md:gap-24">
+                  <div className="flex items-center justify-center gap-6 sm:gap-12 md:gap-24">
                     <ScoreRing
                       username={userA?.username}
                       score={scoreA.total}
@@ -255,7 +255,7 @@ export default function GitHubComparison() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
             >
-              <div className="bg-white dark:bg-gray-900 rounded-[24px] border border-gray-200 dark:border-gray-800 shadow-lg p-8 md:p-10">
+              <div className="bg-white dark:bg-gray-900 rounded-[24px] border border-gray-200 dark:border-gray-800 shadow-lg p-5 sm:p-8 md:p-10">
                 <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-8 gap-4">
                   <div>
                     <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-1">
@@ -309,9 +309,9 @@ export default function GitHubComparison() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
             >
-              <div className="bg-white dark:bg-gray-900 rounded-[24px] border border-gray-200 dark:border-gray-800 shadow-lg p-8 md:p-10">
-                <div className="text-center mb-10">
-                  <h3 className="text-3xl font-black text-gray-900 dark:text-white mb-2">
+              <div className="bg-white dark:bg-gray-900 rounded-[24px] border border-gray-200 dark:border-gray-800 shadow-lg p-5 sm:p-8 md:p-10">
+                <div className="text-center mb-6 sm:mb-10">
+                  <h3 className="text-xl sm:text-3xl font-black text-gray-900 dark:text-white mb-2">
                     Head-to-Head Metrics
                   </h3>
                   <p className="text-sm text-gray-500 dark:text-gray-400">
@@ -457,7 +457,7 @@ export default function GitHubComparison() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 }}
               >
-                <div className="bg-white dark:bg-gray-900 rounded-[24px] border border-gray-200 dark:border-gray-800 shadow-lg p-8 md:p-10">
+                <div className="bg-white dark:bg-gray-900 rounded-[24px] border border-gray-200 dark:border-gray-800 shadow-lg p-5 sm:p-8 md:p-10">
                   {/* Header */}
                   <div className="flex items-center gap-3 mb-6">
                     <span className="text-3xl">🧑‍⚖️</span>
@@ -519,7 +519,7 @@ export default function GitHubComparison() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
             >
-              <div className="bg-gradient-to-br from-white via-indigo-50/20 to-purple-50/20 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900 rounded-[24px] border border-gray-200 dark:border-gray-800 shadow-lg p-8 md:p-10">
+              <div className="bg-gradient-to-br from-white via-indigo-50/20 to-purple-50/20 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900 rounded-[24px] border border-gray-200 dark:border-gray-800 shadow-lg p-5 sm:p-8 md:p-10">
                 <div className="text-center mb-10">
                   <h3 className="text-3xl font-black text-gray-900 dark:text-white mb-2">
                     Technology Overlap
@@ -529,13 +529,13 @@ export default function GitHubComparison() {
                   </p>
                 </div>
 
-                <div className="flex items-center justify-center gap-0 relative h-64">
+                <div className="flex items-center justify-center gap-0 relative h-48 sm:h-64">
                   {/* Circle A - Enhanced */}
                   <motion.div
                     initial={{ x: 60, opacity: 0, scale: 0.8 }}
                     animate={{ x: 0, opacity: 1, scale: 1 }}
                     transition={{ duration: 0.8, type: "spring" }}
-                    className="w-52 h-52 rounded-full bg-gradient-to-br from-blue-500/20 via-blue-400/15 to-blue-500/20 dark:from-blue-500/15 dark:via-blue-400/10 dark:to-blue-500/15 border-2 border-blue-400/40 dark:border-blue-400/30 flex items-center justify-center relative -mr-16 shadow-xl shadow-blue-500/10"
+                    className="w-36 h-36 sm:w-52 sm:h-52 rounded-full bg-gradient-to-br from-blue-500/20 via-blue-400/15 to-blue-500/20 dark:from-blue-500/15 dark:via-blue-400/10 dark:to-blue-500/15 border-2 border-blue-400/40 dark:border-blue-400/30 flex items-center justify-center relative -mr-10 sm:-mr-16 shadow-xl shadow-blue-500/10"
                   >
                     <div className="text-center pr-10">
                       <div className="text-4xl font-black text-blue-500 mb-1">
@@ -567,7 +567,7 @@ export default function GitHubComparison() {
                     initial={{ x: -60, opacity: 0, scale: 0.8 }}
                     animate={{ x: 0, opacity: 1, scale: 1 }}
                     transition={{ duration: 0.8, type: "spring" }}
-                    className="w-52 h-52 rounded-full bg-gradient-to-bl from-purple-500/20 via-purple-400/15 to-purple-500/20 dark:from-purple-500/15 dark:via-purple-400/10 dark:to-purple-500/15 border-2 border-purple-400/40 dark:border-purple-400/30 flex items-center justify-center relative -ml-16 shadow-xl shadow-purple-500/10"
+                    className="w-36 h-36 sm:w-52 sm:h-52 rounded-full bg-gradient-to-bl from-purple-500/20 via-purple-400/15 to-purple-500/20 dark:from-purple-500/15 dark:via-purple-400/10 dark:to-purple-500/15 border-2 border-purple-400/40 dark:border-purple-400/30 flex items-center justify-center relative -ml-10 sm:-ml-16 shadow-xl shadow-purple-500/10"
                   >
                     <div className="text-center pl-10">
                       <div className="text-4xl font-black text-purple-500 mb-1">
@@ -581,7 +581,7 @@ export default function GitHubComparison() {
                 </div>
 
                 {/* Enhanced Labels */}
-                <div className="flex justify-between items-center mt-8 px-12">
+                <div className="flex justify-between items-center mt-6 sm:mt-8 px-4 sm:px-12">
                   <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-100 dark:bg-blue-900/30">
                     <span className="w-3 h-3 bg-blue-500 rounded-full" />
                     <span className="text-sm font-bold text-blue-700 dark:text-blue-300">
@@ -627,7 +627,7 @@ export default function GitHubComparison() {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               transition={{ type: "spring", bounce: 0.4, delay: 0.2 }}
             >
-              <div className="relative overflow-hidden bg-gradient-to-br from-amber-50 via-yellow-50/50 to-orange-50 dark:from-yellow-900/10 dark:via-amber-900/5 dark:to-orange-900/10 rounded-[24px] border-2 border-yellow-200/60 dark:border-yellow-800/40 shadow-xl p-8 md:p-10">
+              <div className="relative overflow-hidden bg-gradient-to-br from-amber-50 via-yellow-50/50 to-orange-50 dark:from-yellow-900/10 dark:via-amber-900/5 dark:to-orange-900/10 rounded-[24px] border-2 border-yellow-200/60 dark:border-yellow-800/40 shadow-xl p-5 sm:p-8 md:p-10">
                 {/* Subtle shine effect */}
                 <motion.div
                   animate={{

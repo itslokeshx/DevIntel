@@ -73,7 +73,7 @@ export default function GitHubIntelligence() {
   if (!data) {
     return (
       <div className="min-h-screen bg-white dark:bg-gray-950">
-        <div className="max-w-content mx-auto px-6 lg:px-12 py-12">
+        <div className="max-w-content mx-auto px-4 sm:px-6 lg:px-12 py-12">
           <div className="text-center mb-12">
             <motion.div
               initial={{ scale: 0 }}
@@ -105,7 +105,7 @@ export default function GitHubIntelligence() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
       {/* ═══ PROFILE HEADER BAR ═══ */}
       <div className="sticky top-[72px] z-[999] h-16 glass border-b border-black/[0.06] dark:border-white/[0.06]">
-        <div className="max-w-content mx-auto px-6 lg:px-12 h-full flex items-center justify-between">
+        <div className="max-w-content mx-auto px-4 sm:px-6 lg:px-12 h-full flex items-center justify-between">
           <button
             onClick={() => navigate("/")}
             className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all"
@@ -139,8 +139,8 @@ export default function GitHubIntelligence() {
           transition={{ duration: 0.5 }}
           className="mb-8"
         >
-          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-12 shadow-md">
-            <div className="flex flex-col md:flex-row items-start gap-10">
+          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-12 shadow-md">
+            <div className="flex flex-col md:flex-row items-center md:items-start gap-6 sm:gap-10">
               {/* Avatar with glow */}
               <motion.div
                 className="relative flex-shrink-0"
@@ -152,7 +152,7 @@ export default function GitHubIntelligence() {
                 <img
                   src={data.profile?.avatarUrl}
                   alt={username}
-                  className="relative w-40 h-40 rounded-full border-4 border-white dark:border-gray-900 shadow-xl"
+                  className="relative w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40 rounded-full border-4 border-white dark:border-gray-900 shadow-xl"
                 />
                 {/* Archetype Badge */}
                 <motion.div
@@ -166,12 +166,12 @@ export default function GitHubIntelligence() {
               </motion.div>
 
               {/* Info */}
-              <div className="flex-1 min-w-0">
+              <div className="flex-1 min-w-0 text-center md:text-left">
                 <motion.h1
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.1 }}
-                  className="text-display-md md:text-[48px] font-extrabold text-gray-900 dark:text-white leading-[1.1] mb-2"
+                  className="text-2xl sm:text-3xl md:text-[48px] font-extrabold text-gray-900 dark:text-white leading-[1.1] mb-2"
                 >
                   {data.profile?.name || username}
                 </motion.h1>
@@ -200,7 +200,7 @@ export default function GitHubIntelligence() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.4 }}
-                  className="flex flex-wrap items-center gap-8 text-[15px] text-gray-500 dark:text-gray-400"
+                  className="flex flex-wrap items-center justify-center md:justify-start gap-4 sm:gap-8 text-sm sm:text-[15px] text-gray-500 dark:text-gray-400"
                 >
                   {data.profile?.location && (
                     <span className="flex items-center gap-2">
@@ -235,11 +235,13 @@ export default function GitHubIntelligence() {
           className="mb-12"
         >
           <div
-            className="relative bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-blue-950/30 dark:via-purple-950/30 dark:to-pink-950/30 border-2 border-blue-200 dark:border-blue-800/50 rounded-[20px] p-10 overflow-hidden animate-gradient"
+            className="relative bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-blue-950/30 dark:via-purple-950/30 dark:to-pink-950/30 border-2 border-blue-200 dark:border-blue-800/50 rounded-[20px] p-5 sm:p-8 md:p-10 overflow-hidden animate-gradient"
             style={{ backgroundSize: "200% 200%" }}
           >
-            <div className="flex items-start gap-5">
-              <span className="text-5xl flex-shrink-0 mt-1">🧬</span>
+            <div className="flex items-start gap-3 sm:gap-5">
+              <span className="text-3xl sm:text-5xl flex-shrink-0 mt-1">
+                🧬
+              </span>
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-2">
                   <h2 className="text-heading-md font-bold text-gray-900 dark:text-white">
@@ -270,7 +272,7 @@ export default function GitHubIntelligence() {
 
         {/* ═══ STAT CARDS GRID ═══ */}
         <div className="mb-12">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
             <StatCard
               icon="📁"
               gradient="from-blue-500 to-blue-600"
@@ -435,27 +437,27 @@ function StatCard({ icon, gradient, value, label, percentile, delay }) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay, duration: 0.5 }}
       whileHover={{ y: -4 }}
-      className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-8 hover:shadow-lg transition-all duration-300 group"
+      className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-5 sm:p-8 hover:shadow-lg transition-all duration-300 group"
     >
       {/* Icon badge */}
       <div
-        className={`w-14 h-14 rounded-xl bg-gradient-to-br ${gradient} flex items-center justify-center mb-5 shadow-md`}
+        className={`w-10 h-10 sm:w-14 sm:h-14 rounded-xl bg-gradient-to-br ${gradient} flex items-center justify-center mb-3 sm:mb-5 shadow-md`}
       >
-        <span className="text-[28px]">{icon}</span>
+        <span className="text-xl sm:text-[28px]">{icon}</span>
       </div>
 
       {/* Big number */}
-      <div className="text-[52px] lg:text-[44px] xl:text-[52px] font-extrabold text-gray-900 dark:text-white leading-none mb-2">
+      <div className="text-3xl sm:text-[44px] xl:text-[52px] font-extrabold text-gray-900 dark:text-white leading-none mb-2">
         <CountUp end={value} duration={1.5} separator="," />
       </div>
 
       {/* Label */}
-      <div className="text-[15px] font-medium text-gray-500 dark:text-gray-400 mb-5">
+      <div className="text-xs sm:text-[15px] font-medium text-gray-500 dark:text-gray-400 mb-3 sm:mb-5">
         {label}
       </div>
 
       {/* Divider */}
-      <div className="h-px bg-gray-200 dark:bg-gray-800 mb-5" />
+      <div className="h-px bg-gray-200 dark:bg-gray-800 mb-3 sm:mb-5" />
 
       {/* Percentile */}
       <div className="flex items-center justify-between text-sm mb-3">

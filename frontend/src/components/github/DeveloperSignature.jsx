@@ -28,7 +28,7 @@ export function DeveloperSignature({
   );
 
   return (
-    <div className="bg-gradient-to-br from-white via-purple-50/30 to-blue-50/30 dark:from-gray-900 dark:via-purple-900/10 dark:to-blue-900/10 rounded-[24px] border border-purple-200 dark:border-purple-800/30 p-8 md:p-10 shadow-xl">
+    <div className="bg-gradient-to-br from-white via-purple-50/30 to-blue-50/30 dark:from-gray-900 dark:via-purple-900/10 dark:to-blue-900/10 rounded-[24px] border border-purple-200 dark:border-purple-800/30 p-5 sm:p-8 md:p-10 shadow-xl">
       {/* Header */}
       <div className="mb-10">
         <div className="flex items-center gap-3 mb-3">
@@ -54,7 +54,7 @@ export function DeveloperSignature({
         className="relative mb-8 overflow-hidden rounded-3xl"
       >
         <div
-          className={`p-8 bg-gradient-to-br ${archetypeData.gradient} relative`}
+          className={`p-5 sm:p-8 bg-gradient-to-br ${archetypeData.gradient} relative`}
         >
           <div className="absolute top-0 right-0 w-48 h-48 bg-white/10 rounded-full -mr-24 -mt-24 blur-3xl" />
           <div className="absolute bottom-0 left-0 w-40 h-40 bg-white/10 rounded-full -ml-20 -mb-20 blur-3xl" />
@@ -65,27 +65,29 @@ export function DeveloperSignature({
                 <div className="text-sm font-semibold text-white/80 mb-2 uppercase tracking-wider">
                   Developer Archetype
                 </div>
-                <div className="text-4xl md:text-5xl font-extrabold mb-3 flex items-center gap-3">
+                <div className="text-2xl sm:text-4xl md:text-5xl font-extrabold mb-3 flex items-center gap-2 sm:gap-3">
                   <span>{archetypeData.emoji}</span>
                   <span>{archetypeData.title}</span>
                 </div>
-                <p className="text-lg text-white/90 max-w-2xl leading-relaxed">
+                <p className="text-sm sm:text-lg text-white/90 max-w-2xl leading-relaxed">
                   {archetypeData.description}
                 </p>
               </div>
             </div>
 
             {/* Stats row */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mt-6 sm:mt-8">
               {archetypeData.stats.map((stat, idx) => (
                 <motion.div
                   key={idx}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3 + idx * 0.1 }}
-                  className="bg-white/15 backdrop-blur-sm rounded-xl p-4 border border-white/20"
+                  className="bg-white/15 backdrop-blur-sm rounded-xl p-3 sm:p-4 border border-white/20"
                 >
-                  <div className="text-3xl font-extrabold">{stat.value}</div>
+                  <div className="text-xl sm:text-3xl font-extrabold">
+                    {stat.value}
+                  </div>
                   <div className="text-xs text-white/80 mt-1">{stat.label}</div>
                 </motion.div>
               ))}

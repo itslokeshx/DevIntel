@@ -38,13 +38,13 @@ export function Home() {
       </div>
 
       {/* ═══ HERO SECTION ═══ */}
-      <section className="relative max-w-content mx-auto px-6 lg:px-12 pt-40 pb-30 text-center">
+      <section className="relative max-w-content mx-auto px-4 sm:px-6 lg:px-12 pt-20 sm:pt-32 md:pt-40 pb-16 sm:pb-30 text-center">
         {/* Headline */}
         <motion.h1
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="text-[56px] md:text-[72px] lg:text-[80px] font-extrabold text-gray-900 dark:text-gray-50 leading-[1.05] tracking-tight mb-6"
+          className="text-3xl sm:text-[48px] md:text-[64px] lg:text-[80px] font-extrabold text-gray-900 dark:text-gray-50 leading-[1.05] tracking-tight mb-4 sm:mb-6"
         >
           Decode Your <span className="gradient-text">Developer DNA</span>
         </motion.h1>
@@ -54,7 +54,7 @@ export function Home() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }}
-          className="text-lg md:text-[22px] text-gray-500 dark:text-gray-400 max-w-[700px] mx-auto leading-relaxed mb-16"
+          className="text-base sm:text-lg md:text-[22px] text-gray-500 dark:text-gray-400 max-w-[700px] mx-auto leading-relaxed mb-8 sm:mb-16 px-2"
         >
           Transform your GitHub activity into meaningful insights, growth
           patterns, and personalized recommendations.
@@ -82,7 +82,7 @@ export function Home() {
               onKeyDown={(e) => e.key === "Enter" && handleAnalyze()}
               placeholder="Enter GitHub username..."
               disabled={loading}
-              className="w-full h-[72px] pl-16 pr-[180px] text-lg bg-gray-50 dark:bg-gray-900 border-2 border-gray-200 dark:border-gray-700 rounded-2xl text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 focus:bg-white dark:focus:bg-gray-900 transition-all duration-200 disabled:opacity-60"
+              className="w-full h-14 sm:h-[72px] pl-12 sm:pl-16 pr-4 sm:pr-[180px] text-base sm:text-lg bg-gray-50 dark:bg-gray-900 border-2 border-gray-200 dark:border-gray-700 rounded-xl sm:rounded-2xl text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 focus:bg-white dark:focus:bg-gray-900 transition-all duration-200 disabled:opacity-60"
               aria-label="GitHub username"
             />
 
@@ -90,7 +90,7 @@ export function Home() {
             <button
               onClick={handleAnalyze}
               disabled={loading || !githubUsername.trim()}
-              className="absolute right-2 top-1/2 -translate-y-1/2 h-14 px-8 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold rounded-xl shadow-blue hover:shadow-blue-lg hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 transition-all duration-200 flex items-center gap-2"
+              className="absolute right-1.5 sm:right-2 top-1/2 -translate-y-1/2 h-10 sm:h-14 px-4 sm:px-8 bg-gradient-to-r from-blue-500 to-purple-600 text-white text-sm sm:text-base font-semibold rounded-lg sm:rounded-xl shadow-blue hover:shadow-blue-lg hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 transition-all duration-200 flex items-center gap-2"
             >
               {loading ? (
                 <>
@@ -142,8 +142,8 @@ export function Home() {
       </section>
 
       {/* ═══ FEATURE CARDS ═══ */}
-      <section className="max-w-content mx-auto px-6 lg:px-12 mb-20">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <section className="max-w-content mx-auto px-4 sm:px-6 lg:px-12 mb-20">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-8">
           <FeatureCard
             icon={<Zap className="w-9 h-9 text-white" />}
             gradient="from-blue-500 to-blue-600"
@@ -169,13 +169,13 @@ export function Home() {
       </section>
 
       {/* ═══ SOCIAL PROOF ═══ */}
-      <section className="max-w-[800px] mx-auto px-6 lg:px-12 mb-20">
+      <section className="max-w-[800px] mx-auto px-4 sm:px-6 lg:px-12 mb-20">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.6 }}
-          className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-950/30 dark:to-purple-950/30 rounded-3xl p-16 text-center"
+          className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-950/30 dark:to-purple-950/30 rounded-3xl p-8 sm:p-16 text-center"
         >
           {/* Avatar stack */}
           <div className="flex justify-center mb-4">
@@ -203,13 +203,13 @@ export function Home() {
       </section>
 
       {/* ═══ FINAL CTA ═══ */}
-      <section className="max-w-[1000px] mx-auto px-6 lg:px-12 mb-20">
+      <section className="max-w-[1000px] mx-auto px-4 sm:px-6 lg:px-12 mb-20">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.6 }}
-          className="relative bg-gradient-to-r from-blue-500 via-purple-600 to-pink-500 rounded-3xl p-16 text-center overflow-hidden animate-gradient"
+          className="relative bg-gradient-to-r from-blue-500 via-purple-600 to-pink-500 rounded-2xl sm:rounded-3xl p-8 sm:p-16 text-center overflow-hidden animate-gradient"
           style={{ backgroundSize: "200% 200%" }}
         >
           <h2 className="text-display-md text-white font-bold mb-4 drop-shadow-lg relative z-10">
@@ -241,7 +241,7 @@ function FeatureCard({ icon, gradient, title, description, delay }) {
       viewport={{ once: true, margin: "-50px" }}
       transition={{ duration: 0.5, delay }}
       whileHover={{ y: -8 }}
-      className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-[20px] p-12 text-center hover:shadow-2xl hover:border-blue-500 dark:hover:border-blue-400 transition-all duration-300 group"
+      className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-[20px] p-6 sm:p-12 text-center hover:shadow-2xl hover:border-blue-500 dark:hover:border-blue-400 transition-all duration-300 group"
     >
       {/* Icon container */}
       <div

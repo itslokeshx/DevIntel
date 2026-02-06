@@ -116,45 +116,33 @@ export function ContributionHeatmap({ contributions }) {
   const longestStreak = contributions?.longestStreak || 0;
 
   return (
-    <div className="bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-900/50 rounded-[24px] border border-gray-200 dark:border-gray-800 p-8 md:p-10 shadow-lg">
+    <div className="bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-900/50 rounded-[24px] border border-gray-200 dark:border-gray-800 p-4 sm:p-6 md:p-10 shadow-lg">
       <div className="flex items-center justify-end mb-4">
         <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
           {format(startDate, "MMM yyyy")} — {format(today, "MMM yyyy")}
         </div>
       </div>
 
-      {/* Month labels - accurately showing last 12 months */}
-      <div className="flex gap-1 mb-3 text-xs font-medium text-gray-600 dark:text-gray-400">
-        {monthLabels.map((m, idx) => (
-          <div key={`${m}-${idx}`} className="w-[calc(100%/12)] text-center">
-            {m}
-          </div>
-        ))}
-      </div>
-
       {/* Heatmap grid - Premium enhanced with smooth rendering */}
-      <div className="flex gap-[3px] mb-6 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-700">
+      <div className="flex gap-[3px] mb-6 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-700 justify-center">
         {weeks.map((week, weekIdx) => (
-          <motion.div
-            key={weekIdx}
-            className="flex flex-col gap-[3px]"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: weekIdx * 0.01, duration: 0.3 }}
-          >
+          <div key={weekIdx} className="flex flex-col gap-[3px]">
             {week.map((day, dayIdx) => {
               if (!day.date)
-                return <div key={dayIdx} className="w-[14px] h-[14px]" />;
+                return (
+                  <div
+                    key={dayIdx}
+                    className="w-[15px] h-[15px] sm:w-[16px] sm:h-[16px]"
+                  />
+                );
 
               const formattedDate = format(new Date(day.date), "MMM d, yyyy");
               const dayName = format(new Date(day.date), "EEEE");
 
               return (
-                <motion.div
+                <div
                   key={`${weekIdx}-${dayIdx}`}
-                  whileHover={{ scale: 1.5, zIndex: 10 }}
-                  className={`w-[14px] h-[14px] rounded-[3px] ${getColor(day.count)} cursor-pointer transition-all duration-200 relative group`}
-                  title={`${formattedDate} (${dayName})\n${day.count} commit${day.count !== 1 ? "s" : ""}`}
+                  className={`w-[15px] h-[15px] sm:w-[16px] sm:h-[16px] rounded-[3px] ${getColor(day.count)} cursor-pointer relative group`}
                 >
                   {/* Compact tooltip */}
                   <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1.5 bg-gray-900 dark:bg-gray-800 text-white text-[10px] rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-150 pointer-events-none whitespace-nowrap z-50 shadow-lg">
@@ -163,10 +151,10 @@ export function ContributionHeatmap({ contributions }) {
                     {format(new Date(day.date), "MMM d")}
                     <div className="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900 dark:border-t-gray-800" />
                   </div>
-                </motion.div>
+                </div>
               );
             })}
-          </motion.div>
+          </div>
         ))}
       </div>
 
@@ -345,14 +333,14 @@ export function ContributionHeatmap({ contributions }) {
       </motion.div>
 
       {/* Premium Stats Row with gradient cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
-          className="bg-gradient-to-br from-blue-50 to-blue-100/50 dark:from-blue-900/20 dark:to-blue-900/10 rounded-2xl p-6 border border-blue-200 dark:border-blue-800/30"
+          className="bg-gradient-to-br from-blue-50 to-blue-100/50 dark:from-blue-900/20 dark:to-blue-900/10 rounded-2xl p-4 sm:p-6 border border-blue-200 dark:border-blue-800/30"
         >
-          <div className="text-4xl md:text-5xl font-extrabold bg-gradient-to-br from-blue-600 to-blue-500 bg-clip-text text-transparent">
+          <div className="text-3xl sm:text-4xl md:text-5xl font-extrabold bg-gradient-to-br from-blue-600 to-blue-500 bg-clip-text text-transparent">
             {totalCommits.toLocaleString()}
           </div>
           <div className="text-sm font-semibold text-blue-700 dark:text-blue-400 mt-2">
@@ -364,9 +352,9 @@ export function ContributionHeatmap({ contributions }) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6 }}
-          className="bg-gradient-to-br from-green-50 to-emerald-100/50 dark:from-green-900/20 dark:to-emerald-900/10 rounded-2xl p-6 border border-green-200 dark:border-green-800/30"
+          className="bg-gradient-to-br from-green-50 to-emerald-100/50 dark:from-green-900/20 dark:to-emerald-900/10 rounded-2xl p-4 sm:p-6 border border-green-200 dark:border-green-800/30"
         >
-          <div className="text-4xl md:text-5xl font-extrabold bg-gradient-to-br from-green-600 to-emerald-500 bg-clip-text text-transparent">
+          <div className="text-3xl sm:text-4xl md:text-5xl font-extrabold bg-gradient-to-br from-green-600 to-emerald-500 bg-clip-text text-transparent">
             {currentStreak.toLocaleString()}
           </div>
           <div className="text-sm font-semibold text-green-700 dark:text-green-400 mt-2 flex items-center gap-1">
@@ -378,9 +366,9 @@ export function ContributionHeatmap({ contributions }) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.7 }}
-          className="bg-gradient-to-br from-purple-50 to-fuchsia-100/50 dark:from-purple-900/20 dark:to-fuchsia-900/10 rounded-2xl p-6 border border-purple-200 dark:border-purple-800/30"
+          className="bg-gradient-to-br from-purple-50 to-fuchsia-100/50 dark:from-purple-900/20 dark:to-fuchsia-900/10 rounded-2xl p-4 sm:p-6 border border-purple-200 dark:border-purple-800/30"
         >
-          <div className="text-4xl md:text-5xl font-extrabold bg-gradient-to-br from-purple-600 to-fuchsia-500 bg-clip-text text-transparent">
+          <div className="text-3xl sm:text-4xl md:text-5xl font-extrabold bg-gradient-to-br from-purple-600 to-fuchsia-500 bg-clip-text text-transparent">
             {longestStreak.toLocaleString()}
           </div>
           <div className="text-sm font-semibold text-purple-700 dark:text-purple-400 mt-2 flex items-center gap-1">
