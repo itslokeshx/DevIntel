@@ -65,18 +65,38 @@ export default function GitHubComparison() {
 
   if (!data) return null;
 
-  const { userA, userB, comparison, aiInsights } = data;
+  const { userA, userB, comparison } = data;
   const scoreA = calculateBattleScore(userA);
   const scoreB = calculateBattleScore(userB);
   const battleResult = determineBattleWinner(scoreA.total, scoreB.total);
   const aiComparison = comparison?.aiInsights || null;
-  const aiWinner = aiComparison?.winner || null;
+
+  // AI returns actual username as winner — map it back to "A"/"B"/"TIE"
+  const rawAiWinner = aiComparison?.winner || null;
+  const aiWinner = rawAiWinner
+    ? rawAiWinner === "A" || rawAiWinner === "B" || rawAiWinner === "TIE"
+      ? rawAiWinner
+      : rawAiWinner.toLowerCase() === userA?.username?.toLowerCase()
+        ? "A"
+        : rawAiWinner.toLowerCase() === userB?.username?.toLowerCase()
+          ? "B"
+          : "TIE"
+    : null;
   const aiWinnerName =
     aiWinner === "A"
       ? userA?.profile?.name || userA?.username
       : aiWinner === "B"
         ? userB?.profile?.name || userB?.username
         : "Tie";
+
+  // If no AI verdict exists, auto-advance to stage 2 so winner still shows
+  const hasAiVerdict = !!aiComparison?.verdict;
+  React.useEffect(() => {
+    if (revealStage === 1 && !hasAiVerdict) {
+      const timer = setTimeout(() => setRevealStage(2), 1500);
+      return () => clearTimeout(timer);
+    }
+  }, [revealStage, hasAiVerdict]);
 
   const repoCountA =
     comparison?.totalProjects?.userA ||
@@ -450,65 +470,64 @@ export default function GitHubComparison() {
 
         {/* 4. AI Verdict & Analysis */}
         <AnimatePresence>
-          {revealStage >= 1 &&
-            (aiComparison?.verdict || aiInsights?.comparison) && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
-              >
-                <div className="bg-white dark:bg-gray-900 rounded-[24px] border border-gray-200 dark:border-gray-800 shadow-lg p-5 sm:p-8 md:p-10">
-                  {/* Header */}
-                  <div className="flex items-center gap-3 mb-6">
-                    <span className="text-3xl">🧑‍⚖️</span>
-                    <div className="flex-1">
-                      <h3 className="text-2xl font-black text-gray-900 dark:text-white">
-                        AI Analysis
-                      </h3>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
-                        Powered by Llama
-                      </p>
-                    </div>
+          {revealStage >= 1 && aiComparison?.verdict && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+            >
+              <div className="bg-white dark:bg-gray-900 rounded-[24px] border border-gray-200 dark:border-gray-800 shadow-lg p-5 sm:p-8 md:p-10">
+                {/* Header */}
+                <div className="flex items-center gap-3 mb-6">
+                  <span className="text-3xl">🧑‍⚖️</span>
+                  <div className="flex-1">
+                    <h3 className="text-2xl font-black text-gray-900 dark:text-white">
+                      AI Analysis
+                    </h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      Powered by Llama
+                    </p>
                   </div>
+                </div>
 
-                  {/* AI Verdict Text */}
-                  <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-6 mb-6">
-                    <div className="text-gray-700 dark:text-gray-300 leading-relaxed text-[15px]">
-                      <StreamingAIVerdict
-                        text={aiComparison?.verdict || aiInsights?.comparison}
-                        onComplete={() =>
-                          setTimeout(() => setRevealStage(2), 500)
-                        }
-                      />
-                    </div>
+                {/* AI Verdict Text */}
+                <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-6 mb-6">
+                  <div className="text-gray-700 dark:text-gray-300 leading-relaxed text-[15px]">
+                    <StreamingAIVerdict
+                      text={aiComparison?.verdict}
+                      onComplete={() =>
+                        setTimeout(() => setRevealStage(2), 500)
+                      }
+                    />
                   </div>
+                </div>
 
-                  {/* Winner Declaration */}
-                  {aiComparison?.winner && (
-                    <div className="bg-gradient-to-r from-yellow-50 to-amber-50 dark:from-yellow-900/20 dark:to-amber-900/20 rounded-xl p-6 border border-yellow-200 dark:border-yellow-800/40">
-                      <div className="flex items-start gap-4">
-                        <div className="flex-shrink-0 w-10 h-10 rounded-full bg-yellow-500 flex items-center justify-center">
-                          <span className="text-white text-xl">🏆</span>
+                {/* Winner Declaration */}
+                {aiComparison?.winner && (
+                  <div className="bg-gradient-to-r from-yellow-50 to-amber-50 dark:from-yellow-900/20 dark:to-amber-900/20 rounded-xl p-6 border border-yellow-200 dark:border-yellow-800/40">
+                    <div className="flex items-start gap-4">
+                      <div className="flex-shrink-0 w-10 h-10 rounded-full bg-yellow-500 flex items-center justify-center">
+                        <span className="text-white text-xl">🏆</span>
+                      </div>
+                      <div className="flex-1">
+                        <div className="text-xs font-bold text-yellow-700 dark:text-yellow-400 uppercase tracking-wider mb-1">
+                          Winner
                         </div>
-                        <div className="flex-1">
-                          <div className="text-xs font-bold text-yellow-700 dark:text-yellow-400 uppercase tracking-wider mb-1">
-                            Winner
-                          </div>
-                          <div className="text-xl font-black text-gray-900 dark:text-white mb-2">
-                            {aiWinnerName}
-                          </div>
-                          {aiComparison?.winReason && (
-                            <p className="text-sm text-gray-600 dark:text-gray-400">
-                              {aiComparison.winReason}
-                            </p>
-                          )}
+                        <div className="text-xl font-black text-gray-900 dark:text-white mb-2">
+                          {aiWinnerName}
                         </div>
+                        {aiComparison?.winReason && (
+                          <p className="text-sm text-gray-600 dark:text-gray-400">
+                            {aiComparison.winReason}
+                          </p>
+                        )}
                       </div>
                     </div>
-                  )}
-                </div>
-              </motion.div>
-            )}
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          )}
         </AnimatePresence>
 
         {/* 5. Tech Stack Overlap */}
