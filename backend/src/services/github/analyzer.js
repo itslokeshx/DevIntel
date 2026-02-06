@@ -19,6 +19,7 @@ const {
     fetchRepoReadme
 } = require('./fetcher');
 const { getContributionCalendar } = require('./contributionCalendar');
+const { validateMetrics, validateYearBreakdown } = require('../../utils/dataValidator');
 
 /**
  * Analyze a GitHub user's complete profile
@@ -123,7 +124,8 @@ async function analyzeGitHubUser(username) {
     console.log(`   Total commits: ${contributions.totalCommits}`);
     console.log(`   Dev Score: ${devScore}/100`);
 
-    return {
+    const analysisResult = {
+        username,
         profile,
         repositories,
         contributions,
@@ -134,13 +136,28 @@ async function analyzeGitHubUser(username) {
             qualityScore,
             primaryTechIdentity,
             skills,
-            languageStats, // Add properly formatted language stats
+            languageStats,
             activityPattern,
             projectFocus,
             documentationHabits
         },
         yearlyBreakdown
     };
+
+    // Validate data before returning
+    const validation = validateMetrics(analysisResult);
+    if (!validation.valid) {
+        console.error('❌ Data validation failed:', validation.errors);
+        console.warn('⚠️ Returning sanitized data');
+    }
+
+    // Validate year breakdown
+    const yearValidation = validateYearBreakdown(yearlyBreakdown);
+    if (!yearValidation.valid) {
+        console.error('❌ Year breakdown validation failed:', yearValidation.errors);
+    }
+
+    return validation.sanitized;
 }
 
 /**
