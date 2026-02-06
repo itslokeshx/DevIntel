@@ -26,8 +26,8 @@ export function RepositoryShowcase({ repositories }) {
   const displayRepos = showAll ? rankedRepos : rankedRepos.slice(0, 6);
 
   return (
-    <div className="bg-white dark:bg-gray-900 rounded-[20px] border border-gray-200 dark:border-gray-800 p-10">
-      <div className="flex items-center justify-between mb-8">
+    <div className="bg-white dark:bg-gray-900 rounded-[20px] border border-gray-200 dark:border-gray-800 p-4 sm:p-6 md:p-10">
+      <div className="flex items-center justify-between mb-4 sm:mb-8">
         <h3 className="text-heading-lg font-bold text-gray-900 dark:text-white">
           🏆 Signature Projects
         </h3>
@@ -47,9 +47,9 @@ export function RepositoryShowcase({ repositories }) {
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: idx * 0.06 }}
             whileHover={{ x: 4 }}
-            className="group flex items-center justify-between bg-gray-50 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl px-6 py-4 transition-colors"
+            className="group flex items-center justify-between bg-gray-50 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl px-3 py-3 sm:px-6 sm:py-4 transition-colors"
           >
-            <div className="flex items-center gap-4 min-w-0">
+            <div className="flex items-center gap-2 sm:gap-4 min-w-0">
               {repo.language && (
                 <div
                   className="w-3 h-3 rounded-full flex-shrink-0"
@@ -68,7 +68,7 @@ export function RepositoryShowcase({ repositories }) {
               </div>
             </div>
 
-            <div className="flex items-center gap-4 flex-shrink-0 ml-4">
+            <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0 ml-2 sm:ml-4">
               {repo.stars > 0 && (
                 <span className="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400">
                   <Star className="w-3.5 h-3.5 fill-yellow-500 text-yellow-500" />
