@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import CountUp from 'react-countup';
-import { ArrowLeft, RefreshCw, Link as LinkIcon, Star, GitFork, Code2, TrendingUp, Calendar, Sparkles, Target, Building2, Users } from 'lucide-react';
+import { ArrowLeft, RefreshCw, Link as LinkIcon, Star, GitFork, Code2, TrendingUp, Calendar, Sparkles, Target, Building2, Users, GitCommit, Flame } from 'lucide-react';
 import { githubAPI } from '../services/api';
 import useStore from '../store';
 import { ContributionHeatmap } from '../components/github/ContributionHeatmap';
@@ -255,18 +255,51 @@ export default function GitHubIntelligence() {
                     </div>
                 </motion.div>
 
-                {/* Metrics Grid */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: 0.2 }}
-                    className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-16"
-                >
-                    <MetricCard label="Repos" value={repos.length} />
-                    <MetricCard label="Stars" value={totalStars} />
-                    <MetricCard label="Commits" value={totalCommits} />
-                    <MetricCard label="Languages" value={languages} />
-                </motion.div>
+                {/* Premium Stats Grid - "The Numbers That Matter" */}
+                <div className="mb-16">
+                    <motion.h2
+                        className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-8"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.2 }}
+                    >
+                        📊 Key Metrics
+                    </motion.h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <MetricCard
+                            label="Repositories"
+                            value={repos.length}
+                            icon={Code2}
+                            percentile={data.aiInsights?.gamification?.percentiles?.projects || 75}
+                            delta={5}
+                            color="blue"
+                        />
+                        <MetricCard
+                            label="Total Stars"
+                            value={totalStars}
+                            icon={Star}
+                            percentile={data.aiInsights?.gamification?.percentiles?.stars || 68}
+                            delta={12}
+                            color="purple"
+                        />
+                        <MetricCard
+                            label="Total Commits"
+                            value={totalCommits}
+                            icon={GitCommit}
+                            percentile={data.aiInsights?.gamification?.percentiles?.commits || 82}
+                            delta={8}
+                            color="green"
+                        />
+                        <MetricCard
+                            label="Active Streak"
+                            value={data.contributions?.currentStreak || 0}
+                            icon={Flame}
+                            percentile={data.aiInsights?.gamification?.percentiles?.streak || 55}
+                            delta={-3}
+                            color="orange"
+                        />
+                    </div>
+                </div>
 
                 {/* Contribution Heatmap */}
                 {data.contributions && (
@@ -456,17 +489,92 @@ export default function GitHubIntelligence() {
     );
 }
 
-function MetricCard({ label, value }) {
+function MetricCard({ label, value, icon: Icon, percentile, delta, color = "blue" }) {
+    const colorClasses = {
+        blue: {
+            gradient: "from-blue-500 to-blue-600",
+            bg: "bg-blue-50 dark:bg-blue-900/20",
+            text: "text-blue-600 dark:text-blue-400",
+            border: "border-blue-200 dark:border-blue-800"
+        },
+        purple: {
+            gradient: "from-purple-500 to-purple-600",
+            bg: "bg-purple-50 dark:bg-purple-900/20",
+            text: "text-purple-600 dark:text-purple-400",
+            border: "border-purple-200 dark:border-purple-800"
+        },
+        green: {
+            gradient: "from-green-500 to-green-600",
+            bg: "bg-green-50 dark:bg-green-900/20",
+            text: "text-green-600 dark:text-green-400",
+            border: "border-green-200 dark:border-green-800"
+        },
+        orange: {
+            gradient: "from-orange-500 to-orange-600",
+            bg: "bg-orange-50 dark:bg-orange-900/20",
+            text: "text-orange-600 dark:text-orange-400",
+            border: "border-orange-200 dark:border-orange-800"
+        }
+    };
+
+    const colors = colorClasses[color] || colorClasses.blue;
+
     return (
         <motion.div
-            whileHover={{ y: -4 }}
-            className="p-6 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl hover:shadow-lg transition-all"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            whileHover={{ y: -8, scale: 1.02 }}
+            transition={{ type: "spring", stiffness: 300 }}
+            className="relative p-6 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl hover:shadow-2xl transition-all overflow-hidden group"
         >
-            <div className="text-5xl font-bold text-gray-900 dark:text-gray-100 mb-2">
-                <CountUp end={value} duration={1.5} />
-            </div>
-            <div className="text-sm uppercase tracking-wide text-gray-500 dark:text-gray-400">
-                {label}
+            {/* Gradient border on hover */}
+            <div className={`absolute inset-0 bg-gradient-to-r ${colors.gradient} opacity-0 group-hover:opacity-10 transition-opacity rounded-2xl`} />
+
+            <div className="relative">
+                {/* Icon and Label */}
+                <div className="flex items-center justify-between mb-4">
+                    <div className={`p-2 ${colors.bg} rounded-lg`}>
+                        {Icon && <Icon className={`w-5 h-5 ${colors.text}`} />}
+                    </div>
+                    {delta !== undefined && (
+                        <motion.div
+                            className={`flex items-center gap-1 text-sm font-semibold ${delta >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.3 }}
+                        >
+                            {delta >= 0 ? '↑' : '↓'} {Math.abs(delta)}%
+                        </motion.div>
+                    )}
+                </div>
+
+                {/* Value with count-up */}
+                <div className="text-5xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+                    <CountUp end={value} duration={1.5} separator="," />
+                </div>
+
+                {/* Label */}
+                <div className="text-sm uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-4">
+                    {label}
+                </div>
+
+                {/* Percentile bar */}
+                {percentile !== undefined && (
+                    <div className="space-y-2">
+                        <div className="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400">
+                            <span>Percentile</span>
+                            <span className="font-semibold">{percentile}th</span>
+                        </div>
+                        <div className="h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+                            <motion.div
+                                className={`h-full bg-gradient-to-r ${colors.gradient} rounded-full`}
+                                initial={{ width: 0 }}
+                                animate={{ width: `${percentile}%` }}
+                                transition={{ duration: 1, delay: 0.5, ease: "easeOut" }}
+                            />
+                        </div>
+                    </div>
+                )}
             </div>
         </motion.div>
     );

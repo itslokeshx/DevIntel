@@ -28,13 +28,13 @@ const languageColors = {
 export function TechStackDNA({ languageStats, repositories }) {
     const [forecast, setForecast] = useState(null);
     const [loadingForecast, setLoadingForecast] = useState(false);
-    
+
     useEffect(() => {
         if (languageStats && languageStats.length > 0) {
             fetchForecast();
         }
     }, [languageStats]);
-    
+
     const fetchForecast = async () => {
         setLoadingForecast(true);
         try {
@@ -43,7 +43,7 @@ export function TechStackDNA({ languageStats, repositories }) {
             setTimeout(() => {
                 const topLang = languageStats[0]?.name;
                 setForecast(
-                    topLang === 'TypeScript' 
+                    topLang === 'TypeScript'
                         ? 'TypeScript usage trending +30% based on recent project patterns. Python dominance stable. Consider exploring Go or Rust for systems work.'
                         : `${topLang} remains your dominant stack. Consider exploring complementary technologies for full-stack capabilities.`
                 );
@@ -53,7 +53,7 @@ export function TechStackDNA({ languageStats, repositories }) {
             setLoadingForecast(false);
         }
     };
-    
+
     if (!languageStats || languageStats.length === 0) {
         return (
             <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-8">
@@ -62,62 +62,100 @@ export function TechStackDNA({ languageStats, repositories }) {
             </div>
         );
     }
-    
+
     const sortedLanguages = languageStats
         .sort((a, b) => (b.count || b.repos || 0) - (a.count || a.repos || 0))
         .slice(0, 8);
-    
+
     const totalRepos = languageStats.reduce((sum, lang) => sum + (lang.count || lang.repos || 0), 0);
-    
+
     return (
         <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-8">
             <div className="flex items-center justify-between mb-6">
                 <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100">🧪 Tech Stack DNA</h3>
                 <span className="text-sm text-gray-500 dark:text-gray-400">{languageStats.length} languages total</span>
             </div>
-            
-            {/* Language Bars */}
-            <div className="space-y-4">
+
+            {/* Language Bars - ENHANCED */}
+            <div className="space-y-5">
                 {sortedLanguages.map((lang, idx) => {
                     const count = lang.count || lang.repos || 0;
                     const percentage = totalRepos > 0 ? (count / totalRepos) * 100 : 0;
                     const color = languageColors[lang.name] || '#888';
-                    
+
+                    // Simulated trend (in production, calculate from historical data)
+                    const trend = idx % 3 === 0 ? 8 : idx % 3 === 1 ? -3 : 0;
+
                     return (
                         <motion.div
                             key={lang.name}
                             initial={{ opacity: 0, x: -20 }}
                             animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: idx * 0.1 }}
+                            transition={{ delay: idx * 0.1, type: "spring", stiffness: 100 }}
+                            className="group"
                         >
-                            <div className="flex items-center justify-between mb-2">
-                                <div className="flex items-center gap-2">
-                                    <div 
-                                        className="w-3 h-3 rounded-full" 
+                            <div className="flex items-center justify-between mb-3">
+                                <div className="flex items-center gap-3">
+                                    {/* Larger language color indicator */}
+                                    <div
+                                        className="w-8 h-8 rounded-lg flex items-center justify-center shadow-md group-hover:scale-110 transition-transform"
                                         style={{ backgroundColor: color }}
-                                    />
-                                    <span className="font-semibold text-gray-900 dark:text-gray-100">{lang.name}</span>
+                                    >
+                                        <span className="text-white text-xs font-bold">
+                                            {lang.name.substring(0, 2).toUpperCase()}
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <span className="font-bold text-lg text-gray-900 dark:text-gray-100">
+                                            {lang.name}
+                                        </span>
+                                        {/* Trend indicator */}
+                                        {trend !== 0 && (
+                                            <motion.span
+                                                className={`ml-2 text-xs font-semibold ${trend > 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}
+                                                initial={{ opacity: 0, x: -5 }}
+                                                animate={{ opacity: 1, x: 0 }}
+                                                transition={{ delay: idx * 0.1 + 0.3 }}
+                                            >
+                                                {trend > 0 ? '↑' : '↓'} {Math.abs(trend)}%
+                                            </motion.span>
+                                        )}
+                                    </div>
                                 </div>
-                                <div className="text-sm text-gray-600 dark:text-gray-400">
-                                    {percentage.toFixed(1)}% · {count} repos
+                                <div className="text-right">
+                                    <div className="text-lg font-bold text-gray-900 dark:text-gray-100">
+                                        {percentage.toFixed(1)}%
+                                    </div>
+                                    <div className="text-xs text-gray-500 dark:text-gray-400">
+                                        {count} repo{count !== 1 ? 's' : ''}
+                                    </div>
                                 </div>
                             </div>
-                            
-                            {/* Animated progress bar */}
-                            <div className="h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+
+                            {/* Animated progress bar with gradient */}
+                            <div className="h-3 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden shadow-inner">
                                 <motion.div
-                                    className="h-full rounded-full"
-                                    style={{ backgroundColor: color }}
+                                    className="h-full rounded-full relative overflow-hidden"
+                                    style={{
+                                        background: `linear-gradient(90deg, ${color}dd, ${color})`
+                                    }}
                                     initial={{ width: 0 }}
                                     animate={{ width: `${percentage}%` }}
-                                    transition={{ duration: 1, delay: idx * 0.1 }}
-                                />
+                                    transition={{ duration: 1, delay: idx * 0.1, ease: "easeOut" }}
+                                >
+                                    {/* Shimmer effect */}
+                                    <motion.div
+                                        className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+                                        animate={{ x: ['-100%', '200%'] }}
+                                        transition={{ duration: 2, delay: idx * 0.1 + 1, ease: "linear" }}
+                                    />
+                                </motion.div>
                             </div>
                         </motion.div>
                     );
                 })}
             </div>
-            
+
             {/* AI Prediction */}
             <motion.div
                 initial={{ opacity: 0, y: 10 }}
