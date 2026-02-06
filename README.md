@@ -1,23 +1,17 @@
 <div align="center">
 
-  <img src="https://img.shields.io/badge/React-18.0-61DAFB?style=for-the-badge&logo=react&logoColor=white" alt="React 18" />
-  <img src="https://img.shields.io/badge/Node.js-Express-339933?style=for-the-badge&logo=node.js&logoColor=white" alt="Node.js" />
-  <img src="https://img.shields.io/badge/AI-Llama_3.3_70B-FF6B6B?style=for-the-badge&logo=meta&logoColor=white" alt="Llama AI" />
-  <img src="https://img.shields.io/badge/MongoDB-Atlas-47A248?style=for-the-badge&logo=mongodb&logoColor=white" alt="MongoDB" />
+<img src="https://img.shields.io/badge/React-18.0-61DAFB?style=for-the-badge&logo=react&logoColor=white" alt="React 18" />
+<img src="https://img.shields.io/badge/Node.js-Express-339933?style=for-the-badge&logo=node.js&logoColor=white" alt="Node.js" />
+<img src="https://img.shields.io/badge/AI-Llama_3.3_70B-FF6B6B?style=for-the-badge&logo=meta&logoColor=white" alt="Llama AI" />
+<img src="https://img.shields.io/badge/MongoDB-Atlas-47A248?style=for-the-badge&logo=mongodb&logoColor=white" alt="MongoDB" />
 
-  <h1>🧬 DevIntel</h1>
-  
-  <h3>Decode Your Developer DNA</h3>
+# 🧬 DevIntel
 
-  <p>
-    <strong>🌍 <a href="https://dev-intel.vercel.app/">Live Demo</a> | 📖 <a href="#quick-start">Get Started</a> | ⚔️ <a href="#features">Features</a></strong>
-  </p>
+### Decode Your Developer DNA
 
-  <p>
-    <i>An AI-powered intelligence platform that transforms your GitHub activity into meaningful insights, personalized recommendations, and competitive analysis.</i>
-  </p>
+**🌍 [Live Demo](https://dev-intel.vercel.app/) | 📖 [Get Started](#quick-start) | ⚔️ [Features](#features)**
 
-  <br />
+_An AI-powered intelligence platform that transforms your GitHub activity into meaningful insights, personalized recommendations, and competitive analysis._
 
 </div>
 
@@ -495,9 +489,5 @@ This project is licensed under the **MIT License** — see the [LICENSE](LICENSE
 ## **Built with ❤️ by [Lokesh](https://github.com/itslokeshx)**
 
 ### ⭐ Star this repo if you found it helpful!
-
-**🐛 Found a bug?** [Open an issue](https://github.com/itslokeshx/DevIntel/issues)  
-**💡 Have an idea?** [Start a discussion](https://github.com/itslokeshx/DevIntel/discussions)  
-**🚀 Want to contribute?** Check our [contributing guidelines](#-contributing)
 
 </div>
