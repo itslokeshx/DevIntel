@@ -20,6 +20,7 @@ const {
 } = require('./fetcher');
 const { getContributionCalendar } = require('./contributionCalendar');
 const { validateMetrics, validateYearBreakdown } = require('../../utils/dataValidator');
+const { awardAchievements } = require('../gamification/achievements');
 
 /**
  * Analyze a GitHub user's complete profile
@@ -143,6 +144,11 @@ async function analyzeGitHubUser(username) {
         },
         yearlyBreakdown
     };
+
+    // Award achievements based on metrics
+    const achievements = awardAchievements(analysisResult);
+    console.log(`🏆 Unlocked ${achievements.length} achievements`);
+    analysisResult.achievements = achievements;
 
     // Validate data before returning
     const validation = validateMetrics(analysisResult);

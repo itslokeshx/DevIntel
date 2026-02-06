@@ -99,6 +99,9 @@ export function WinnerAnnouncement({ winner, winnerName, margin, description, on
         );
     }
 
+    // Legendary win detection (30+ point gap)
+    const isLegendaryWin = margin >= 30;
+
     return (
         <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
@@ -106,20 +109,21 @@ export function WinnerAnnouncement({ winner, winnerName, margin, description, on
             transition={{ delay: 0.6, type: 'spring', bounce: 0.5 }}
             className="text-center py-16 relative"
         >
-            {/* Animated crown */}
+            {/* Animated crown or fire for legendary win */}
             <motion.div
                 animate={{
                     y: [0, -20, 0],
                     rotate: [0, 5, -5, 0],
+                    scale: isLegendaryWin ? [1, 1.2, 1] : [1, 1, 1],
                 }}
                 transition={{
-                    duration: 2,
+                    duration: isLegendaryWin ? 0.5 : 2,
                     repeat: Infinity,
                     ease: 'easeInOut',
                 }}
                 className="text-9xl mb-6"
             >
-                👑
+                {isLegendaryWin ? '🔥' : '👑'}
             </motion.div>
 
             {/* Winner badge */}
@@ -151,10 +155,23 @@ export function WinnerAnnouncement({ winner, winnerName, margin, description, on
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 1.2 }}
-                className="text-3xl font-bold text-gray-300 mb-8"
+                className={`text-3xl font-bold mb-4 ${isLegendaryWin ? 'text-red-400' : 'text-gray-300'
+                    }`}
             >
                 {description}
             </motion.p>
+
+            {/* Legendary win message */}
+            {isLegendaryWin && (
+                <motion.p
+                    initial={{ opacity: 0, scale: 0 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 1.4, type: 'spring', bounce: 0.6 }}
+                    className="text-xl text-red-500 font-bold mb-8"
+                >
+                    💥 LEGENDARY VICTORY! Better luck next time! 💥
+                </motion.p>
+            )}
 
             {/* Score margin */}
             <motion.div
