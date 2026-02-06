@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Trophy, Crown } from "lucide-react";
@@ -18,6 +18,19 @@ export default function GitHubComparison() {
   const [data, setData] = useState(null);
   const [showBattleStart, setShowBattleStart] = useState(true);
   const [revealStage, setRevealStage] = useState(0);
+
+  // Auto-advance reveal stage if no AI verdict exists
+  useEffect(() => {
+    if (data && revealStage === 1) {
+      const aiComparison = data.comparison?.aiInsights;
+      const hasAiVerdict = !!aiComparison?.verdict;
+
+      if (!hasAiVerdict) {
+        const timer = setTimeout(() => setRevealStage(2), 1500);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [data, revealStage]);
 
   const handleBattleStart = async (fighterA, fighterB) => {
     try {
@@ -88,15 +101,6 @@ export default function GitHubComparison() {
       : aiWinner === "B"
         ? userB?.profile?.name || userB?.username
         : "Tie";
-
-  // If no AI verdict exists, auto-advance to stage 2 so winner still shows
-  const hasAiVerdict = !!aiComparison?.verdict;
-  React.useEffect(() => {
-    if (revealStage === 1 && !hasAiVerdict) {
-      const timer = setTimeout(() => setRevealStage(2), 1500);
-      return () => clearTimeout(timer);
-    }
-  }, [revealStage, hasAiVerdict]);
 
   const repoCountA =
     comparison?.totalProjects?.userA ||
@@ -173,7 +177,7 @@ export default function GitHubComparison() {
           </button>
 
           <div className="flex items-center gap-3">
-            <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse shadow-lg shadow-green-500/50" />
+            <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
             <h1 className="text-base font-black text-gray-900 dark:text-white tracking-tight">
               Battle Results
             </h1>
@@ -286,7 +290,7 @@ export default function GitHubComparison() {
                     </p>
                   </div>
                   <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
-                    <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+                    <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
                     <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
                       Live Data
                     </span>

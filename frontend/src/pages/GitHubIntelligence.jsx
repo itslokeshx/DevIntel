@@ -12,6 +12,7 @@ import {
   Flame,
   GitCommit,
   MapPin,
+  Trophy,
 } from "lucide-react";
 import { githubAPI } from "../services/api";
 import useStore from "../store";
@@ -133,99 +134,102 @@ export default function GitHubIntelligence() {
 
       <div className="max-w-content mx-auto px-6 lg:px-12 py-12">
         {/* ═══ HERO CARD ═══ */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="mb-8"
-        >
-          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-12 shadow-md">
-            <div className="flex flex-col md:flex-row items-center md:items-start gap-6 sm:gap-10">
-              {/* Avatar with glow */}
-              <motion.div
-                className="relative flex-shrink-0"
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ type: "spring", bounce: 0.5, delay: 0.1 }}
-              >
-                <div className="absolute -inset-4 rounded-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 opacity-20 blur-xl animate-pulse-slow" />
+        <div className="mb-8">
+          <div className="relative bg-gradient-to-br from-white via-gray-50/30 to-white dark:from-gray-900 dark:via-gray-800/30 dark:to-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-8 sm:p-10 md:p-14 shadow-sm overflow-hidden">
+            {/* Subtle decorative pattern */}
+            <div className="absolute inset-0 opacity-[0.02] dark:opacity-[0.03]">
+              <div
+                className="absolute inset-0"
+                style={{
+                  backgroundImage:
+                    "radial-gradient(circle at 2px 2px, currentColor 1px, transparent 0)",
+                  backgroundSize: "48px 48px",
+                }}
+              />
+            </div>
+
+            <div className="relative flex flex-col items-center text-center gap-6">
+              {/* Avatar */}
+              <div className="relative">
+                <div className="absolute -inset-1 bg-gradient-to-br from-blue-500/20 via-purple-500/20 to-pink-500/20 rounded-full blur-xl" />
                 <img
                   src={data.profile?.avatarUrl}
                   alt={username}
-                  className="relative w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40 rounded-full border-4 border-white dark:border-gray-900 shadow-xl"
+                  className="relative w-28 h-28 sm:w-36 sm:h-36 rounded-full border-4 border-white dark:border-gray-800 shadow-lg"
                 />
-                {/* Archetype Badge */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3, duration: 0.4 }}
-                  className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-blue-500 to-purple-600 text-white px-5 py-2 rounded-full text-sm font-semibold whitespace-nowrap shadow-blue"
-                >
-                  🏗️ {data.metrics?.primaryTechIdentity || "Developer"}
-                </motion.div>
-              </motion.div>
+              </div>
 
-              {/* Info */}
-              <div className="flex-1 min-w-0 text-center md:text-left">
-                <motion.h1
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.1 }}
-                  className="text-2xl sm:text-3xl md:text-[48px] font-extrabold text-gray-900 dark:text-white leading-[1.1] mb-2"
-                >
-                  {data.profile?.name || username}
-                </motion.h1>
+              {/* Name and Title */}
+              <div className="space-y-3">
+                <div>
+                  <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-2">
+                    {data.profile?.name || username}
+                  </h1>
+                  <p className="text-lg text-gray-500 dark:text-gray-400 font-medium">
+                    @{username}
+                  </p>
+                </div>
 
-                <motion.p
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.2 }}
-                  className="text-heading-md text-gray-500 dark:text-gray-400 font-medium mb-6"
-                >
-                  @{username}
-                </motion.p>
+                {/* Tech Identity Badge */}
+                <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950/50 dark:to-purple-950/50 text-gray-700 dark:text-gray-300 rounded-full text-sm font-semibold border border-blue-200/50 dark:border-blue-800/50">
+                  <span className="text-base">💼</span>
+                  {data.metrics?.primaryTechIdentity || "Developer"}
+                </div>
+              </div>
 
-                {data.profile?.bio && (
-                  <motion.p
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.3 }}
-                    className="text-body-lg text-gray-600 dark:text-gray-300 max-w-[700px] leading-relaxed mb-8"
-                  >
-                    {data.profile.bio}
-                  </motion.p>
+              {/* Bio */}
+              {data.profile?.bio && (
+                <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300 max-w-2xl leading-relaxed">
+                  {data.profile.bio}
+                </p>
+              )}
+
+              {/* Metadata Row */}
+              <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-gray-500 dark:text-gray-400">
+                {data.profile?.location && (
+                  <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-100 dark:bg-gray-800 rounded-lg">
+                    <MapPin className="w-4 h-4" />
+                    <span>{data.profile.location}</span>
+                  </div>
                 )}
-
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.4 }}
-                  className="flex flex-wrap items-center justify-center md:justify-start gap-4 sm:gap-8 text-sm sm:text-[15px] text-gray-500 dark:text-gray-400"
-                >
-                  {data.profile?.location && (
-                    <span className="flex items-center gap-2">
-                      <MapPin className="w-4 h-4" />
-                      {data.profile.location}
-                    </span>
-                  )}
-                  <span className="flex items-center gap-2">
-                    <Users className="w-4 h-4" />
-                    <strong className="text-gray-900 dark:text-white">
+                <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-100 dark:bg-gray-800 rounded-lg">
+                  <Users className="w-4 h-4" />
+                  <span>
+                    <strong className="text-gray-900 dark:text-white font-semibold">
                       {data.profile?.followers || 0}
                     </strong>{" "}
-                    followers
+                    followers ·{" "}
+                    <strong className="text-gray-900 dark:text-white font-semibold">
+                      {data.profile?.following || 0}
+                    </strong>{" "}
+                    following
                   </span>
-                  {data.profile?.createdAt && (
-                    <span className="flex items-center gap-2">
-                      <Calendar className="w-4 h-4" />
+                </div>
+                {data.profile?.createdAt && (
+                  <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-100 dark:bg-gray-800 rounded-lg">
+                    <Calendar className="w-4 h-4" />
+                    <span>
                       Joined {new Date(data.profile.createdAt).getFullYear()}
                     </span>
-                  )}
-                </motion.div>
+                  </div>
+                )}
+              </div>
+
+              {/* Developer Stats Pills */}
+              <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+                <div className="px-4 py-2 bg-blue-50 dark:bg-blue-950/30 text-blue-700 dark:text-blue-300 rounded-full text-sm font-medium border border-blue-200 dark:border-blue-800/50">
+                  {repos.length} Repositories
+                </div>
+                <div className="px-4 py-2 bg-purple-50 dark:bg-purple-950/30 text-purple-700 dark:text-purple-300 rounded-full text-sm font-medium border border-purple-200 dark:border-purple-800/50">
+                  {totalStars} Stars Earned
+                </div>
+                <div className="px-4 py-2 bg-green-50 dark:bg-green-950/30 text-green-700 dark:text-green-300 rounded-full text-sm font-medium border border-green-200 dark:border-green-800/50">
+                  {totalCommits.toLocaleString()} Commits
+                </div>
               </div>
             </div>
           </div>
-        </motion.div>
+        </div>
 
         {/* ═══ AI VERDICT CARD ═══ */}
         <motion.div
@@ -245,17 +249,17 @@ export default function GitHubIntelligence() {
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-2">
                   <h2 className="text-heading-md font-bold text-gray-900 dark:text-white">
-                    AI Verdict
+                    What Makes You Special?
                   </h2>
                 </div>
                 <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
-                  Powered by Llama 3.3 70B
+                  AI-powered insights revealing your unique developer DNA
                 </p>
                 <div className="text-[19px] md:text-body-lg leading-[1.7] text-gray-800 dark:text-gray-200 tracking-[0.01em]">
                   {aiVerdictStreaming ? (
                     <div>
                       <span>{aiVerdict}</span>
-                      <span className="inline-block w-0.5 h-5 bg-blue-500 ml-1 align-middle animate-pulse" />
+                      <span className="inline-block w-0.5 h-5 bg-blue-500 ml-1 align-middle opacity-70" />
                     </div>
                   ) : aiVerdict ? (
                     aiVerdict
@@ -318,104 +322,154 @@ export default function GitHubIntelligence() {
 
         {/* ═══ CONTRIBUTION HEATMAP ═══ */}
         {data.contributions && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-            className="mb-12"
-          >
+          <div className="mb-12">
             <ContributionHeatmap contributions={data.contributions} />
-          </motion.div>
+          </div>
         )}
 
         {/* ═══ TECH STACK DNA ═══ */}
         {data.metrics?.languageStats &&
           data.metrics.languageStats.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.4 }}
-              className="mb-12"
-            >
+            <div className="mb-12">
               <TechStackDNA
                 languageStats={data.metrics.languageStats}
                 repositories={data.repositories}
               />
-            </motion.div>
+            </div>
           )}
 
         {/* ═══ REPOSITORY SHOWCASE ═══ */}
         {repos.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.5 }}
-            className="mb-12"
-          >
+          <div className="mb-12">
             <RepositoryShowcase repositories={data.repositories} />
-          </motion.div>
+          </div>
         )}
 
         {/* ═══ YEARLY BREAKDOWN ═══ */}
         {data.yearlyBreakdown && data.yearlyBreakdown.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.5 }}
-            className="mb-12"
-          >
+          <div className="mb-12">
             <YearlyBreakdown
               yearlyBreakdown={data.yearlyBreakdown}
               contributions={data.contributions}
             />
-          </motion.div>
+          </div>
         )}
 
         {/* ═══ DEVELOPER ANALYSIS ═══ */}
         {data.metrics && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.5 }}
-            className="mb-12"
-          >
+          <div className="mb-12">
             <DeveloperAnalysis
               metrics={data.metrics}
               contributions={data.contributions}
               repositories={data.repositories}
             />
-          </motion.div>
+          </div>
         )}
 
         {/* ═══ DEVELOPER WRAPPED ═══ */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.6 }}
-          className="mb-12"
-        >
+        <div className="mb-12">
           <DeveloperWrapped
             wrappedData={data.wrappedData}
             contributions={data.contributions}
             repositories={data.repositories}
             username={username}
           />
-        </motion.div>
+        </div>
 
-        {/* ═══ DEVELOPER SIGNATURE ═══ */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.7 }}
-          className="mb-20"
-        >
-          <DeveloperSignature
-            metrics={data.metrics}
-            contributions={data.contributions}
-            repositories={data.repositories}
-            username={username}
-          />
-        </motion.div>
+        {/* ═══ ENGAGEMENT SECTION ═══ */}
+        <div className="space-y-8 mb-20">
+          {/* Compare CTA */}
+          <div className="relative overflow-hidden bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-blue-950/20 dark:via-purple-950/20 dark:to-pink-950/20 rounded-3xl p-8 sm:p-10 border border-blue-200 dark:border-blue-800/50">
+            <div className="relative z-10 text-center space-y-4">
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/60 dark:bg-gray-900/60 backdrop-blur-sm rounded-full text-sm font-semibold text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700">
+                <Trophy className="w-4 h-4 text-yellow-500" />
+                Battle Arena
+              </div>
+              <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
+                Ready to Battle?
+              </h3>
+              <p className="text-gray-600 dark:text-gray-300 max-w-xl mx-auto">
+                Compare your developer profile against others. See who comes out
+                on top with AI-powered analysis.
+              </p>
+              <button
+                onClick={() => navigate("/compare")}
+                className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-xl font-semibold transition-all duration-200 hover:scale-105 shadow-lg"
+              >
+                <span>Challenge a Developer</span>
+                <ArrowLeft className="w-4 h-4 rotate-180" />
+              </button>
+            </div>
+          </div>
+
+          {/* Share Profile CTA */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 sm:p-8">
+              <div className="space-y-4">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center">
+                  <span className="text-2xl">🚀</span>
+                </div>
+                <h4 className="text-xl font-bold text-gray-900 dark:text-white">
+                  Share Your Profile
+                </h4>
+                <p className="text-gray-600 dark:text-gray-400 text-sm">
+                  Show off your developer achievements and AI-generated insights
+                  with the world.
+                </p>
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(window.location.href);
+                    alert("Profile link copied to clipboard!");
+                  }}
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-900 dark:text-white rounded-lg font-medium transition-colors"
+                >
+                  <span>Copy Profile Link</span>
+                  <Code2 className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+
+            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 sm:p-8">
+              <div className="space-y-4">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center">
+                  <span className="text-2xl">🔥</span>
+                </div>
+                <h4 className="text-xl font-bold text-gray-900 dark:text-white">
+                  Discover More Devs
+                </h4>
+                <p className="text-gray-600 dark:text-gray-400 text-sm">
+                  Analyze any GitHub developer's profile and uncover hidden
+                  patterns in their code.
+                </p>
+                <button
+                  onClick={() => navigate("/")}
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-900 dark:text-white rounded-lg font-medium transition-colors"
+                >
+                  <span>Analyze Another</span>
+                  <Star className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Social Proof */}
+          <div className="text-center py-8 border-t border-gray-200 dark:border-gray-800">
+            <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-gray-500 dark:text-gray-400">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-green-500" />
+                <span>AI-Powered Analysis</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-blue-500" />
+                <span>Real-time GitHub Data</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-purple-500" />
+                <span>Developer Insights</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* All Repositories Modal */}
@@ -432,23 +486,17 @@ export default function GitHubIntelligence() {
 /* ═══ STAT CARD COMPONENT ═══ */
 function StatCard({ icon, gradient, value, label, percentile, delay }) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay, duration: 0.5 }}
-      whileHover={{ y: -4 }}
-      className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-5 sm:p-8 hover:shadow-lg transition-all duration-300 group"
-    >
+    <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-5 sm:p-8 transition-shadow duration-200 hover:shadow-md">
       {/* Icon badge */}
       <div
-        className={`w-10 h-10 sm:w-14 sm:h-14 rounded-xl bg-gradient-to-br ${gradient} flex items-center justify-center mb-3 sm:mb-5 shadow-md`}
+        className={`w-10 h-10 sm:w-14 sm:h-14 rounded-xl bg-gradient-to-br ${gradient} flex items-center justify-center mb-3 sm:mb-5`}
       >
         <span className="text-xl sm:text-[28px]">{icon}</span>
       </div>
 
       {/* Big number */}
-      <div className="text-3xl sm:text-[44px] xl:text-[52px] font-extrabold text-gray-900 dark:text-white leading-none mb-2">
-        <CountUp end={value} duration={1.5} separator="," />
+      <div className="text-3xl sm:text-[44px] xl:text-[52px] font-bold text-gray-900 dark:text-white leading-none mb-2">
+        <CountUp end={value} duration={1} separator="," />
       </div>
 
       {/* Label */}
@@ -468,18 +516,12 @@ function StatCard({ icon, gradient, value, label, percentile, delay }) {
 
       {/* Progress bar */}
       <div className="h-1.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
-        <motion.div
-          className={`h-full bg-gradient-to-r ${gradient} rounded-full`}
-          initial={{ width: 0 }}
-          animate={{ width: `${percentile || 50}%` }}
-          transition={{
-            duration: 1.5,
-            delay: (delay || 0) + 0.5,
-            ease: "easeOut",
-          }}
+        <div
+          className={`h-full bg-gradient-to-r ${gradient} rounded-full transition-all duration-1000`}
+          style={{ width: `${percentile || 50}%` }}
         />
       </div>
-    </motion.div>
+    </div>
   );
 }
 

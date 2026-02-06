@@ -23,7 +23,7 @@ export function StreamingAIVerdict({ text, onComplete }) {
     <div className="leading-relaxed text-sm md:text-base">
       {displayedText}
       {currentIndex < (text?.length || 0) && (
-        <span className="inline-block w-0.5 h-4 bg-current ml-0.5 align-middle animate-pulse" />
+        <span className="inline-block w-0.5 h-4 bg-current ml-0.5 align-middle opacity-70" />
       )}
     </div>
   );

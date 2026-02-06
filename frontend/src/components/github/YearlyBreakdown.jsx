@@ -14,7 +14,7 @@ export function YearlyBreakdown({ yearlyBreakdown, contributions }) {
   const validYears = useMemo(
     () =>
       yearlyBreakdown
-        ?.filter((y) => y.year >= 2020 && y.year <= currentYear)
+        ?.filter((y) => y.year >= 2025 && y.year <= 2026)
         .sort((a, b) => b.year - a.year) || [],
     [yearlyBreakdown, currentYear],
   );

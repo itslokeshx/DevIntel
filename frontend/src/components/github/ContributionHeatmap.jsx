@@ -124,7 +124,7 @@ export function ContributionHeatmap({ contributions }) {
       </div>
 
       {/* Heatmap grid - Premium enhanced with smooth rendering */}
-      <div className="flex gap-[3px] mb-6 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-700 justify-center">
+      <div className="flex gap-[3px] mb-6 justify-center max-w-full overflow-hidden">
         {weeks.map((week, weekIdx) => (
           <div key={weekIdx} className="flex flex-col gap-[3px]">
             {week.map((day, dayIdx) => {
@@ -132,7 +132,7 @@ export function ContributionHeatmap({ contributions }) {
                 return (
                   <div
                     key={dayIdx}
-                    className="w-[15px] h-[15px] sm:w-[16px] sm:h-[16px]"
+                    className="w-[14px] h-[14px] sm:w-[16px] sm:h-[16px]"
                   />
                 );
 
@@ -142,7 +142,7 @@ export function ContributionHeatmap({ contributions }) {
               return (
                 <div
                   key={`${weekIdx}-${dayIdx}`}
-                  className={`w-[15px] h-[15px] sm:w-[16px] sm:h-[16px] rounded-[3px] ${getColor(day.count)} cursor-pointer relative group`}
+                  className={`w-[14px] h-[14px] sm:w-[16px] sm:h-[16px] rounded-[2px] ${getColor(day.count)} cursor-pointer relative group`}
                 >
                   {/* Compact tooltip */}
                   <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1.5 bg-gray-900 dark:bg-gray-800 text-white text-[10px] rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-150 pointer-events-none whitespace-nowrap z-50 shadow-lg">
@@ -321,7 +321,7 @@ export function ContributionHeatmap({ contributions }) {
             {format(startDate, "MMM yyyy")}
           </span>
           <span className="flex items-center gap-1.5 px-2 py-1 bg-amber-100 dark:bg-amber-900/30 rounded-full">
-            <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+            <div className="w-2 h-2 rounded-full bg-amber-500" />
             <span className="text-amber-700 dark:text-amber-400">
               Peak Week
             </span>
