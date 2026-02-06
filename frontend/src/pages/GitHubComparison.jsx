@@ -10,6 +10,8 @@ import { BattleArenaSetup } from '../components/comparison/BattleArenaSetup';
 import { StreamingAIVerdict } from '../components/comparison/StreamingAIVerdict';
 import { WinnerAnnouncement } from '../components/comparison/WinnerAnnouncement';
 import { calculateBattleScore, determineBattleWinner } from '../utils/battleScore';
+import { CompactAchievementBadges } from '../components/gamification/AchievementBadges';
+import { GlobalRankingTease } from '../components/gamification/GlobalRankingTease';
 
 export default function GitHubComparison() {
     const navigate = useNavigate();
@@ -271,6 +273,13 @@ function FighterCard({ user, score, color, isWinner }) {
                 <p className="text-white/70">@{user?.username}</p>
                 {user?.profile?.bio && (
                     <p className="text-sm text-white/60 mt-2 line-clamp-2">{user?.profile?.bio}</p>
+                )}
+
+                {/* Achievements */}
+                {user?.achievements && user.achievements.length > 0 && (
+                    <div className="mt-3">
+                        <CompactAchievementBadges achievements={user.achievements} maxDisplay={3} />
+                    </div>
                 )}
             </div>
 
