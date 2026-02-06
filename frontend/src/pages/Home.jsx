@@ -38,7 +38,7 @@ export function Home() {
       </div>
 
       {/* ═══ HERO SECTION ═══ */}
-      <section className="relative max-w-content mx-auto px-4 sm:px-6 lg:px-12 pt-12 sm:pt-20 md:pt-24 pb-12 sm:pb-20 text-center">
+      <section className="relative max-w-content mx-auto px-4 sm:px-6 lg:px-12 pt-12 sm:pt-20 md:pt-24 pb-6 sm:pb-12 text-center">
         {/* Headline */}
         <motion.h1
           initial={{ opacity: 0, y: 20 }}
