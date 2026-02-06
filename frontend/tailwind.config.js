@@ -74,7 +74,26 @@ export default {
             borderRadius: {
                 'card': '8px',
                 'btn': '6px'
-            }
+            },
+            screens: {
+                'mobile': '0px',
+                'tablet': '768px',
+                'desktop': '1024px',
+                'wide': '1280px',
+            },
+            maxWidth: {
+                'content': '1280px',
+            },
+            animation: {
+                'shimmer': 'shimmer 2s infinite',
+                'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            },
+            keyframes: {
+                shimmer: {
+                    '0%': { transform: 'translateX(-100%)' },
+                    '100%': { transform: 'translateX(100%)' },
+                },
+            },
         },
     },
     plugins: [],
