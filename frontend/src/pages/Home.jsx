@@ -1,170 +1,261 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { Search, ArrowRight, BarChart3, Dna, Rocket } from 'lucide-react';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import { Search, Zap, Brain, TrendingUp } from "lucide-react";
 
 export function Home() {
-    const navigate = useNavigate();
-    const [githubUsername, setGithubUsername] = useState('');
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState('');
+  const navigate = useNavigate();
+  const [githubUsername, setGithubUsername] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-    const handleAnalyze = async () => {
-        if (!githubUsername.trim()) {
-            setError('GitHub username is required');
-            return;
-        }
+  const handleAnalyze = async () => {
+    if (!githubUsername.trim()) {
+      setError("GitHub username is required");
+      return;
+    }
+    setError("");
+    setLoading(true);
+    try {
+      navigate(`/github/${githubUsername.trim()}`);
+    } catch (err) {
+      setError(err.message);
+      setLoading(false);
+    }
+  };
 
-        setError('');
-        setLoading(true);
+  const exampleUsers = ["torvalds", "gvanrossum", "tj"];
 
-        try {
-            navigate(`/github/${githubUsername.trim()}`);
-        } catch (err) {
-            setError(err.message);
-            setLoading(false);
-        }
-    };
+  return (
+    <div className="min-h-screen bg-white dark:bg-gray-950 relative overflow-hidden">
+      {/* ═══ Animated Background Orbs ═══ */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute top-[-200px] left-[-200px] w-[600px] h-[600px] rounded-full bg-blue-500/10 dark:bg-blue-500/5 blur-[120px] animate-slow-rotate" />
+        <div
+          className="absolute bottom-[-200px] right-[-200px] w-[600px] h-[600px] rounded-full bg-purple-500/10 dark:bg-purple-500/5 blur-[120px] animate-slow-rotate"
+          style={{ animationDirection: "reverse" }}
+        />
+      </div>
 
-    const handleCompare = () => {
-        navigate('/compare');
-    };
+      {/* ═══ HERO SECTION ═══ */}
+      <section className="relative max-w-content mx-auto px-6 lg:px-12 pt-40 pb-30 text-center">
+        {/* Headline */}
+        <motion.h1
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="text-[56px] md:text-[72px] lg:text-[80px] font-extrabold text-gray-900 dark:text-gray-50 leading-[1.05] tracking-tight mb-6"
+        >
+          Decode Your <span className="gradient-text">Developer DNA</span>
+        </motion.h1>
 
-    const exampleUsers = ['torvalds', 'gvanrossum', 'gaearon', 'tj'];
+        {/* Subtitle */}
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.1 }}
+          className="text-lg md:text-[22px] text-gray-500 dark:text-gray-400 max-w-[700px] mx-auto leading-relaxed mb-16"
+        >
+          Transform your GitHub activity into meaningful insights, growth
+          patterns, and personalized recommendations.
+        </motion.p>
 
-    return (
-        <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-950 dark:to-gray-900">
-            {/* Subtle Grid Background */}
-            <div className="absolute inset-0 bg-grid-pattern opacity-5 dark:opacity-10" />
-            
-            {/* Hero Section */}
-            <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6 }}
-                    className="text-center space-y-8 mb-16"
-                >
-                    <h1 className="text-7xl font-bold text-gray-900 dark:text-gray-100 tracking-tight leading-tight">
-                        ✨ DevIntel
-                    </h1>
-                    <p className="text-2xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-                        Decode Your Developer DNA
-                    </p>
-                </motion.div>
+        {/* ═══ SEARCH INPUT ═══ */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="max-w-[680px] mx-auto mb-6 relative"
+        >
+          <div className="relative">
+            {/* Search icon */}
+            <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-6 h-6 text-gray-400 pointer-events-none" />
 
-                {/* Search Bar */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: 0.2 }}
-                    className="max-w-2xl mx-auto mb-8"
-                >
-                    <div className="relative">
-                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                            <Search className="h-6 w-6 text-gray-400 animate-pulse" />
-                        </div>
-                        <input
-                            type="text"
-                            value={githubUsername}
-                            onChange={(e) => setGithubUsername(e.target.value)}
-                            onKeyPress={(e) => e.key === 'Enter' && handleAnalyze()}
-                            placeholder="Enter GitHub username..."
-                            className="w-full h-16 pl-12 pr-32 text-lg bg-white dark:bg-gray-900 border-2 border-gray-200 dark:border-gray-800 rounded-2xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all"
-                        />
-                        <button
-                            onClick={handleAnalyze}
-                            disabled={loading || !githubUsername.trim()}
-                            className="absolute inset-y-0 right-0 pr-2 flex items-center"
-                        >
-                            <div className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2">
-                                {loading ? 'Analyzing...' : 'Analyze'}
-                                <ArrowRight className="h-5 w-5" />
-                            </div>
-                        </button>
-                    </div>
-                    {error && (
-                        <p className="mt-2 text-sm text-red-600 dark:text-red-400 text-center">{error}</p>
-                    )}
-                    <p className="mt-4 text-center text-gray-500 dark:text-gray-400 text-sm">
-                        or try: {exampleUsers.map((user, i) => (
-                            <React.Fragment key={user}>
-                                <button
-                                    onClick={() => {
-                                        setGithubUsername(user);
-                                        setTimeout(() => handleAnalyze(), 100);
-                                    }}
-                                    className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                                >
-                                    {user}
-                                </button>
-                                {i < exampleUsers.length - 1 && ' · '}
-                            </React.Fragment>
-                        ))}
-                    </p>
-                </motion.div>
+            {/* Input */}
+            <input
+              type="text"
+              value={githubUsername}
+              onChange={(e) => {
+                setGithubUsername(e.target.value);
+                setError("");
+              }}
+              onKeyDown={(e) => e.key === "Enter" && handleAnalyze()}
+              placeholder="Enter GitHub username..."
+              disabled={loading}
+              className="w-full h-[72px] pl-16 pr-[180px] text-lg bg-gray-50 dark:bg-gray-900 border-2 border-gray-200 dark:border-gray-700 rounded-2xl text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 focus:bg-white dark:focus:bg-gray-900 transition-all duration-200 disabled:opacity-60"
+              aria-label="GitHub username"
+            />
 
-                {/* Three Pillars */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: 0.4 }}
-                    className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto mb-20"
-                >
-                    <PillarCard
-                        icon={<BarChart3 className="h-8 w-8" />}
-                        title="Past"
-                        subtitle="Your Code Timeline"
-                        description="See your evolution. Commits, stars, and contribution patterns mapped across years."
-                    />
-                    <PillarCard
-                        icon={<Dna className="h-8 w-8" />}
-                        title="Present"
-                        subtitle="Developer Identity"
-                        description="AI analyzes your work to identify: Are you a Builder? Architect? Explorer?"
-                    />
-                    <PillarCard
-                        icon={<Rocket className="h-8 w-8" />}
-                        title="Potential"
-                        subtitle="Growth Vectors"
-                        description="Personalized roadmap based on your trajectory and industry trends."
-                    />
-                </motion.div>
+            {/* Analyze Button */}
+            <button
+              onClick={handleAnalyze}
+              disabled={loading || !githubUsername.trim()}
+              className="absolute right-2 top-1/2 -translate-y-1/2 h-14 px-8 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold rounded-xl shadow-blue hover:shadow-blue-lg hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 transition-all duration-200 flex items-center gap-2"
+            >
+              {loading ? (
+                <>
+                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  Analyzing...
+                </>
+              ) : (
+                "Analyze"
+              )}
+            </button>
+          </div>
 
-                {/* Scroll Indicator */}
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 0.6, delay: 0.6 }}
-                    className="text-center"
-                >
-                    <p className="text-gray-500 dark:text-gray-400 text-sm mb-4">
-                        Scroll for live examples ↓
-                    </p>
-                </motion.div>
-            </div>
+          {/* Error */}
+          {error && (
+            <p
+              className="mt-3 text-sm text-red-500 dark:text-red-400 text-center"
+              role="alert"
+            >
+              {error}
+            </p>
+          )}
+        </motion.div>
+
+        {/* ═══ QUICK EXAMPLES ═══ */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+          className="text-sm text-center mb-32"
+        >
+          <span className="text-gray-400 mr-3">Try:</span>
+          {exampleUsers.map((user, i) => (
+            <React.Fragment key={user}>
+              <button
+                onClick={() => {
+                  setGithubUsername(user);
+                  navigate(`/github/${user}`);
+                }}
+                className="text-blue-500 dark:text-blue-400 font-medium hover:underline transition-colors"
+              >
+                {user}
+              </button>
+              {i < exampleUsers.length - 1 && (
+                <span className="text-gray-300 dark:text-gray-600 mx-3">•</span>
+              )}
+            </React.Fragment>
+          ))}
+        </motion.div>
+      </section>
+
+      {/* ═══ FEATURE CARDS ═══ */}
+      <section className="max-w-content mx-auto px-6 lg:px-12 mb-20">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <FeatureCard
+            icon={<Zap className="w-9 h-9 text-white" />}
+            gradient="from-blue-500 to-blue-600"
+            title="Real-Time Intelligence"
+            description="100% live data from GitHub. No caching, no simulations—see your exact current state instantly."
+            delay={0}
+          />
+          <FeatureCard
+            icon={<Brain className="w-9 h-9 text-white" />}
+            gradient="from-purple-500 to-purple-700"
+            title="AI-Powered Insights"
+            description="Advanced AI analyzes your work to reveal your developer archetype and hidden patterns."
+            delay={0.1}
+          />
+          <FeatureCard
+            icon={<TrendingUp className="w-9 h-9 text-white" />}
+            gradient="from-pink-500 to-pink-700"
+            title="Growth Roadmap"
+            description="Personalized, actionable recommendations to amplify your impact and visibility."
+            delay={0.2}
+          />
         </div>
-    );
+      </section>
+
+      {/* ═══ SOCIAL PROOF ═══ */}
+      <section className="max-w-[800px] mx-auto px-6 lg:px-12 mb-20">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.6 }}
+          className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-950/30 dark:to-purple-950/30 rounded-3xl p-16 text-center"
+        >
+          {/* Avatar stack */}
+          <div className="flex justify-center mb-4">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <div
+                key={i}
+                className={`w-12 h-12 rounded-full border-[3px] border-white dark:border-gray-900 bg-gradient-to-br ${
+                  i % 3 === 0
+                    ? "from-blue-400 to-blue-600"
+                    : i % 3 === 1
+                      ? "from-purple-400 to-purple-600"
+                      : "from-pink-400 to-pink-600"
+                } shadow-md ${i > 1 ? "-ml-3" : ""}`}
+              />
+            ))}
+          </div>
+
+          <h2 className="text-heading-xl font-bold text-gray-900 dark:text-white mb-4">
+            Join 50,000+ Developers
+          </h2>
+          <p className="text-body-md text-gray-500 dark:text-gray-400">
+            Analyzing their GitHub DNA every day
+          </p>
+        </motion.div>
+      </section>
+
+      {/* ═══ FINAL CTA ═══ */}
+      <section className="max-w-[1000px] mx-auto px-6 lg:px-12 mb-20">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.6 }}
+          className="relative bg-gradient-to-r from-blue-500 via-purple-600 to-pink-500 rounded-3xl p-16 text-center overflow-hidden animate-gradient"
+          style={{ backgroundSize: "200% 200%" }}
+        >
+          <h2 className="text-display-md text-white font-bold mb-4 drop-shadow-lg relative z-10">
+            Ready to see your developer story?
+          </h2>
+          <p className="text-xl text-white/90 mb-8 relative z-10">
+            Uncover insights that will change how you see your work
+          </p>
+          <button
+            onClick={() => {
+              window.scrollTo({ top: 0, behavior: "smooth" });
+              setTimeout(() => document.querySelector("input")?.focus(), 500);
+            }}
+            className="relative z-10 bg-white text-blue-600 px-12 py-5 text-lg font-bold rounded-xl shadow-xl hover:scale-105 hover:shadow-2xl active:scale-[0.98] transition-all duration-200"
+          >
+            Analyze Your Profile Now
+          </button>
+        </motion.div>
+      </section>
+    </div>
+  );
 }
 
-function PillarCard({ icon, title, subtitle, description }) {
-    return (
-        <motion.div
-            whileHover={{ y: -4 }}
-            className="p-8 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl hover:shadow-lg transition-all"
-        >
-            <div className="flex items-center gap-3 mb-4">
-                <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl text-blue-600 dark:text-blue-400">
-                    {icon}
-                </div>
-                <div>
-                    <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{title}</h3>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">{subtitle}</p>
-                </div>
-            </div>
-            <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-                {description}
-            </p>
-        </motion.div>
-    );
+function FeatureCard({ icon, gradient, title, description, delay }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{ duration: 0.5, delay }}
+      whileHover={{ y: -8 }}
+      className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-[20px] p-12 text-center hover:shadow-2xl hover:border-blue-500 dark:hover:border-blue-400 transition-all duration-300 group"
+    >
+      {/* Icon container */}
+      <div
+        className={`w-[72px] h-[72px] mx-auto mb-6 rounded-2xl bg-gradient-to-br ${gradient} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300`}
+      >
+        {icon}
+      </div>
+
+      <h3 className="text-[22px] font-bold text-gray-900 dark:text-white mb-3">
+        {title}
+      </h3>
+      <p className="text-body-md text-gray-500 dark:text-gray-400 leading-relaxed">
+        {description}
+      </p>
+    </motion.div>
+  );
 }

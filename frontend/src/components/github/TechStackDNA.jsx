@@ -1,188 +1,166 @@
-import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { TrendingUp, Loader2 } from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import { TrendingUp, Loader2 } from "lucide-react";
 
 const languageColors = {
-    'JavaScript': '#f7df1e',
-    'TypeScript': '#3178c6',
-    'Python': '#3776ab',
-    'HTML': '#e34c26',
-    'CSS': '#563d7c',
-    'Java': '#b07219',
-    'Go': '#00add8',
-    'Rust': '#dea584',
-    'PHP': '#4f5d95',
-    'Jupyter Notebook': '#da5b0b',
-    'C++': '#00599c',
-    'C': '#a8b9cc',
-    'Ruby': '#cc342d',
-    'Swift': '#fa7343',
-    'Kotlin': '#7f52ff',
-    'Dart': '#0175c2',
-    'Shell': '#89e051',
-    'PowerShell': '#012456',
-    'R': '#276dc3',
-    'MATLAB': '#e16737'
+  JavaScript: "#f7df1e",
+  TypeScript: "#3178c6",
+  Python: "#3776ab",
+  HTML: "#e34c26",
+  CSS: "#563d7c",
+  Java: "#b07219",
+  Go: "#00add8",
+  Rust: "#dea584",
+  PHP: "#4f5d95",
+  "Jupyter Notebook": "#da5b0b",
+  "C++": "#00599c",
+  C: "#a8b9cc",
+  Ruby: "#cc342d",
+  Swift: "#fa7343",
+  Kotlin: "#7f52ff",
+  Dart: "#0175c2",
+  Shell: "#89e051",
+  PowerShell: "#012456",
+  R: "#276dc3",
+  MATLAB: "#e16737",
 };
 
 export function TechStackDNA({ languageStats, repositories }) {
-    const [forecast, setForecast] = useState(null);
-    const [loadingForecast, setLoadingForecast] = useState(false);
+  const [forecast, setForecast] = useState(null);
+  const [loadingForecast, setLoadingForecast] = useState(false);
 
-    useEffect(() => {
-        if (languageStats && languageStats.length > 0) {
-            fetchForecast();
-        }
-    }, [languageStats]);
-
-    const fetchForecast = async () => {
-        setLoadingForecast(true);
-        try {
-            // This would call your backend API for AI forecast
-            // For now, we'll use a simple client-side prediction
-            setTimeout(() => {
-                const topLang = languageStats[0]?.name;
-                setForecast(
-                    topLang === 'TypeScript'
-                        ? 'TypeScript usage trending +30% based on recent project patterns. Python dominance stable. Consider exploring Go or Rust for systems work.'
-                        : `${topLang} remains your dominant stack. Consider exploring complementary technologies for full-stack capabilities.`
-                );
-                setLoadingForecast(false);
-            }, 1000);
-        } catch (err) {
-            setLoadingForecast(false);
-        }
-    };
-
-    if (!languageStats || languageStats.length === 0) {
-        return (
-            <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-8">
-                <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">🧪 Tech Stack DNA</h3>
-                <p className="text-gray-500 dark:text-gray-400">No language data available</p>
-            </div>
-        );
+  useEffect(() => {
+    if (languageStats && languageStats.length > 0) {
+      fetchForecast();
     }
+  }, [languageStats]);
 
-    const sortedLanguages = languageStats
-        .sort((a, b) => (b.count || b.repos || 0) - (a.count || a.repos || 0))
-        .slice(0, 8);
+  const fetchForecast = async () => {
+    setLoadingForecast(true);
+    try {
+      // This would call your backend API for AI forecast
+      // For now, we'll use a simple client-side prediction
+      setTimeout(() => {
+        const topLang = languageStats[0]?.name;
+        setForecast(
+          topLang === "TypeScript"
+            ? "TypeScript usage trending +30% based on recent project patterns. Python dominance stable. Consider exploring Go or Rust for systems work."
+            : `${topLang} remains your dominant stack. Consider exploring complementary technologies for full-stack capabilities.`,
+        );
+        setLoadingForecast(false);
+      }, 1000);
+    } catch (err) {
+      setLoadingForecast(false);
+    }
+  };
 
-    const totalRepos = languageStats.reduce((sum, lang) => sum + (lang.count || lang.repos || 0), 0);
-
+  if (!languageStats || languageStats.length === 0) {
     return (
-        <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-8">
-            <div className="flex items-center justify-between mb-6">
-                <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100">🧪 Tech Stack DNA</h3>
-                <span className="text-sm text-gray-500 dark:text-gray-400">{languageStats.length} languages total</span>
-            </div>
-
-            {/* Language Bars - ENHANCED */}
-            <div className="space-y-5">
-                {sortedLanguages.map((lang, idx) => {
-                    const count = lang.count || lang.repos || 0;
-                    const percentage = totalRepos > 0 ? (count / totalRepos) * 100 : 0;
-                    const color = languageColors[lang.name] || '#888';
-
-                    // Simulated trend (in production, calculate from historical data)
-                    const trend = idx % 3 === 0 ? 8 : idx % 3 === 1 ? -3 : 0;
-
-                    return (
-                        <motion.div
-                            key={lang.name}
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: idx * 0.1, type: "spring", stiffness: 100 }}
-                            className="group"
-                        >
-                            <div className="flex items-center justify-between mb-3">
-                                <div className="flex items-center gap-3">
-                                    {/* Larger language color indicator */}
-                                    <div
-                                        className="w-8 h-8 rounded-lg flex items-center justify-center shadow-md group-hover:scale-110 transition-transform"
-                                        style={{ backgroundColor: color }}
-                                    >
-                                        <span className="text-white text-xs font-bold">
-                                            {lang.name.substring(0, 2).toUpperCase()}
-                                        </span>
-                                    </div>
-                                    <div>
-                                        <span className="font-bold text-lg text-gray-900 dark:text-gray-100">
-                                            {lang.name}
-                                        </span>
-                                        {/* Trend indicator */}
-                                        {trend !== 0 && (
-                                            <motion.span
-                                                className={`ml-2 text-xs font-semibold ${trend > 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}
-                                                initial={{ opacity: 0, x: -5 }}
-                                                animate={{ opacity: 1, x: 0 }}
-                                                transition={{ delay: idx * 0.1 + 0.3 }}
-                                            >
-                                                {trend > 0 ? '↑' : '↓'} {Math.abs(trend)}%
-                                            </motion.span>
-                                        )}
-                                    </div>
-                                </div>
-                                <div className="text-right">
-                                    <div className="text-lg font-bold text-gray-900 dark:text-gray-100">
-                                        {percentage.toFixed(1)}%
-                                    </div>
-                                    <div className="text-xs text-gray-500 dark:text-gray-400">
-                                        {count} repo{count !== 1 ? 's' : ''}
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Animated progress bar with gradient */}
-                            <div className="h-3 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden shadow-inner">
-                                <motion.div
-                                    className="h-full rounded-full relative overflow-hidden"
-                                    style={{
-                                        background: `linear-gradient(90deg, ${color}dd, ${color})`
-                                    }}
-                                    initial={{ width: 0 }}
-                                    animate={{ width: `${percentage}%` }}
-                                    transition={{ duration: 1, delay: idx * 0.1, ease: "easeOut" }}
-                                >
-                                    {/* Shimmer effect */}
-                                    <motion.div
-                                        className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
-                                        animate={{ x: ['-100%', '200%'] }}
-                                        transition={{ duration: 2, delay: idx * 0.1 + 1, ease: "linear" }}
-                                    />
-                                </motion.div>
-                            </div>
-                        </motion.div>
-                    );
-                })}
-            </div>
-
-            {/* AI Prediction */}
-            <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 }}
-                className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-800"
-            >
-                <div className="flex items-start gap-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
-                    <TrendingUp className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-1 flex-shrink-0" />
-                    <div className="flex-1">
-                        <div className="font-semibold text-blue-900 dark:text-blue-300 mb-1">
-                            🔮 6-Month Forecast
-                        </div>
-                        {loadingForecast ? (
-                            <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                                <Loader2 className="w-4 h-4 animate-spin" />
-                                <span>Analyzing trends...</span>
-                            </div>
-                        ) : (
-                            <div className="text-sm text-gray-700 dark:text-gray-400">
-                                {forecast || `${sortedLanguages[0]?.name || 'Primary language'} remains your dominant stack. Consider exploring complementary technologies for full-stack capabilities.`}
-                            </div>
-                        )}
-                    </div>
-                </div>
-            </motion.div>
-        </div>
+      <div className="bg-white dark:bg-gray-900 rounded-[20px] border border-gray-200 dark:border-gray-800 p-10">
+        <h3 className="text-heading-lg font-bold text-gray-900 dark:text-white mb-6">
+          🧪 Tech Stack DNA
+        </h3>
+        <p className="text-gray-500 dark:text-gray-400">
+          No language data available
+        </p>
+      </div>
     );
-}
+  }
 
+  const sortedLanguages = languageStats
+    .sort((a, b) => (b.count || b.repos || 0) - (a.count || a.repos || 0))
+    .slice(0, 8);
+
+  const totalRepos = languageStats.reduce(
+    (sum, lang) => sum + (lang.count || lang.repos || 0),
+    0,
+  );
+
+  return (
+    <div className="bg-white dark:bg-gray-900 rounded-[20px] border border-gray-200 dark:border-gray-800 p-10">
+      <div className="flex items-center justify-between mb-8">
+        <h3 className="text-heading-lg font-bold text-gray-900 dark:text-white">
+          🧪 Tech Stack DNA
+        </h3>
+        <span className="text-sm text-gray-500 dark:text-gray-400">
+          {languageStats.length} languages total
+        </span>
+      </div>
+
+      {/* Language Bars */}
+      <div className="space-y-4">
+        {sortedLanguages.map((lang, idx) => {
+          const count = lang.count || lang.repos || 0;
+          const percentage = totalRepos > 0 ? (count / totalRepos) * 100 : 0;
+          const color = languageColors[lang.name] || "#888";
+
+          return (
+            <motion.div
+              key={lang.name}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: idx * 0.08, type: "spring", stiffness: 120 }}
+            >
+              <div className="flex items-center justify-between mb-1.5">
+                <div className="flex items-center gap-2.5">
+                  <div
+                    className="w-4 h-4 rounded-full flex-shrink-0"
+                    style={{ backgroundColor: color }}
+                  />
+                  <span className="font-semibold text-sm text-gray-900 dark:text-gray-100">
+                    {lang.name}
+                  </span>
+                </div>
+                <span className="text-sm font-semibold text-gray-600 dark:text-gray-400">
+                  {percentage.toFixed(1)}%
+                </span>
+              </div>
+
+              <div className="h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+                <motion.div
+                  className="h-full rounded-full"
+                  style={{ backgroundColor: color }}
+                  initial={{ width: 0 }}
+                  animate={{ width: `${percentage}%` }}
+                  transition={{
+                    duration: 0.8,
+                    delay: idx * 0.08,
+                    ease: "easeOut",
+                  }}
+                />
+              </div>
+            </motion.div>
+          );
+        })}
+      </div>
+
+      {/* AI Prediction */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.5 }}
+        className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-800"
+      >
+        <div className="flex items-start gap-4 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950/30 dark:to-blue-900/20 border border-blue-200 dark:border-blue-800/50 rounded-2xl p-6">
+          <span className="text-[32px] flex-shrink-0">🔮</span>
+          <div className="flex-1">
+            <div className="text-base font-semibold text-blue-700 dark:text-blue-300 mb-2">
+              6-Month Forecast
+            </div>
+            {loadingForecast ? (
+              <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span>Analyzing trends...</span>
+              </div>
+            ) : (
+              <div className="text-sm text-gray-700 dark:text-gray-400">
+                {forecast ||
+                  `${sortedLanguages[0]?.name || "Primary language"} remains your dominant stack. Consider exploring complementary technologies for full-stack capabilities.`}
+              </div>
+            )}
+          </div>
+        </div>
+      </motion.div>
+    </div>
+  );
+}
