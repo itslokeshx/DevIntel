@@ -9,6 +9,8 @@ import { ContributionHeatmap } from '../components/github/ContributionHeatmap';
 import { TechStackDNA } from '../components/github/TechStackDNA';
 import { YearlyBreakdown } from '../components/github/YearlyBreakdown';
 import { DeveloperWrapped } from '../components/github/DeveloperWrapped';
+import { RepositoryShowcase } from '../components/github/RepositoryShowcase';
+import { GrowthOpportunities } from '../components/github/GrowthOpportunities';
 import { LoadingSkeleton } from '../components/common/LoadingSkeleton';
 import { AllRepositories } from '../components/github/AllRepositories';
 import { DeveloperAnalysis } from '../components/github/DeveloperAnalysis';
@@ -325,7 +327,7 @@ export default function GitHubIntelligence() {
                     </motion.div>
                 )}
 
-                {/* Signature Projects */}
+                {/* Repository Showcase - PREMIUM */}
                 {repos.length > 0 && (
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
@@ -333,65 +335,7 @@ export default function GitHubIntelligence() {
                         transition={{ duration: 0.5, delay: 0.5 }}
                         className="mb-16"
                     >
-                        <SectionCard
-                            icon={<Star className="w-6 h-6" />}
-                            title="🏆 SIGNATURE PROJECTS"
-                        >
-                            <div className="space-y-6">
-                                {repos.slice(0, 3).map((repo, idx) => (
-                                    <div key={repo.name} className="p-6 bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800">
-                                        <div className="flex items-start justify-between mb-3">
-                                            <div>
-                                                <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                                                    {idx + 1}. {repo.name}
-                                                </h3>
-                                                {repo.description && (
-                                                    <p className="text-gray-600 dark:text-gray-400 italic mb-4">
-                                                        "{repo.description}"
-                                                    </p>
-                                                )}
-                                            </div>
-                                        </div>
-                                        <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400 mb-4">
-                                            {repo.language && (
-                                                <span className="flex items-center gap-1">
-                                                    <Code2 className="w-4 h-4" />
-                                                    {repo.language}
-                                                </span>
-                                            )}
-                                            {repo.stars > 0 && (
-                                                <span className="flex items-center gap-1">
-                                                    <Star className="w-4 h-4" />
-                                                    {repo.stars}
-                                                </span>
-                                            )}
-                                            {repo.forks > 0 && (
-                                                <span className="flex items-center gap-1">
-                                                    <GitFork className="w-4 h-4" />
-                                                    {repo.forks}
-                                                </span>
-                                            )}
-                                        </div>
-                                        <a
-                                            href={repo.url}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="inline-flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-semibold"
-                                        >
-                                            View Repository →
-                                        </a>
-                                    </div>
-                                ))}
-                                {repos.length > 3 && (
-                                    <button
-                                        onClick={() => setShowAllRepos(true)}
-                                        className="w-full py-3 text-center text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 font-semibold transition-colors"
-                                    >
-                                        See all {repos.length} repositories →
-                                    </button>
-                                )}
-                            </div>
-                        </SectionCard>
+                        <RepositoryShowcase repositories={data.repositories} />
                     </motion.div>
                 )}
 
@@ -438,43 +382,18 @@ export default function GitHubIntelligence() {
                     />
                 </motion.div>
 
-                {/* Growth Opportunities */}
+                {/* Growth Opportunities - PREMIUM */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: 0.7 }}
                     className="mb-16"
                 >
-                    <SectionCard
-                        icon={<Target className="w-6 h-6" />}
-                        title="🎯 GROWTH OPPORTUNITIES"
-                    >
-                        <div className="space-y-6">
-                            <p className="text-gray-600 dark:text-gray-400 mb-6">
-                                Based on your trajectory, here's what could amplify your impact:
-                            </p>
-                            <div className="space-y-4">
-                                <GrowthCard
-                                    number="1️⃣"
-                                    title="Documentation Power-Up"
-                                    description="76% of your repos lack comprehensive READMEs. Well-documented projects receive 3-5x more stars and signal professionalism to recruiters."
-                                    action="Add demos, installation guides, and usage examples."
-                                />
-                                <GrowthCard
-                                    number="2️⃣"
-                                    title="Open Source Engagement"
-                                    description="You have 0 contributions to external repos. Contributing to 3 mid-size projects in your stack builds credibility and expands your network."
-                                    action="Find issues labeled 'good first issue' in repos you use, submit quality PRs."
-                                />
-                                <GrowthCard
-                                    number="3️⃣"
-                                    title="Consistency Multiplier"
-                                    description={`Your ${data.contributions?.currentStreak || 0}-day streak is impressive! Maintain 90 days to enter top 5% of consistent contributors.`}
-                                    action="Commit to 1 small PR/day, even documentation fixes, to maintain momentum."
-                                />
-                            </div>
-                        </div>
-                    </SectionCard>
+                    <GrowthOpportunities
+                        growthOps={data.insights?.growthOps}
+                        metrics={data.metrics}
+                        repositories={data.repositories}
+                    />
                 </motion.div>
             </div>
 
