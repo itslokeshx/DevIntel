@@ -151,7 +151,7 @@ export default function GitHubComparison() {
             <ArrowLeft className="w-4 h-4" />
             Back
           </button>
-          
+
           <div className="flex items-center gap-3">
             <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse shadow-lg shadow-green-500/50" />
             <h1 className="text-base font-black text-gray-900 dark:text-white tracking-tight">
@@ -159,7 +159,7 @@ export default function GitHubComparison() {
             </h1>
             <Trophy className="w-4 h-4 text-yellow-500" />
           </div>
-          
+
           <button
             onClick={handleNewBattle}
             className="flex items-center gap-2 px-5 py-2.5 text-sm font-bold bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-xl shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 transition-all duration-200 hover:scale-105"
@@ -174,8 +174,6 @@ export default function GitHubComparison() {
           </button>
         </div>
       </div>
-      
-      <div className="pt-8">
 
       <div className="max-w-5xl mx-auto px-6 py-12 space-y-8">
         {/* 1. Overall Scores with Circular Progress */}
@@ -303,167 +301,13 @@ export default function GitHubComparison() {
           )}
         </AnimatePresence>
 
-        {/* 3. AI Referee Verdict */}
-        <AnimatePresence>
-          {revealStage >= 1 &&
-            (aiComparison?.verdict || aiInsights?.comparison) && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-              >
-                <div className="relative overflow-hidden bg-gradient-to-br from-gray-900 via-gray-900 to-blue-900/20 dark:from-gray-800 dark:via-gray-800 dark:to-blue-800/20 rounded-[24px] shadow-xl p-8 md:p-12">
-                  {/* Animated gradient overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-transparent to-purple-500/5" />
-
-                  <div className="relative z-10">
-                    <div className="flex items-start gap-4 mb-6">
-                      <motion.span
-                        animate={{ rotate: [0, 10, -10, 0] }}
-                        transition={{
-                          duration: 2,
-                          repeat: Infinity,
-                          repeatDelay: 3,
-                        }}
-                        className="text-4xl flex-shrink-0"
-                      >
-                        🧑‍⚖️
-                      </motion.span>
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-2">
-                          <h3 className="text-2xl font-black text-white">
-                            AI Analysis
-                          </h3>
-                          <span className="px-3 py-1 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 text-xs font-bold text-white">
-                            GPT-4
-                          </span>
-                        </div>
-                        <p className="text-sm text-gray-400">
-                          Deep learning-powered comparison using advanced
-                          pattern recognition
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10">
-                      <div className="text-gray-100 leading-relaxed text-[15px]">
-                        <StreamingAIVerdict
-                          text={aiComparison?.verdict || aiInsights?.comparison}
-                          onComplete={() =>
-                            setTimeout(() => setRevealStage(2), 500)
-                          }
-                        />
-                      </div>
-                      {aiComparison?.winner && (
-                        <motion.div
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: 0.5 }}
-                          className="mt-6 pt-6 border-t border-white/10"
-                        >
-                          <div className="flex items-center gap-2 text-sm">
-                            <Crown className="w-4 h-4 text-amber-400" />
-                            <span className="font-semibold text-white">
-                              AI Winner:
-                            </span>
-                            <span className="font-bold text-amber-300">
-                              {aiWinnerName}
-                            </span>
-                            {aiComparison?.winReason && (
-                              <span className="text-gray-400">
-                                — {aiComparison.winReason}
-                              </span>
-                            )}
-                          </div>
-                        </motion.div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            )}
-        </AnimatePresence>
-
-        {/* 4. Clear Winner Declaration */}
-        <AnimatePresence>
-          {revealStage >= 1 && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.4, type: "spring" }}
-            >
-              <div className="relative overflow-hidden bg-gradient-to-br from-amber-50 via-yellow-50/50 to-orange-50 dark:from-yellow-900/10 dark:via-amber-900/5 dark:to-orange-900/10 rounded-[24px] border-2 border-yellow-200/60 dark:border-yellow-800/40 shadow-xl p-10 md:p-12">
-                {/* Subtle shine effect */}
-                <motion.div
-                  animate={{
-                    x: ["-100%", "100%"],
-                  }}
-                  transition={{
-                    duration: 3,
-                    repeat: Infinity,
-                    repeatDelay: 2,
-                    ease: "easeInOut",
-                  }}
-                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
-                  style={{ transform: "skewX(-20deg)" }}
-                />
-
-                <div className="relative z-10">
-                  <div className="flex flex-col md:flex-row items-center justify-between gap-8">
-                    <div className="flex-1 text-center md:text-left">
-                      <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/80 dark:bg-gray-900/60 backdrop-blur-sm border border-yellow-300/30 dark:border-yellow-700/30 mb-4">
-                        <Trophy className="w-3.5 h-3.5 text-yellow-600 dark:text-yellow-500" />
-                        <span className="text-xs font-bold text-yellow-700 dark:text-yellow-400">
-                          WINNER
-                        </span>
-                      </div>
-                      <div className="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-600 via-amber-600 to-orange-600 dark:from-yellow-400 dark:via-amber-400 dark:to-orange-400 mb-3">
-                        {aiWinner && aiWinner !== "TIE"
-                          ? aiWinnerName
-                          : battleResult.winner === "TIE"
-                            ? "Perfect Draw"
-                            : battleResult.winner === "A"
-                              ? userA?.profile?.name || userA?.username
-                              : userB?.profile?.name || userB?.username}
-                      </div>
-                      <p className="text-sm md:text-base text-gray-700 dark:text-gray-300 font-medium max-w-md mx-auto md:mx-0">
-                        {aiComparison?.winReason || battleResult.description}
-                      </p>
-                    </div>
-
-                    <div className="flex items-center gap-4">
-                      <div className="flex flex-col items-center gap-2 px-6 py-4 rounded-2xl bg-white/60 dark:bg-gray-900/40 backdrop-blur-sm border border-blue-200/50 dark:border-blue-800/30">
-                        <span className="w-4 h-4 rounded-full bg-blue-500 shadow-lg shadow-blue-500/50" />
-                        <span className="text-xs font-bold text-gray-700 dark:text-gray-300">
-                          @{userA?.username}
-                        </span>
-                      </div>
-
-                      <div className="text-2xl font-black text-gray-400 dark:text-gray-600">
-                        ⚔️
-                      </div>
-
-                      <div className="flex flex-col items-center gap-2 px-6 py-4 rounded-2xl bg-white/60 dark:bg-gray-900/40 backdrop-blur-sm border border-purple-200/50 dark:border-purple-800/30">
-                        <span className="w-4 h-4 rounded-full bg-purple-500 shadow-lg shadow-purple-500/50" />
-                        <span className="text-xs font-bold text-gray-700 dark:text-gray-300">
-                          @{userB?.username}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* 5. Head-to-Head Metrics */}
+        {/* 3. Head-to-Head Metrics */}
         <AnimatePresence>
           {revealStage >= 1 && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
+              transition={{ delay: 0.3 }}
             >
               <div className="bg-white dark:bg-gray-900 rounded-[24px] border border-gray-200 dark:border-gray-800 shadow-lg p-8 md:p-10">
                 <div className="text-center mb-10">
@@ -604,13 +448,76 @@ export default function GitHubComparison() {
           )}
         </AnimatePresence>
 
-        {/* 6. Tech Stack Overlap */}
+        {/* 4. AI Verdict & Analysis */}
+        <AnimatePresence>
+          {revealStage >= 1 &&
+            (aiComparison?.verdict || aiInsights?.comparison) && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+              >
+                <div className="bg-white dark:bg-gray-900 rounded-[24px] border border-gray-200 dark:border-gray-800 shadow-lg p-8 md:p-10">
+                  {/* Header */}
+                  <div className="flex items-center gap-3 mb-6">
+                    <span className="text-3xl">🧑‍⚖️</span>
+                    <div className="flex-1">
+                      <h3 className="text-2xl font-black text-gray-900 dark:text-white">
+                        AI Analysis
+                      </h3>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        Powered by Llama
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* AI Verdict Text */}
+                  <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-6 mb-6">
+                    <div className="text-gray-700 dark:text-gray-300 leading-relaxed text-[15px]">
+                      <StreamingAIVerdict
+                        text={aiComparison?.verdict || aiInsights?.comparison}
+                        onComplete={() =>
+                          setTimeout(() => setRevealStage(2), 500)
+                        }
+                      />
+                    </div>
+                  </div>
+
+                  {/* Winner Declaration */}
+                  {aiComparison?.winner && (
+                    <div className="bg-gradient-to-r from-yellow-50 to-amber-50 dark:from-yellow-900/20 dark:to-amber-900/20 rounded-xl p-6 border border-yellow-200 dark:border-yellow-800/40">
+                      <div className="flex items-start gap-4">
+                        <div className="flex-shrink-0 w-10 h-10 rounded-full bg-yellow-500 flex items-center justify-center">
+                          <span className="text-white text-xl">🏆</span>
+                        </div>
+                        <div className="flex-1">
+                          <div className="text-xs font-bold text-yellow-700 dark:text-yellow-400 uppercase tracking-wider mb-1">
+                            Winner
+                          </div>
+                          <div className="text-xl font-black text-gray-900 dark:text-white mb-2">
+                            {aiWinnerName}
+                          </div>
+                          {aiComparison?.winReason && (
+                            <p className="text-sm text-gray-600 dark:text-gray-400">
+                              {aiComparison.winReason}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </motion.div>
+            )}
+        </AnimatePresence>
+
+        {/* 5. Tech Stack Overlap */}
         <AnimatePresence>
           {revealStage >= 1 && (langsA.size > 0 || langsB.size > 0) && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 }}
+              transition={{ delay: 0.5 }}
             >
               <div className="bg-gradient-to-br from-white via-indigo-50/20 to-purple-50/20 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900 rounded-[24px] border border-gray-200 dark:border-gray-800 shadow-lg p-8 md:p-10">
                 <div className="text-center mb-10">
@@ -712,148 +619,146 @@ export default function GitHubComparison() {
           )}
         </AnimatePresence>
 
-        {/* 7. Winner Announcement */}
+        {/* 6. Final Winner Declaration */}
         <AnimatePresence>
           {revealStage >= 2 && (
             <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ type: "spring", bounce: 0.3 }}
+              initial={{ opacity: 0, scale: 0.95, y: 30 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              transition={{ type: "spring", bounce: 0.4, delay: 0.2 }}
             >
-              {battleResult.winner === "TIE" ? (
-                <div className="relative overflow-hidden bg-gradient-to-br from-gray-50 via-slate-50 to-gray-100 dark:from-gray-800 dark:via-gray-850 dark:to-gray-900 rounded-[24px] border border-gray-200 dark:border-gray-700 shadow-xl p-12 md:p-16 text-center">
-                  <motion.div
-                    animate={{ rotate: 360 }}
-                    transition={{
-                      duration: 20,
-                      repeat: Infinity,
-                      ease: "linear",
-                    }}
-                    className="absolute top-10 right-10 text-6xl opacity-10"
-                  >
-                    🤝
-                  </motion.div>
+              <div className="relative overflow-hidden bg-gradient-to-br from-amber-50 via-yellow-50/50 to-orange-50 dark:from-yellow-900/10 dark:via-amber-900/5 dark:to-orange-900/10 rounded-[24px] border-2 border-yellow-200/60 dark:border-yellow-800/40 shadow-xl p-8 md:p-10">
+                {/* Subtle shine effect */}
+                <motion.div
+                  animate={{
+                    x: ["-100%", "100%"],
+                  }}
+                  transition={{
+                    duration: 3,
+                    repeat: Infinity,
+                    repeatDelay: 2,
+                    ease: "easeInOut",
+                  }}
+                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+                  style={{ transform: "skewX(-20deg)" }}
+                />
 
-                  <motion.span
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ type: "spring", delay: 0.2 }}
-                    className="text-7xl mb-6 block"
-                  >
-                    🤝
-                  </motion.span>
-                  <h2 className="text-4xl md:text-5xl font-black text-gray-900 dark:text-white mb-3">
-                    Perfect Balance!
-                  </h2>
-                  <p className="text-lg text-gray-600 dark:text-gray-400 max-w-md mx-auto">
-                    Both developers demonstrate exceptional and equivalent
-                    skills
-                  </p>
-                </div>
-              ) : (
-                <div className="relative overflow-hidden bg-gradient-to-br from-amber-50 via-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:via-amber-900/10 dark:to-orange-900/20 border-2 border-yellow-300/50 dark:border-yellow-700/40 rounded-[24px] p-10 md:p-14 text-center shadow-2xl">
-                  {/* Enhanced Confetti */}
-                  <div className="absolute inset-0 pointer-events-none overflow-hidden">
-                    {[...Array(20)].map((_, i) => (
-                      <motion.div
-                        key={i}
-                        initial={{
-                          y: -20,
-                          x: `${20 + Math.random() * 60}%`,
-                          opacity: 0,
-                          rotate: 0,
-                        }}
-                        animate={{
-                          y: ["0%", "120%"],
-                          opacity: [0, 1, 1, 0],
-                          rotate: Math.random() * 720,
-                        }}
-                        transition={{
-                          duration: 2.5 + Math.random() * 2,
-                          delay: Math.random() * 1.5,
-                          repeat: Infinity,
-                          repeatDelay: 2,
-                          ease: "easeInOut",
-                        }}
-                        className="absolute text-2xl"
+                <div className="relative z-10">
+                  {/* Check AI winner first, fallback to battleResult */}
+                  {aiWinner === "TIE" ||
+                  (!aiWinner && battleResult.winner === "TIE") ? (
+                    <div className="text-center">
+                      <motion.span
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{ type: "spring", delay: 0.3 }}
+                        className="text-5xl mb-4 block"
                       >
-                        {["🎉", "⭐", "✨", "💫", "🏆"][i % 5]}
-                      </motion.div>
-                    ))}
-                  </div>
-
-                  <motion.div
-                    initial={{ scale: 0, rotate: -180, y: -50 }}
-                    animate={{ scale: 1, rotate: 0, y: 0 }}
-                    transition={{ type: "spring", bounce: 0.6, delay: 0.2 }}
-                    className="relative z-10"
-                  >
-                    <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-yellow-400 to-amber-500 shadow-2xl shadow-yellow-500/50 mb-6">
-                      <Trophy className="w-10 h-10 text-white" />
+                        🤝
+                      </motion.span>
+                      <h2 className="text-3xl font-black text-gray-900 dark:text-white mb-3">
+                        Perfect Draw!
+                      </h2>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 max-w-md mx-auto">
+                        Both developers demonstrate exceptional and equivalent
+                        skills
+                      </p>
                     </div>
-                  </motion.div>
+                  ) : (
+                    <div>
+                      <div className="flex flex-col items-center">
+                        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/80 dark:bg-gray-900/60 backdrop-blur-sm border border-yellow-300/30 dark:border-yellow-700/30 mb-4">
+                          <Trophy className="w-3.5 h-3.5 text-yellow-600 dark:text-yellow-500" />
+                          <span className="text-xs font-bold text-yellow-700 dark:text-yellow-400 uppercase tracking-wider">
+                            Final Verdict
+                          </span>
+                        </div>
 
-                  <motion.img
-                    initial={{ scale: 0.8, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{ delay: 0.4 }}
-                    src={`https://github.com/${battleResult.winner === "A" ? userA?.username : userB?.username}.png`}
-                    alt="Winner"
-                    className="w-28 h-28 rounded-full mx-auto mb-6 border-4 border-white dark:border-gray-800 shadow-2xl ring-4 ring-yellow-400/30"
-                  />
+                        <motion.img
+                          initial={{ scale: 0.8, opacity: 0 }}
+                          animate={{ scale: 1, opacity: 1 }}
+                          transition={{ delay: 0.4, type: "spring" }}
+                          src={`https://github.com/${
+                            aiWinner && aiWinner !== "TIE"
+                              ? aiWinner === "A"
+                                ? userA?.username
+                                : userB?.username
+                              : battleResult.winner === "A"
+                                ? userA?.username
+                                : userB?.username
+                          }.png`}
+                          alt="Winner"
+                          className="w-20 h-20 rounded-full mb-4 border-3 border-white dark:border-gray-800 shadow-xl ring-2 ring-yellow-400/40"
+                        />
 
-                  <motion.h2
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.5 }}
-                    className="text-5xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-600 via-amber-600 to-orange-600 dark:from-yellow-400 dark:via-amber-400 dark:to-orange-400 mb-3"
-                  >
-                    {battleResult.winner === "A"
-                      ? userA?.profile?.name || userA?.username
-                      : userB?.profile?.name || userB?.username}
-                  </motion.h2>
+                        <h2 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-600 via-amber-600 to-orange-600 dark:from-yellow-400 dark:via-amber-400 dark:to-orange-400 mb-3">
+                          {aiWinner && aiWinner !== "TIE"
+                            ? aiWinnerName
+                            : battleResult.winner === "A"
+                              ? userA?.profile?.name || userA?.username
+                              : userB?.profile?.name || userB?.username}
+                        </h2>
 
-                  <motion.p
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.6 }}
-                    className="text-lg font-medium text-gray-700 dark:text-gray-300 mb-8 max-w-lg mx-auto"
-                  >
-                    {battleResult.description}
-                  </motion.p>
+                        <p className="text-sm text-gray-700 dark:text-gray-300 font-medium max-w-xl text-center mb-6">
+                          {aiComparison?.winReason || battleResult.description}
+                        </p>
 
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.7 }}
-                    className="inline-flex items-center gap-6 bg-white dark:bg-gray-800 px-10 py-5 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700"
-                  >
-                    <div className="text-center">
-                      <div className="text-xs font-bold text-gray-400 dark:text-gray-500 mb-1 uppercase">
-                        Winner
+                        {/* Score Display */}
+                        <div className="inline-flex items-center gap-6 bg-white/80 dark:bg-gray-900/60 backdrop-blur-sm px-8 py-4 rounded-xl shadow-lg border border-gray-200/50 dark:border-gray-700/50 mb-6">
+                          <div className="text-center">
+                            <div className="text-[10px] font-bold text-gray-400 dark:text-gray-500 mb-1 uppercase tracking-wider">
+                              Winner
+                            </div>
+                            <span className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 to-amber-600">
+                              {(aiWinner && aiWinner !== "TIE"
+                                ? aiWinner
+                                : battleResult.winner) === "A"
+                                ? scoreA.total
+                                : scoreB.total}
+                            </span>
+                          </div>
+
+                          <div className="w-px h-10 bg-gray-300 dark:bg-gray-700" />
+
+                          <div className="text-center">
+                            <div className="text-[10px] font-bold text-gray-400 dark:text-gray-500 mb-1 uppercase tracking-wider">
+                              Runner-up
+                            </div>
+                            <span className="text-2xl font-black text-gray-400 dark:text-gray-600">
+                              {(aiWinner && aiWinner !== "TIE"
+                                ? aiWinner
+                                : battleResult.winner) === "A"
+                                ? scoreB.total
+                                : scoreA.total}
+                            </span>
+                          </div>
+                        </div>
                       </div>
-                      <span className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 to-amber-600">
-                        {battleResult.winner === "A"
-                          ? scoreA.total
-                          : scoreB.total}
-                      </span>
-                    </div>
 
-                    <div className="w-px h-12 bg-gray-200 dark:bg-gray-700" />
+                      {/* Fighter Cards */}
+                      <div className="flex items-center justify-center gap-3">
+                        <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/60 dark:bg-gray-900/40 backdrop-blur-sm border border-blue-200/50 dark:border-blue-800/30">
+                          <span className="w-3 h-3 rounded-full bg-blue-500 shadow-lg shadow-blue-500/50" />
+                          <span className="text-xs font-bold text-gray-700 dark:text-gray-300">
+                            @{userA?.username}
+                          </span>
+                        </div>
 
-                    <div className="text-center">
-                      <div className="text-xs font-bold text-gray-400 dark:text-gray-500 mb-1 uppercase">
-                        Runner-up
+                        <div className="text-xl font-black text-gray-400 dark:text-gray-600">
+                          ⚔️
+                        </div>
+
+                        <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/60 dark:bg-gray-900/40 backdrop-blur-sm border border-purple-200/50 dark:border-purple-800/30">
+                          <span className="w-3 h-3 rounded-full bg-purple-500 shadow-lg shadow-purple-500/50" />
+                          <span className="text-xs font-bold text-gray-700 dark:text-gray-300">
+                            @{userB?.username}
+                          </span>
+                        </div>
                       </div>
-                      <span className="text-3xl font-black text-gray-400 dark:text-gray-600">
-                        {battleResult.winner === "A"
-                          ? scoreB.total
-                          : scoreA.total}
-                      </span>
                     </div>
-                  </motion.div>
+                  )}
                 </div>
-              )}
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
@@ -872,16 +777,6 @@ function ScoreRing({ username, score, isWinner, color }) {
   return (
     <div className="flex flex-col items-center gap-3">
       <div className="relative">
-        {isWinner && (
-          <motion.div
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: -8 }}
-            transition={{ delay: 0.8 }}
-            className="absolute -top-6 left-1/2 -translate-x-1/2 z-10"
-          >
-            <Crown className="w-7 h-7 text-yellow-500 fill-yellow-400" />
-          </motion.div>
-        )}
         <svg width="140" height="140" className="-rotate-90">
           <circle
             cx="70"

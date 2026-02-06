@@ -240,10 +240,15 @@ export default function GitHubIntelligence() {
           >
             <div className="flex items-start gap-5">
               <span className="text-5xl flex-shrink-0 mt-1">🧬</span>
-              <div>
-                <h2 className="text-heading-md font-bold text-gray-900 dark:text-white mb-5">
-                  AI Verdict
-                </h2>
+              <div className="flex-1">
+                <div className="flex items-center gap-3 mb-2">
+                  <h2 className="text-heading-md font-bold text-gray-900 dark:text-white">
+                    AI Verdict
+                  </h2>
+                </div>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                  Powered by Llama 3.3 70B
+                </p>
                 <div className="text-[19px] md:text-body-lg leading-[1.7] text-gray-800 dark:text-gray-200 tracking-[0.01em]">
                   {aiVerdictStreaming ? (
                     <div>
