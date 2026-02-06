@@ -8,22 +8,22 @@
  * Target: 800 tokens per profile (down from 1800)
  */
 function getBatchedInsightsPrompt(data) {
-    const username = data.username;
-    const repos = data.repositories?.length || 0;
-    const stars = data.repositories?.reduce((sum, r) => sum + (r.stars || 0), 0) || 0;
-    const commits = data.contributions?.totalCommits || 0;
-    const currentStreak = data.contributions?.currentStreak || 0;
-    const longestStreak = data.contributions?.longestStreak || 0;
-    const topLanguages = data.metrics?.skills?.slice(0, 5).map(s => s.name).join(', ') || 'N/A';
-    const devScore = data.metrics?.devScore || 0;
-    const consistencyScore = data.metrics?.consistencyScore || 0;
-    const impactScore = data.metrics?.impactScore || 0;
+  const username = data.username;
+  const repos = data.repositories?.length || 0;
+  const stars = data.repositories?.reduce((sum, r) => sum + (r.stars || 0), 0) || 0;
+  const commits = data.contributions?.totalCommits || 0;
+  const currentStreak = data.contributions?.currentStreak || 0;
+  const longestStreak = data.contributions?.longestStreak || 0;
+  const topLanguages = data.metrics?.skills?.slice(0, 5).map(s => s.name).join(', ') || 'N/A';
+  const devScore = data.metrics?.devScore || 0;
+  const consistencyScore = data.metrics?.consistencyScore || 0;
+  const impactScore = data.metrics?.impactScore || 0;
 
-    // Calculate documentation quality
-    const reposWithReadme = (data.repositories || []).filter(r => r.hasReadme).length;
-    const docScore = repos > 0 ? Math.round((reposWithReadme / repos) * 100) : 0;
+  // Calculate documentation quality
+  const reposWithReadme = (data.repositories || []).filter(r => r.hasReadme).length;
+  const docScore = repos > 0 ? Math.round((reposWithReadme / repos) * 100) : 0;
 
-    return `You are a senior tech analyst. Analyze this developer and return ONLY valid JSON.
+  return `You are a senior tech analyst. Analyze this developer and return ONLY valid JSON.
 
 DEVELOPER DATA:
 - Username: ${username}
@@ -76,27 +76,27 @@ Return ONLY the JSON, no markdown, no explanation.`;
  * COMPARISON VERDICT PROMPT - Optimized for battles
  */
 function getComparisonVerdictPrompt(userAData, userBData) {
-    const userA = {
-        username: userAData.username,
-        repos: userAData.repositories?.length || 0,
-        stars: userAData.repositories?.reduce((sum, r) => sum + (r.stars || 0), 0) || 0,
-        commits: userAData.contributions?.totalCommits || 0,
-        streak: userAData.contributions?.currentStreak || 0,
-        languages: userAData.metrics?.skills?.slice(0, 3).map(s => s.name).join(', ') || 'N/A',
-        devScore: userAData.metrics?.devScore || 0
-    };
+  const userA = {
+    username: userAData.username,
+    repos: userAData.repositories?.length || 0,
+    stars: userAData.repositories?.reduce((sum, r) => sum + (r.stars || 0), 0) || 0,
+    commits: userAData.contributions?.totalCommits || 0,
+    streak: userAData.contributions?.currentStreak || 0,
+    languages: userAData.metrics?.skills?.slice(0, 3).map(s => s.name).join(', ') || 'N/A',
+    devScore: userAData.metrics?.devScore || 0
+  };
 
-    const userB = {
-        username: userBData.username,
-        repos: userBData.repositories?.length || 0,
-        stars: userBData.repositories?.reduce((sum, r) => sum + (r.stars || 0), 0) || 0,
-        commits: userBData.contributions?.totalCommits || 0,
-        streak: userBData.contributions?.currentStreak || 0,
-        languages: userBData.metrics?.skills?.slice(0, 3).map(s => s.name).join(', ') || 'N/A',
-        devScore: userBData.metrics?.devScore || 0
-    };
+  const userB = {
+    username: userBData.username,
+    repos: userBData.repositories?.length || 0,
+    stars: userBData.repositories?.reduce((sum, r) => sum + (r.stars || 0), 0) || 0,
+    commits: userBData.contributions?.totalCommits || 0,
+    streak: userBData.contributions?.currentStreak || 0,
+    languages: userBData.metrics?.skills?.slice(0, 3).map(s => s.name).join(', ') || 'N/A',
+    devScore: userBData.metrics?.devScore || 0
+  };
 
-    return `You are an impartial tech analyst comparing two developers. Return ONLY valid JSON.
+  return `You are an impartial tech analyst comparing two developers. Return ONLY valid JSON.
 
 DEVELOPER A (@${userA.username}):
 - Repos: ${userA.repos} | Stars: ${userA.stars} | Commits: ${userA.commits}
@@ -134,7 +134,7 @@ Return ONLY the JSON, no markdown.`;
  * YEAR STORY PROMPT - For yearly breakdown
  */
 function getYearStoryPrompt(yearData, year) {
-    return `Generate a 3-sentence narrative for this developer's ${year} journey.
+  return `Generate a 3-sentence narrative for this developer's ${year} journey.
 
 YEAR DATA:
 - Commits: ${yearData.commits || 0}
@@ -155,7 +155,7 @@ Be specific, celebratory, and honest. Return plain text only.`;
  * REPOSITORY STORY PROMPT - For individual repos
  */
 function getRepoStoryPrompt(repo) {
-    return `Write a 2-sentence story about this repository.
+  return `Write a 2-sentence story about this repository.
 
 REPO DATA:
 - Name: ${repo.name}
@@ -175,11 +175,11 @@ Be specific, not generic. No hype words. Return plain text only.`;
  * Legacy prompts for backward compatibility
  */
 function getDeveloperPersonalityPrompt(data) {
-    const topLanguages = data.metrics.skills.slice(0, 5).map(s => s.name).join(', ');
-    const activeRepos = data.repositories.filter(r => r.maturityStage === 'active').length;
-    const totalRepos = data.repositories.length;
+  const topLanguages = data.metrics.skills.slice(0, 5).map(s => s.name).join(', ');
+  const activeRepos = data.repositories.filter(r => r.maturityStage === 'active').length;
+  const totalRepos = data.repositories.length;
 
-    return `You are an expert developer psychologist analyzing GitHub behavior patterns.
+  return `You are an expert developer psychologist analyzing GitHub behavior patterns.
 
 DEVELOPER PROFILE:
 Username: ${data.username}
@@ -213,13 +213,13 @@ Be specific and insightful. Base everything on the data provided.`;
 }
 
 function getGrowthTrajectoryPrompt(data) {
-    const weakAreas = [];
-    if (data.metrics.consistencyScore < 60) weakAreas.push('consistency');
-    if (data.metrics.documentationHabits === 'poor' || data.metrics.documentationHabits === 'inconsistent') weakAreas.push('documentation');
-    if (data.repositories.filter(r => r.maturityStage === 'abandoned').length > 5) weakAreas.push('project completion');
-    if (data.metrics.impactScore < 40) weakAreas.push('community engagement');
+  const weakAreas = [];
+  if (data.metrics.consistencyScore < 60) weakAreas.push('consistency');
+  if (data.metrics.documentationHabits === 'poor' || data.metrics.documentationHabits === 'inconsistent') weakAreas.push('documentation');
+  if (data.repositories.filter(r => r.maturityStage === 'abandoned').length > 5) weakAreas.push('project completion');
+  if (data.metrics.impactScore < 40) weakAreas.push('community engagement');
 
-    return `You are a senior developer mentor creating a personalized growth plan.
+  return `You are a senior developer mentor creating a personalized growth plan.
 
 DEVELOPER STATS:
 Username: ${data.username}
@@ -254,7 +254,7 @@ Provide 3-4 recommendations. Be specific, actionable, and encouraging.`;
 }
 
 function getDetailedComparisonPrompt(userAData, userBData, metrics) {
-    return `You are comparing two developers for a head-to-head analysis. Be objective, specific, and insightful.
+  return `You are comparing two developers for a head-to-head analysis. Be objective, specific, and insightful.
 
 DEVELOPER A (${userAData.username}):
 - Dev Score: ${metrics.devScore.userA}/100
@@ -305,7 +305,7 @@ Be specific and avoid generic statements.`;
 
 // Simple utility prompts
 function getRepoSummaryPrompt(repo) {
-    return `Summarize this repository in ONE compelling sentence (max 20 words):
+  return `Summarize this repository in ONE compelling sentence (max 20 words):
 
 Name: ${repo.name}
 Description: ${repo.description || 'No description'}
@@ -316,7 +316,7 @@ Focus on what problem it solves, not the tech stack.`;
 }
 
 function getDeveloperArchetypePrompt(data) {
-    return `Classify this developer as ONE archetype:
+  return `Classify this developer as ONE archetype:
 
 Projects: ${data.repositories.length}
 Documentation: ${data.metrics.documentationHabits}
@@ -327,17 +327,38 @@ Choose: Builder, Problem Solver, Educator, Experimenter, Specialist, or Balanced
 Return ONLY the archetype name.`;
 }
 
-module.exports = {
-    // OPTIMIZED BATCHED PROMPTS (Primary)
-    getBatchedInsightsPrompt,
-    getComparisonVerdictPrompt,
-    getYearStoryPrompt,
-    getRepoStoryPrompt,
+/**
+ * STREAMING VERDICT PROMPT - Lightweight for fast "first impression"
+ */
+function getAIVerdictPrompt(data) {
+  const username = data.username;
+  const repos = data.repositories?.length || 0;
+  const stars = data.repositories?.reduce((sum, r) => sum + (r.stars || 0), 0) || 0;
+  const commits = data.contributions?.totalCommits || 0;
+  const topLanguages = data.metrics?.skills?.slice(0, 5).map(s => s.name).join(', ') || 'N/A';
 
-    // Legacy prompts (for backward compatibility)
-    getDeveloperPersonalityPrompt,
-    getGrowthTrajectoryPrompt,
-    getDetailedComparisonPrompt,
-    getRepoSummaryPrompt,
-    getDeveloperArchetypePrompt
+  return `You are a senior tech recruiter giving a quick 3-sentence verdict on this developer profile.
+
+User: ${username}
+Repos: ${repos} | Stars: ${stars} | Commits: ${commits}
+Languages: ${topLanguages}
+
+Give a professional, energetic verdict on their coding style and potential.
+Format: Plain text, no markdown.`;
+}
+
+module.exports = {
+  // OPTIMIZED BATCHED PROMPTS (Primary)
+  getBatchedInsightsPrompt,
+  getAIVerdictPrompt, // Restored for streaming endpoint
+  getComparisonVerdictPrompt,
+  getYearStoryPrompt,
+  getRepoStoryPrompt,
+
+  // Legacy prompts (for backward compatibility)
+  getDeveloperPersonalityPrompt,
+  getGrowthTrajectoryPrompt,
+  getDetailedComparisonPrompt,
+  getRepoSummaryPrompt,
+  getDeveloperArchetypePrompt
 };
