@@ -7,6 +7,9 @@ import { RacingBars } from '../components/comparison/RacingBars';
 import { TechVennDiagram } from '../components/comparison/TechVennDiagram';
 import { ActivityRadarChart } from '../components/comparison/ActivityRadarChart';
 import { BattleArenaSetup } from '../components/comparison/BattleArenaSetup';
+import { StreamingAIVerdict } from '../components/comparison/StreamingAIVerdict';
+import { WinnerAnnouncement } from '../components/comparison/WinnerAnnouncement';
+import { calculateBattleScore, determineBattleWinner } from '../utils/battleScore';
 
 export default function GitHubComparison() {
     const navigate = useNavigate();
@@ -14,6 +17,7 @@ export default function GitHubComparison() {
     const [error, setError] = useState(null);
     const [data, setData] = useState(null);
     const [showBattleStart, setShowBattleStart] = useState(true);
+    const [streamingComplete, setStreamingComplete] = useState(false);
 
     const handleBattleStart = async (fighterA, fighterB) => {
         try {
@@ -69,7 +73,11 @@ export default function GitHubComparison() {
     if (!data) return null;
 
     const { userA, userB, comparison, aiInsights } = data;
-    const winner = comparison?.winner;
+
+    // Calculate battle scores
+    const scoreA = calculateBattleScore(userA);
+    const scoreB = calculateBattleScore(userB);
+    const battleResult = determineBattleWinner(scoreA.total, scoreB.total);
 
     // Extract tech stacks
     const techStackA = userA?.repositories?.map(r => r.language).filter(Boolean) || [];
@@ -111,36 +119,26 @@ export default function GitHubComparison() {
                     {/* Fighter A */}
                     <FighterCard
                         user={userA}
+                        score={scoreA}
                         color="blue"
-                        isWinner={winner === 'A'}
+                        isWinner={battleResult.winner === 'A'}
                     />
 
                     {/* Fighter B */}
                     <FighterCard
                         user={userB}
+                        score={scoreB}
                         color="purple"
-                        isWinner={winner === 'B'}
+                        isWinner={battleResult.winner === 'B'}
                     />
                 </motion.div>
 
-                {/* AI Verdict */}
+                {/* AI Verdict with Streaming */}
                 {aiInsights?.comparison && (
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.2 }}
-                        className="bg-gradient-to-br from-yellow-500/10 to-orange-500/10 border border-yellow-500/30 rounded-2xl p-8"
-                    >
-                        <div className="flex items-center gap-3 mb-6">
-                            <Sparkles className="w-6 h-6 text-yellow-400" />
-                            <h2 className="text-2xl font-bold text-yellow-400">🧬 AI REFEREE VERDICT</h2>
-                        </div>
-                        <div className="prose prose-invert max-w-none">
-                            <p className="text-gray-300 leading-relaxed whitespace-pre-line">
-                                {aiInsights.comparison}
-                            </p>
-                        </div>
-                    </motion.div>
+                    <StreamingAIVerdict
+                        text={aiInsights.comparison}
+                        onComplete={() => setStreamingComplete(true)}
+                    />
                 )}
 
                 {/* Head-to-Head Metrics */}
@@ -219,43 +217,14 @@ export default function GitHubComparison() {
                     />
                 </motion.div>
 
-                {/* Winner Announcement */}
-                {winner && winner !== 'TIE' && (
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: 0.6, type: 'spring', bounce: 0.5 }}
-                        className="text-center py-12"
-                    >
-                        <div className="inline-block">
-                            <div className="text-8xl mb-4">🏆</div>
-                            <h2 className="text-5xl font-black mb-4 text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-400">
-                                WINNER
-                            </h2>
-                            <p className="text-4xl font-bold text-white">
-                                {winner === 'A' ? userA?.username : userB?.username}
-                            </p>
-                        </div>
-                    </motion.div>
-                )}
-
-                {winner === 'TIE' && (
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: 0.6, type: 'spring', bounce: 0.5 }}
-                        className="text-center py-12"
-                    >
-                        <div className="inline-block">
-                            <div className="text-8xl mb-4">🤝</div>
-                            <h2 className="text-5xl font-black mb-4 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
-                                EVENLY MATCHED
-                            </h2>
-                            <p className="text-2xl text-gray-400">
-                                Both developers bring unique strengths to the table
-                            </p>
-                        </div>
-                    </motion.div>
+                {/* Winner Announcement with Confetti */}
+                {streamingComplete && (
+                    <WinnerAnnouncement
+                        winner={battleResult.winner}
+                        winnerName={battleResult.winner === 'A' ? userA?.username : userB?.username}
+                        margin={battleResult.margin}
+                        description={battleResult.description}
+                    />
                 )}
             </div>
         </div>
