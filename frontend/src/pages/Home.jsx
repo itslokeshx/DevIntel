@@ -38,17 +38,17 @@ export function Home() {
       </div>
 
       {/* ═══ HERO SECTION ═══ */}
-      <section className="relative max-w-content mx-auto px-4 sm:px-6 lg:px-12 pt-16 sm:pt-24 md:pt-32 pb-8 sm:pb-14 text-center">
+      <section className="relative max-w-content mx-auto px-4 sm:px-6 lg:px-12 pt-20 sm:pt-24 md:pt-32 pb-6 sm:pb-10 text-center">
         {/* Premium Badge */}
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5 }}
-          className="inline-flex items-center gap-2 px-4 sm:px-5 py-2 sm:py-2.5 mb-6 sm:mb-8 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-pink-500/10 dark:from-blue-500/20 dark:via-purple-500/20 dark:to-pink-500/20 backdrop-blur-sm border border-blue-200/30 dark:border-blue-500/30 rounded-full"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 mb-5 sm:mb-6 bg-blue-50 dark:bg-blue-500/10 border border-blue-200/50 dark:border-blue-500/20 rounded-full"
         >
-          <Zap className="w-4 h-4 text-blue-500 dark:text-blue-400" />
-          <span className="text-xs sm:text-sm font-semibold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 dark:from-blue-400 dark:via-purple-400 dark:to-pink-400 bg-clip-text text-transparent">
-            Powered by AI • Real-time Analysis
+          <Zap className="w-3 h-3 text-blue-600 dark:text-blue-400" />
+          <span className="text-[10px] sm:text-xs font-semibold text-blue-700 dark:text-blue-300">
+            AI-Powered Analysis
           </span>
         </motion.div>
 
@@ -57,7 +57,7 @@ export function Home() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.1 }}
-          className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-gray-900 dark:text-gray-50 leading-[1.1] tracking-tight mb-5 sm:mb-7"
+          className="text-[28px] leading-[1.15] sm:text-5xl md:text-6xl lg:text-7xl font-black text-gray-900 dark:text-gray-50 sm:leading-[1.1] tracking-tight mb-3 sm:mb-5 px-2"
         >
           Decode Your{" "}
           <span className="inline-block gradient-text animate-gradient">
@@ -70,54 +70,22 @@ export function Home() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.2 }}
-          className="text-base sm:text-xl md:text-2xl text-gray-600 dark:text-gray-300 max-w-[800px] mx-auto leading-relaxed mb-8 sm:mb-12 px-4 font-medium"
+          className="text-[13px] leading-[1.5] sm:text-base md:text-lg text-gray-600 dark:text-gray-400 max-w-[280px] sm:max-w-[500px] mx-auto mb-6 sm:mb-8"
         >
-          Transform your GitHub activity into{" "}
-          <span className="text-gray-900 dark:text-white font-semibold">
-            meaningful insights
-          </span>
-          ,{" "}
-          <span className="text-gray-900 dark:text-white font-semibold">
-            growth patterns
-          </span>
-          , and{" "}
-          <span className="text-gray-900 dark:text-white font-semibold">
-            AI-powered recommendations
-          </span>
+          AI-powered GitHub insights and analytics
         </motion.p>
-
-        {/* Trust Indicators */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.7, delay: 0.3 }}
-          className="flex flex-wrap items-center justify-center gap-4 sm:gap-8 mb-10 sm:mb-14 text-xs sm:text-sm text-gray-500 dark:text-gray-400"
-        >
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-            <span className="font-medium">Live Analysis</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Brain className="w-4 h-4 text-purple-500" />
-            <span className="font-medium">AI-Powered</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <TrendingUp className="w-4 h-4 text-blue-500" />
-            <span className="font-medium">Growth Tracking</span>
-          </div>
-        </motion.div>
 
         {/* ═══ SEARCH INPUT ═══ */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.4 }}
-          className="max-w-[720px] mx-auto mb-8 relative"
+          transition={{ duration: 0.7, delay: 0.3 }}
+          className="w-full max-w-[300px] sm:max-w-[480px] md:max-w-[550px] mx-auto mb-4 sm:mb-6 relative"
         >
           {/* Glass Card Wrapper */}
-          <div className="relative bg-white/60 dark:bg-gray-900/60 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-2 sm:p-3 shadow-2xl shadow-blue-500/5 dark:shadow-blue-500/10 border border-gray-200/50 dark:border-gray-700/50">
+          <div className="relative bg-white dark:bg-gray-900 rounded-lg sm:rounded-xl border-2 border-gray-200 dark:border-gray-800 focus-within:border-blue-500 dark:focus-within:border-blue-500 transition-colors">
             {/* Search icon */}
-            <Search className="absolute left-6 sm:left-8 top-1/2 -translate-y-1/2 w-5 h-5 sm:w-6 sm:h-6 text-gray-400 dark:text-gray-500 pointer-events-none z-10" />
+            <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none z-10" />
 
             {/* Input */}
             <input
@@ -128,9 +96,9 @@ export function Home() {
                 setError("");
               }}
               onKeyDown={(e) => e.key === "Enter" && handleAnalyze()}
-              placeholder="Enter GitHub username..."
+              placeholder="username"
               disabled={loading}
-              className="w-full h-16 sm:h-20 pl-14 sm:pl-20 pr-4 sm:pr-44 text-base sm:text-lg bg-white dark:bg-gray-900 border-2 border-transparent rounded-xl sm:rounded-2xl text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-blue-500 dark:focus:border-blue-400 focus:ring-0 focus:bg-white dark:focus:bg-gray-900 transition-all duration-300 disabled:opacity-60 font-medium"
+              className="w-full h-11 sm:h-12 pl-10 sm:pl-12 pr-20 sm:pr-24 text-sm sm:text-base bg-transparent text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none transition-all disabled:opacity-60"
               aria-label="GitHub username"
             />
 
@@ -138,17 +106,14 @@ export function Home() {
             <button
               onClick={handleAnalyze}
               disabled={loading || !githubUsername.trim()}
-              className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 h-12 sm:h-14 px-6 sm:px-10 bg-gradient-to-r from-blue-600 via-blue-500 to-purple-600 text-white text-sm sm:text-base font-bold rounded-lg sm:rounded-xl shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 transition-all duration-300 flex items-center gap-2.5"
+              className="absolute right-1.5 sm:right-2 top-1/2 -translate-y-1/2 h-8 sm:h-8 px-3 sm:px-4 bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-semibold rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
             >
               {loading ? (
-                <>
-                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  <span className="hidden sm:inline">Analyzing...</span>
-                </>
+                <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
               ) : (
                 <>
-                  <span>Analyze</span>
-                  <Zap className="w-4 h-4" />
+                  <span>Go</span>
+                  <Zap className="w-3 h-3" />
                 </>
               )}
             </button>
@@ -169,12 +134,10 @@ export function Home() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.5 }}
-          className="text-sm sm:text-base text-center"
+          transition={{ duration: 0.7, delay: 0.4 }}
+          className="text-[11px] sm:text-xs text-center text-gray-500 dark:text-gray-500"
         >
-          <span className="text-gray-500 dark:text-gray-400 mr-2 sm:mr-3 font-medium">
-            Quick Try:
-          </span>
+          <span className="mr-1.5">Try:</span>
           {exampleUsers.map((user, i) => (
             <React.Fragment key={user}>
               <button
@@ -182,15 +145,11 @@ export function Home() {
                   setGithubUsername(user);
                   navigate(`/github/${user}`);
                 }}
-                className="text-blue-600 dark:text-blue-400 font-semibold hover:text-blue-700 dark:hover:text-blue-300 hover:underline underline-offset-2 transition-all"
+                className="text-blue-600 dark:text-blue-400 font-medium hover:underline"
               >
                 {user}
               </button>
-              {i < exampleUsers.length - 1 && (
-                <span className="text-gray-300 dark:text-gray-600 mx-2 sm:mx-3">
-                  •
-                </span>
-              )}
+              {i < exampleUsers.length - 1 && <span className="mx-1.5">•</span>}
             </React.Fragment>
           ))}
         </motion.div>
