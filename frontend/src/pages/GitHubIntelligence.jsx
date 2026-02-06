@@ -254,10 +254,10 @@ export default function GitHubIntelligence() {
                     What Makes You Special?
                   </h2>
                 </div>
-                <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mb-3 sm:mb-4">
+                <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mb-2 sm:mb-3">
                   AI-powered insights revealing your unique developer DNA
                 </p>
-                <div className="text-base sm:text-[19px] md:text-body-lg leading-[1.7] text-gray-800 dark:text-gray-200 tracking-[0.01em]">
+                <div className="text-sm sm:text-base md:text-[17px] leading-[1.5] sm:leading-[1.6] text-gray-800 dark:text-gray-200">
                   {aiVerdictStreaming ? (
                     <div>
                       <span>{aiVerdict}</span>
@@ -379,7 +379,7 @@ export default function GitHubIntelligence() {
         </div>
 
         {/* ═══ ENGAGEMENT SECTION ═══ */}
-        <div className="space-y-8 mb-20">
+        <div className="space-y-8 mb-12">
           {/* Compare CTA */}
           <div className="relative overflow-hidden bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-blue-950/20 dark:via-purple-950/20 dark:to-pink-950/20 rounded-2xl sm:rounded-3xl p-5 sm:p-8 md:p-10 border border-blue-200 dark:border-blue-800/50">
             <div className="relative z-10 text-center space-y-4">

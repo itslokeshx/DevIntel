@@ -475,7 +475,7 @@ export default function GitHubComparison() {
 
         {/* 4. AI Verdict & Analysis */}
         <AnimatePresence>
-          {revealStage >= 1 && aiComparison?.verdict && (
+          {revealStage >= 1 && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -498,12 +498,18 @@ export default function GitHubComparison() {
                 {/* AI Verdict Text */}
                 <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-6 mb-6">
                   <div className="text-gray-700 dark:text-gray-300 leading-relaxed text-[15px]">
-                    <StreamingAIVerdict
-                      text={aiComparison?.verdict}
-                      onComplete={() =>
-                        setTimeout(() => setRevealStage(2), 500)
-                      }
-                    />
+                    {aiComparison?.verdict ? (
+                      <StreamingAIVerdict
+                        text={aiComparison.verdict}
+                        onComplete={() =>
+                          setTimeout(() => setRevealStage(2), 500)
+                        }
+                      />
+                    ) : (
+                      <p className="text-gray-400 dark:text-gray-500 italic">
+                        AI analysis unavailable for this comparison.
+                      </p>
+                    )}
                   </div>
                 </div>
 
