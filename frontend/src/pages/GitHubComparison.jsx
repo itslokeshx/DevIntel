@@ -169,7 +169,7 @@ export default function GitHubComparison() {
       <div className="sticky top-[72px] z-50 bg-white/95 dark:bg-gray-950/95 backdrop-blur-2xl border-b-2 border-gray-200/80 dark:border-gray-800/80 shadow-lg shadow-gray-200/50 dark:shadow-gray-900/50">
         <div className="max-w-5xl mx-auto px-3 sm:px-6 h-14 sm:h-16 flex items-center justify-between">
           <button
-            onClick={() => navigate("/compare")}
+            onClick={() => navigate("/")}
             className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all duration-200"
           >
             <ArrowLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4" />

@@ -54,7 +54,7 @@ export function Home() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }}
-          className="text-base sm:text-lg md:text-[22px] text-gray-500 dark:text-gray-400 max-w-[700px] mx-auto leading-relaxed mb-8 sm:mb-16 px-2"
+          className="text-base sm:text-lg md:text-[22px] text-gray-500 dark:text-gray-400 max-w-[700px] mx-auto leading-relaxed mb-6 sm:mb-10 px-2"
         >
           Transform your GitHub activity into meaningful insights, growth
           patterns, and personalized recommendations.

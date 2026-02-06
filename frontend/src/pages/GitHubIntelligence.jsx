@@ -127,7 +127,9 @@ export default function GitHubIntelligence() {
             <RefreshCw
               className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${refreshing ? "animate-spin" : ""}`}
             />
-            <span className="hidden sm:inline">{refreshing ? "Refreshing..." : "Refresh"}</span>
+            <span className="hidden sm:inline">
+              {refreshing ? "Refreshing..." : "Refresh"}
+            </span>
           </button>
         </div>
       </div>
