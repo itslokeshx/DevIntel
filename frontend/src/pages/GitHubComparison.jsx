@@ -65,7 +65,7 @@ export default function GitHubComparison() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-white dark:bg-gray-950 flex items-center justify-center relative overflow-hidden">
+      <div className="min-h-screen bg-[var(--bg-primary)] flex items-center justify-center relative overflow-hidden">
         {/* Animated Background Gradient */}
         <motion.div
           className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-purple-500/5 to-pink-500/5"
@@ -112,11 +112,11 @@ export default function GitHubComparison() {
             transition={{ delay: 0.2 }}
             className="space-y-2"
           >
-            <p className="text-lg font-semibold text-gray-900 dark:text-white">
+            <p className="text-lg font-semibold text-[var(--text-primary)]">
               Analyzing profiles...
             </p>
             <motion.p
-              className="text-sm text-gray-600 dark:text-gray-400"
+              className="text-sm text-[var(--text-tertiary)]"
               animate={{ opacity: [0.5, 1, 0.5] }}
               transition={{ duration: 1.5, repeat: Infinity }}
             >
@@ -129,7 +129,7 @@ export default function GitHubComparison() {
             {[0, 1, 2].map((i) => (
               <motion.div
                 key={i}
-                className="w-2 h-2 rounded-full bg-blue-600 dark:bg-blue-400"
+                className="w-2 h-2 rounded-full bg-[var(--accent)]"
                 animate={{
                   y: [-8, 0, -8],
                   opacity: [0.3, 1, 0.3],
@@ -235,29 +235,29 @@ export default function GitHubComparison() {
   const uniqueB = [...langsB].filter((l) => !langsA.has(l));
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-950">
+    <div className="min-h-screen bg-[var(--bg-primary)]">
       {/* Enhanced Sticky Sub-header */}
-      <div className="sticky top-[72px] z-50 bg-white/95 dark:bg-gray-950/95 backdrop-blur-2xl border-b-2 border-gray-200/80 dark:border-gray-800/80 shadow-lg shadow-gray-200/50 dark:shadow-gray-900/50">
-        <div className="max-w-5xl mx-auto px-3 sm:px-6 h-14 sm:h-16 flex items-center justify-between">
+      <div className="sticky top-14 z-50 glass border-b border-[var(--border-subtle)]">
+        <div className="max-w-5xl mx-auto px-3 sm:px-6 h-12 flex items-center justify-between">
           <button
             onClick={() => navigate("/")}
-            className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all duration-200"
+            className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-hover)] rounded-lg transition-all"
           >
             <ArrowLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             <span className="hidden sm:inline">Back</span>
           </button>
 
           <div className="flex items-center gap-1.5 sm:gap-3">
-            <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-green-500" />
-            <h1 className="text-xs sm:text-base font-black text-gray-900 dark:text-white tracking-tight">
+            <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
+            <h1 className="text-xs sm:text-sm font-semibold text-[var(--text-primary)]">
               Battle Results
             </h1>
-            <Trophy className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-500" />
+            <Trophy className="w-3.5 h-3.5 text-amber-500" />
           </div>
 
           <button
             onClick={handleNewBattle}
-            className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-1.5 sm:py-2.5 text-xs sm:text-sm font-bold bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-lg sm:rounded-xl shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 transition-all duration-200 hover:scale-105"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-[var(--text-primary)] text-[var(--bg-primary)] rounded-lg hover:opacity-90 transition-all"
           >
             <span className="hidden sm:inline">New Battle</span>
             <motion.span
@@ -889,7 +889,7 @@ function ScoreRing({ username, score, isWinner, color }) {
             cy="70"
             r={radius}
             stroke="currentColor"
-            className="text-gray-100 dark:text-gray-800"
+            className="text-[var(--bg-tertiary)]"
             strokeWidth="10"
             fill="none"
           />
@@ -913,12 +913,12 @@ function ScoreRing({ username, score, isWinner, color }) {
             alt={username}
             className="w-8 h-8 sm:w-12 sm:h-12 rounded-full mb-0.5 sm:mb-1"
           />
-          <span className="text-lg sm:text-2xl font-black text-gray-900 dark:text-white">
+          <span className="text-lg sm:text-2xl font-semibold text-[var(--text-primary)]">
             <CountUp end={score} duration={1.5} />
           </span>
         </div>
       </div>
-      <span className="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400 truncate max-w-[80px] sm:max-w-none">
+      <span className="text-xs sm:text-sm font-medium text-[var(--text-tertiary)] truncate max-w-[80px] sm:max-w-none">
         @{username}
       </span>
     </div>
