@@ -15,16 +15,16 @@ export function ThemeToggle() {
   return (
     <button
       onClick={handleToggle}
-      className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
+      className="w-8 h-8 rounded-lg flex items-center justify-center text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-hover)] transition-colors"
       aria-label={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
     >
       <div
-        className={`transition-transform duration-300 ${rotating ? "rotate-180" : ""}`}
+        className={`transition-transform duration-200 ${rotating ? "rotate-180" : ""}`}
       >
         {theme === "light" ? (
-          <Moon size={20} className="text-gray-500" />
+          <Moon size={15} />
         ) : (
-          <Sun size={20} className="text-gray-400" />
+          <Sun size={15} />
         )}
       </div>
     </button>

@@ -2,37 +2,26 @@ import React, { useMemo } from "react";
 import { motion } from "framer-motion";
 import {
   format,
-  startOfYear,
   eachDayOfInterval,
-  getDay,
-  subWeeks,
   getMonth,
-  startOfWeek,
-  endOfWeek,
-  addDays,
+  subWeeks,
 } from "date-fns";
 
 export function ContributionHeatmap({ contributions }) {
-  // Use real calendar data if available
   const calendarDays = contributions?.calendar || [];
-
-  // Generate last 52 weeks (365 days) of data - from last February to current date
   const today = new Date();
   const startDate = subWeeks(today, 52);
   const days = eachDayOfInterval({ start: startDate, end: today });
 
-  // Create a map of dates to commit counts
   const commitMap = new Map();
 
   if (calendarDays.length > 0) {
-    // Use 100% real calendar data from GitHub GraphQL API
     calendarDays.forEach((day) => {
       if (day.date && day.count !== undefined) {
         commitMap.set(day.date, day.count);
       }
     });
   } else if (contributions?.commitsByMonth) {
-    // Fallback: distribute commits across months
     contributions.commitsByMonth.forEach(({ month, count }) => {
       const [year, monthNum] = month.split("-").map(Number);
       const daysInMonth = new Date(year, monthNum, 0).getDate();
@@ -46,7 +35,6 @@ export function ContributionHeatmap({ contributions }) {
     });
   }
 
-  // Organize into weeks (7 days per week, 52 weeks)
   const weeks = [];
   for (let w = 0; w < 52; w++) {
     const week = [];
@@ -64,45 +52,6 @@ export function ContributionHeatmap({ contributions }) {
     weeks.push(week);
   }
 
-  // Calculate which months to show based on actual data range
-  const monthLabels = useMemo(() => {
-    const labels = [];
-    const monthsSet = new Set();
-
-    weeks.forEach((week, weekIdx) => {
-      week.forEach((day) => {
-        if (day.date) {
-          const monthNum = getMonth(new Date(day.date));
-          monthsSet.add(monthNum);
-        }
-      });
-    });
-
-    // Get month abbreviations in order from the start date
-    const monthNames = [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec",
-    ];
-    const startMonth = getMonth(startDate);
-
-    for (let i = 0; i < 12; i++) {
-      const monthIndex = (startMonth + i) % 12;
-      labels.push(monthNames[monthIndex]);
-    }
-
-    return labels;
-  }, [weeks, startDate]);
-
   const getColor = (count) => {
     if (count === 0) return "heatmap-0";
     if (count < 3) return "heatmap-1";
@@ -116,15 +65,18 @@ export function ContributionHeatmap({ contributions }) {
   const longestStreak = contributions?.longestStreak || 0;
 
   return (
-    <div className="bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-900/50 rounded-2xl sm:rounded-[24px] border border-gray-200 dark:border-gray-800 p-4 sm:p-6 md:p-10 shadow-lg">
-      <div className="flex items-center justify-end mb-4">
-        <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+    <div className="rounded-xl border border-[var(--border-default)] bg-[var(--bg-elevated)] p-4 sm:p-6 md:p-8">
+      <div className="flex items-center justify-between mb-5">
+        <h3 className="text-sm font-semibold text-[var(--text-primary)]">
+          Contribution Activity
+        </h3>
+        <span className="text-[11px] text-[var(--text-tertiary)]">
           {format(startDate, "MMM yyyy")} — {format(today, "MMM yyyy")}
-        </div>
+        </span>
       </div>
 
-      {/* Heatmap grid - Premium enhanced with smooth rendering */}
-      <div className="overflow-x-auto -mx-4 sm:-mx-6 md:-mx-10 px-4 sm:px-6 md:px-10 pb-2 mb-6">
+      {/* Heatmap grid */}
+      <div className="overflow-x-auto -mx-4 sm:-mx-6 md:-mx-8 px-4 sm:px-6 md:px-8 pb-2 mb-5">
         <div className="flex gap-[2px] sm:gap-[3px] justify-center min-w-fit">
           {weeks.map((week, weekIdx) => (
             <div key={weekIdx} className="flex flex-col gap-[2px] sm:gap-[3px]">
@@ -133,24 +85,20 @@ export function ContributionHeatmap({ contributions }) {
                   return (
                     <div
                       key={dayIdx}
-                      className="w-[10px] h-[10px] sm:w-[14px] sm:h-[14px] md:w-[16px] md:h-[16px]"
+                      className="w-[10px] h-[10px] sm:w-[13px] sm:h-[13px]"
                     />
                   );
-
-                const formattedDate = format(new Date(day.date), "MMM d, yyyy");
-                const dayName = format(new Date(day.date), "EEEE");
 
                 return (
                   <div
                     key={`${weekIdx}-${dayIdx}`}
-                    className={`w-[10px] h-[10px] sm:w-[14px] sm:h-[14px] md:w-[16px] md:h-[16px] rounded-[2px] ${getColor(day.count)} cursor-pointer relative group`}
+                    className={`w-[10px] h-[10px] sm:w-[13px] sm:h-[13px] rounded-[2px] ${getColor(day.count)} cursor-pointer relative group`}
                   >
-                    {/* Compact tooltip */}
-                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1.5 bg-gray-900 dark:bg-gray-800 text-white text-[10px] rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-150 pointer-events-none whitespace-nowrap z-50 shadow-lg">
+                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-[var(--text-primary)] text-[var(--bg-primary)] text-[10px] rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-150 pointer-events-none whitespace-nowrap z-50">
                       <span className="font-semibold">{day.count}</span> commit
                       {day.count !== 1 ? "s" : ""} ·{" "}
                       {format(new Date(day.date), "MMM d")}
-                      <div className="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900 dark:border-t-gray-800" />
+                      <div className="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-[var(--text-primary)]" />
                     </div>
                   </div>
                 );
@@ -160,40 +108,33 @@ export function ContributionHeatmap({ contributions }) {
         </div>
       </div>
 
-      {/* Legend - Premium styled */}
-      <div className="flex items-center justify-between mb-8">
-        <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 font-medium">
+      {/* Legend */}
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-1.5 text-[10px] text-[var(--text-tertiary)]">
           <span>Less</span>
-          <div className="flex gap-1.5">
-            <div className="w-3.5 h-3.5 heatmap-0 rounded border border-gray-200 dark:border-gray-700" />
-            <div className="w-3.5 h-3.5 heatmap-1 rounded" />
-            <div className="w-3.5 h-3.5 heatmap-2 rounded" />
-            <div className="w-3.5 h-3.5 heatmap-3 rounded" />
-            <div className="w-3.5 h-3.5 heatmap-4 rounded" />
+          <div className="flex gap-1">
+            <div className="w-3 h-3 heatmap-0 rounded-sm border border-[var(--border-default)]" />
+            <div className="w-3 h-3 heatmap-1 rounded-sm" />
+            <div className="w-3 h-3 heatmap-2 rounded-sm" />
+            <div className="w-3 h-3 heatmap-3 rounded-sm" />
+            <div className="w-3 h-3 heatmap-4 rounded-sm" />
           </div>
           <span>More</span>
         </div>
-        <div className="text-xs text-gray-500 dark:text-gray-400">
-          <span className="font-semibold text-gray-700 dark:text-gray-300">
+        <span className="text-[10px] text-[var(--text-tertiary)]">
+          <strong className="text-[var(--text-secondary)]">
             {weeks.flat().filter((d) => d.count > 0).length}
-          </span>{" "}
+          </strong>{" "}
           active days
-        </div>
+        </span>
       </div>
 
-      {/* Activity Intensity Timeline - Premium version */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
-        className="mb-8 p-4 sm:p-6 bg-gradient-to-br from-blue-50/50 to-purple-50/50 dark:from-blue-900/10 dark:to-purple-900/10 rounded-2xl border border-blue-100 dark:border-blue-900/30"
-      >
-        <h4 className="text-sm font-bold text-gray-800 dark:text-gray-200 mb-4 flex items-center gap-2">
-          <span className="text-lg">📈</span>
-          Activity Intensity Over Time
+      {/* Activity chart */}
+      <div className="mb-6 p-4 bg-[var(--bg-secondary)] rounded-lg border border-[var(--border-subtle)]">
+        <h4 className="text-[11px] font-medium text-[var(--text-tertiary)] mb-3 uppercase tracking-wider">
+          Activity Over Time
         </h4>
-        <div className="h-28 relative rounded-xl p-4">
-          {/* Calculate weekly aggregates */}
+        <div className="h-20 relative">
           {(() => {
             const weeklyData = [];
             for (let w = 0; w < Math.min(weeks.length, 52); w++) {
@@ -205,10 +146,6 @@ export function ContributionHeatmap({ contributions }) {
             }
 
             const maxCommits = Math.max(...weeklyData.map((d) => d.commits), 1);
-            const peakWeek = weeklyData.reduce(
-              (max, d) => (d.commits > max.commits ? d : max),
-              weeklyData[0],
-            );
 
             return (
               <svg
@@ -216,167 +153,80 @@ export function ContributionHeatmap({ contributions }) {
                 viewBox={`0 0 ${weeklyData.length * 8} 100`}
                 preserveAspectRatio="none"
               >
-                {/* Premium gradient definition */}
                 <defs>
-                  <linearGradient
-                    id="activityGradient"
-                    x1="0"
-                    y1="0"
-                    x2="0"
-                    y2="1"
-                  >
-                    <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.9" />
-                    <stop offset="50%" stopColor="#8b5cf6" stopOpacity="0.4" />
-                    <stop offset="100%" stopColor="#ec4899" stopOpacity="0.1" />
-                  </linearGradient>
-                  <linearGradient
-                    id="strokeGradient"
-                    x1="0"
-                    y1="0"
-                    x2="1"
-                    y2="0"
-                  >
-                    <stop offset="0%" stopColor="#3b82f6" />
-                    <stop offset="50%" stopColor="#8b5cf6" />
-                    <stop offset="100%" stopColor="#ec4899" />
+                  <linearGradient id="actFill" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="var(--accent)" stopOpacity="0.15" />
+                    <stop offset="100%" stopColor="var(--accent)" stopOpacity="0.02" />
                   </linearGradient>
                 </defs>
 
-                {/* Area fill */}
                 <motion.path
                   d={`
-                                        M 0 100
-                                        ${weeklyData
-                                          .map((d, i) => {
-                                            const x = i * 8;
-                                            const y =
-                                              100 -
-                                              (d.commits / maxCommits) * 85;
-                                            return `L ${x} ${y}`;
-                                          })
-                                          .join(" ")}
-                                        L ${weeklyData.length * 8} 100
-                                        Z
-                                    `}
-                  fill="url(#activityGradient)"
+                    M 0 100
+                    ${weeklyData.map((d, i) => {
+                      const x = i * 8;
+                      const y = 100 - (d.commits / maxCommits) * 85;
+                      return `L ${x} ${y}`;
+                    }).join(" ")}
+                    L ${weeklyData.length * 8} 100 Z
+                  `}
+                  fill="url(#actFill)"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  transition={{ duration: 1, delay: 0.4 }}
+                  transition={{ duration: 0.8 }}
                 />
 
-                {/* Line stroke with gradient */}
                 <motion.path
                   d={`
-                                        M 0 ${100 - (weeklyData[0].commits / maxCommits) * 85}
-                                        ${weeklyData
-                                          .slice(1)
-                                          .map((d, i) => {
-                                            const x = (i + 1) * 8;
-                                            const y =
-                                              100 -
-                                              (d.commits / maxCommits) * 85;
-                                            return `L ${x} ${y}`;
-                                          })
-                                          .join(" ")}
-                                    `}
-                  stroke="url(#strokeGradient)"
-                  strokeWidth="2.5"
+                    M 0 ${100 - (weeklyData[0].commits / maxCommits) * 85}
+                    ${weeklyData.slice(1).map((d, i) => {
+                      const x = (i + 1) * 8;
+                      const y = 100 - (d.commits / maxCommits) * 85;
+                      return `L ${x} ${y}`;
+                    }).join(" ")}
+                  `}
+                  stroke="var(--accent)"
+                  strokeWidth="1.5"
                   fill="none"
                   strokeLinecap="round"
                   strokeLinejoin="round"
+                  strokeOpacity="0.6"
                   initial={{ pathLength: 0 }}
                   animate={{ pathLength: 1 }}
-                  transition={{ duration: 1.5, delay: 0.5, ease: "easeOut" }}
+                  transition={{ duration: 1.2, ease: "easeOut" }}
                 />
-
-                {/* Peak marker with glow */}
-                {peakWeek && peakWeek.commits > 0 && (
-                  <motion.g
-                    initial={{ scale: 0, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{ delay: 1.2, type: "spring", stiffness: 200 }}
-                  >
-                    {/* Glow effect */}
-                    <circle
-                      cx={peakWeek.week * 8}
-                      cy={100 - (peakWeek.commits / maxCommits) * 85}
-                      r="6"
-                      fill="#f59e0b"
-                      opacity="0.3"
-                    />
-                    <circle
-                      cx={peakWeek.week * 8}
-                      cy={100 - (peakWeek.commits / maxCommits) * 85}
-                      r="4"
-                      fill="#f59e0b"
-                      stroke="#fff"
-                      strokeWidth="2"
-                    />
-                  </motion.g>
-                )}
               </svg>
             );
           })()}
         </div>
-        <div className="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mt-3 font-medium">
-          <span className="text-gray-500 dark:text-gray-500">
-            {format(startDate, "MMM yyyy")}
-          </span>
-          <span className="flex items-center gap-1.5 px-2 py-1 bg-amber-100 dark:bg-amber-900/30 rounded-full">
-            <div className="w-2 h-2 rounded-full bg-amber-500" />
-            <span className="text-amber-700 dark:text-amber-400">
-              Peak Week
-            </span>
-          </span>
-          <span className="text-gray-500 dark:text-gray-500">
-            {format(today, "MMM yyyy")}
-          </span>
-        </div>
-      </motion.div>
+      </div>
 
-      {/* Premium Stats Row with gradient cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-          className="bg-gradient-to-br from-blue-50 to-blue-100/50 dark:from-blue-900/20 dark:to-blue-900/10 rounded-2xl p-4 sm:p-6 border border-blue-200 dark:border-blue-800/30"
-        >
-          <div className="text-3xl sm:text-4xl md:text-5xl font-extrabold bg-gradient-to-br from-blue-600 to-blue-500 bg-clip-text text-transparent">
+      {/* Stats row */}
+      <div className="grid grid-cols-3 gap-3">
+        <div className="text-center">
+          <div className="text-xl sm:text-2xl font-semibold text-[var(--text-primary)]">
             {totalCommits.toLocaleString()}
           </div>
-          <div className="text-sm font-semibold text-blue-700 dark:text-blue-400 mt-2">
+          <div className="text-[10px] text-[var(--text-tertiary)] mt-0.5">
             Total Commits
           </div>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6 }}
-          className="bg-gradient-to-br from-green-50 to-emerald-100/50 dark:from-green-900/20 dark:to-emerald-900/10 rounded-2xl p-4 sm:p-6 border border-green-200 dark:border-green-800/30"
-        >
-          <div className="text-3xl sm:text-4xl md:text-5xl font-extrabold bg-gradient-to-br from-green-600 to-emerald-500 bg-clip-text text-transparent">
-            {currentStreak.toLocaleString()}
+        </div>
+        <div className="text-center">
+          <div className="text-xl sm:text-2xl font-semibold text-[var(--text-primary)]">
+            {currentStreak}
           </div>
-          <div className="text-sm font-semibold text-green-700 dark:text-green-400 mt-2 flex items-center gap-1">
-            <span>🔥</span> Current Streak
+          <div className="text-[10px] text-[var(--text-tertiary)] mt-0.5">
+            Current Streak
           </div>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.7 }}
-          className="bg-gradient-to-br from-purple-50 to-fuchsia-100/50 dark:from-purple-900/20 dark:to-fuchsia-900/10 rounded-2xl p-4 sm:p-6 border border-purple-200 dark:border-purple-800/30"
-        >
-          <div className="text-3xl sm:text-4xl md:text-5xl font-extrabold bg-gradient-to-br from-purple-600 to-fuchsia-500 bg-clip-text text-transparent">
-            {longestStreak.toLocaleString()}
+        </div>
+        <div className="text-center">
+          <div className="text-xl sm:text-2xl font-semibold text-[var(--text-primary)]">
+            {longestStreak}
           </div>
-          <div className="text-sm font-semibold text-purple-700 dark:text-purple-400 mt-2 flex items-center gap-1">
-            <span>⚡</span> Longest Streak
+          <div className="text-[10px] text-[var(--text-tertiary)] mt-0.5">
+            Longest Streak
           </div>
-        </motion.div>
+        </div>
       </div>
     </div>
   );

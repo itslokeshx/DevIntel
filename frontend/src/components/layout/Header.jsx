@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Zap, Menu, X, Swords, Home } from "lucide-react";
+import { Menu, X, Swords, Home } from "lucide-react";
 import { ThemeToggle } from "../common/ThemeToggle";
 
 export function Header() {
@@ -9,24 +9,24 @@ export function Header() {
   const isActive = (path) => location.pathname === path;
 
   return (
-    <header className="sticky top-0 z-[1000] glass border-b border-black/[0.06] dark:border-white/[0.06]">
-      <div className="max-w-content mx-auto px-4 sm:px-6 lg:px-12 h-[72px] flex items-center justify-between">
+    <header className="sticky top-0 z-[1000] glass border-b border-[var(--border-subtle)]">
+      <div className="max-w-content mx-auto px-4 sm:px-6 lg:px-12 h-14 flex items-center justify-between">
         {/* Logo */}
         <Link
           to="/"
-          className="flex items-center gap-2.5 group transition-transform duration-200 hover:scale-[1.02]"
+          className="flex items-center gap-2 group"
           onClick={() => setMobileOpen(false)}
         >
-          <div className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-md group-hover:shadow-blue transition-shadow duration-200">
-            <Zap className="w-4 h-4 text-white" />
+          <div className="w-6 h-6 rounded-lg bg-[var(--text-primary)] flex items-center justify-center">
+            <span className="text-[10px] font-black text-[var(--bg-primary)] leading-none tracking-tight">DI</span>
           </div>
-          <span className="text-xl font-semibold text-gray-900 dark:text-white">
+          <span className="text-[15px] font-semibold text-[var(--text-primary)]">
             DevIntel
           </span>
         </Link>
 
-        {/* Desktop Navigation Links */}
-        <nav className="hidden md:flex items-center gap-8">
+        {/* Desktop Navigation */}
+        <nav className="hidden md:flex items-center gap-1">
           <NavLink to="/" active={isActive("/")}>
             Home
           </NavLink>
@@ -35,27 +35,27 @@ export function Header() {
           </NavLink>
         </nav>
 
-        {/* Right side: Theme Toggle + Mobile Hamburger */}
-        <div className="flex items-center gap-2">
+        {/* Right side */}
+        <div className="flex items-center gap-1">
           <ThemeToggle />
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="md:hidden flex items-center justify-center w-10 h-10 rounded-xl text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            className="md:hidden flex items-center justify-center w-8 h-8 rounded-lg text-[var(--text-secondary)] hover:bg-[var(--surface-hover)] transition-colors"
             aria-label="Toggle menu"
           >
             {mobileOpen ? (
-              <X className="w-5 h-5" />
+              <X className="w-4 h-4" />
             ) : (
-              <Menu className="w-5 h-5" />
+              <Menu className="w-4 h-4" />
             )}
           </button>
         </div>
       </div>
 
-      {/* Mobile Menu Dropdown */}
+      {/* Mobile Menu */}
       {mobileOpen && (
-        <div className="md:hidden border-t border-gray-200/60 dark:border-gray-800/60 bg-white/95 dark:bg-gray-950/95 backdrop-blur-xl">
-          <nav className="max-w-content mx-auto px-4 py-3 space-y-1">
+        <div className="md:hidden border-t border-[var(--border-subtle)] bg-[var(--bg-primary)]">
+          <nav className="max-w-content mx-auto px-4 py-2 space-y-0.5">
             <MobileNavLink
               to="/"
               active={isActive("/")}
@@ -70,7 +70,7 @@ export function Header() {
               icon={<Swords className="w-4 h-4" />}
               onClick={() => setMobileOpen(false)}
             >
-              Compare Developers
+              Compare
             </MobileNavLink>
           </nav>
         </div>
@@ -83,16 +83,13 @@ function NavLink({ to, active, children }) {
   return (
     <Link
       to={to}
-      className={`relative text-[15px] font-medium transition-colors duration-200 py-1 ${
+      className={`px-3 py-1.5 rounded-lg text-[13px] font-medium transition-colors ${
         active
-          ? "text-gray-900 dark:text-white"
-          : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+          ? "text-[var(--text-primary)] bg-[var(--surface-hover)]"
+          : "text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-hover)]"
       }`}
     >
       {children}
-      {active && (
-        <span className="absolute -bottom-0.5 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full" />
-      )}
     </Link>
   );
 }
@@ -102,10 +99,10 @@ function MobileNavLink({ to, active, icon, onClick, children }) {
     <Link
       to={to}
       onClick={onClick}
-      className={`flex items-center gap-3 px-4 py-3 rounded-xl text-[15px] font-medium transition-all duration-200 ${
+      className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-[13px] font-medium transition-colors ${
         active
-          ? "bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400"
-          : "text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-900"
+          ? "text-[var(--text-primary)] bg-[var(--surface-hover)]"
+          : "text-[var(--text-secondary)] hover:bg-[var(--surface-hover)]"
       }`}
     >
       {icon}

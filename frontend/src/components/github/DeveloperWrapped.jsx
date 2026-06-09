@@ -51,8 +51,8 @@ export function DeveloperWrapped({
 
   if (!wrappedData && !contributions && !repositories) return null;
 
+  // Use the current year for the wrapped — this shows the user's data as of right now
   const currentYear = new Date().getFullYear();
-  const displayYear = currentYear === 2026 ? 2025 : currentYear - 1;
 
   const totalCommits = contributions?.totalCommits || 0;
   const totalRepos = repositories?.length || 0;
@@ -61,7 +61,7 @@ export function DeveloperWrapped({
   const currentStreak = contributions?.currentStreak || 0;
   const longestStreak = contributions?.longestStreak || 0;
 
-  // Find actual peak month
+  // Find actual peak month from available data
   const sortedMonths = [...(contributions?.commitsByMonth || [])].sort(
     (a, b) => b.count - a.count,
   );
@@ -85,62 +85,61 @@ export function DeveloperWrapped({
 
   const slides = [
     {
-      title: "Your Year in Numbers",
-      gradient: "from-blue-600 via-purple-600 to-pink-600",
+      label: "Overview",
       content: (
-        <div className="space-y-4 w-full max-w-sm mx-auto">
-          <div className="text-4xl sm:text-6xl font-black text-center text-white">
-            {totalCommits.toLocaleString()}
-          </div>
-          <div className="text-lg text-center text-white/90 font-medium">
-            commits this year
-          </div>
-          <div className="text-sm text-center text-white/70">
-            ~{Math.round(totalCommits / 365)} per day average
-          </div>
-          <div className="grid grid-cols-3 gap-3 mt-4">
-            <div className="bg-white/15 rounded-xl p-3 text-center">
-              <div className="text-xl font-bold text-white">{totalRepos}</div>
-              <div className="text-[10px] text-white/70">Repos</div>
+        <div className="space-y-5 w-full max-w-sm mx-auto">
+          <div className="text-center">
+            <div className="text-4xl sm:text-5xl font-semibold text-[var(--text-primary)] tracking-tight">
+              {totalCommits.toLocaleString()}
             </div>
-            <div className="bg-white/15 rounded-xl p-3 text-center">
-              <div className="text-xl font-bold text-white">{totalStars}</div>
-              <div className="text-[10px] text-white/70">Stars</div>
+            <div className="text-sm text-[var(--text-secondary)] mt-1">
+              total commits
             </div>
-            <div className="bg-white/15 rounded-xl p-3 text-center">
-              <div className="text-xl font-bold text-white">
+            <div className="text-xs text-[var(--text-tertiary)] mt-0.5">
+              ~{Math.round(totalCommits / 365)} per day average
+            </div>
+          </div>
+          <div className="grid grid-cols-3 gap-2">
+            <div className="bg-[var(--bg-tertiary)] rounded-lg p-3 text-center">
+              <div className="text-lg font-semibold text-[var(--text-primary)]">{totalRepos}</div>
+              <div className="text-[10px] text-[var(--text-tertiary)]">Repos</div>
+            </div>
+            <div className="bg-[var(--bg-tertiary)] rounded-lg p-3 text-center">
+              <div className="text-lg font-semibold text-[var(--text-primary)]">{totalStars}</div>
+              <div className="text-[10px] text-[var(--text-tertiary)]">Stars</div>
+            </div>
+            <div className="bg-[var(--bg-tertiary)] rounded-lg p-3 text-center">
+              <div className="text-lg font-semibold text-[var(--text-primary)]">
                 {longestStreak}
               </div>
-              <div className="text-[10px] text-white/70">Best Streak</div>
+              <div className="text-[10px] text-[var(--text-tertiary)]">Best Streak</div>
             </div>
           </div>
         </div>
       ),
     },
     {
-      title: "Peak Month",
-      gradient: "from-orange-500 via-red-500 to-pink-600",
+      label: "Peak Month",
       content: (
-        <div className="space-y-4 w-full max-w-sm mx-auto text-center">
-          <div className="text-3xl sm:text-5xl font-black text-white">
+        <div className="space-y-3 w-full max-w-sm mx-auto text-center">
+          <div className="text-2xl sm:text-3xl font-semibold text-[var(--text-primary)]">
             {peakMonthLabel}
           </div>
-          <div className="text-sm text-white/80">
-            was your most productive month
+          <div className="text-xs text-[var(--text-tertiary)]">
+            most productive month
           </div>
-          <div className="text-4xl sm:text-5xl font-black text-white mt-2">
-            {peakCommits} 🔥
+          <div className="text-3xl sm:text-4xl font-semibold text-[var(--text-primary)] mt-2">
+            {peakCommits}
           </div>
-          <div className="text-sm text-white/70">commits that month</div>
+          <div className="text-xs text-[var(--text-tertiary)]">commits that month</div>
         </div>
       ),
     },
     {
-      title: "Tech Stack",
-      gradient: "from-green-500 via-teal-500 to-cyan-600",
+      label: "Tech Stack",
       content: (
         <div className="space-y-4 w-full max-w-sm mx-auto text-center">
-          <div className="text-lg font-bold text-white mb-4">
+          <div className="text-sm font-medium text-[var(--text-secondary)] mb-3">
             Your Languages
           </div>
           <div className="flex flex-wrap gap-2 justify-center">
@@ -148,61 +147,54 @@ export function DeveloperWrapped({
               topLanguages.map((lang) => (
                 <span
                   key={lang}
-                  className="px-3 py-1.5 bg-white/20 rounded-full text-white text-sm font-medium"
+                  className="px-3 py-1.5 bg-[var(--bg-tertiary)] border border-[var(--border-default)] rounded-full text-[var(--text-primary)] text-xs font-medium"
                 >
                   {lang}
                 </span>
               ))
             ) : (
-              <span className="text-white/70 text-sm">
+              <span className="text-[var(--text-tertiary)] text-xs">
                 No languages detected
               </span>
             )}
-          </div>
-          <div className="text-sm text-white/80 mt-4">
-            Versatile & modern tech stack
           </div>
         </div>
       ),
     },
     {
-      title: "Share Your Story",
-      gradient: "from-pink-500 via-purple-500 to-blue-500",
+      label: "Summary",
       content: (
         <div className="w-full max-w-sm mx-auto text-center space-y-4">
-          <div className="text-lg font-bold text-white">
-            {displayYear} Developer Story
+          <div className="text-sm font-medium text-[var(--text-secondary)]">
+            {currentYear} Developer Summary
           </div>
-          <div className="bg-white/15 rounded-xl p-4">
+          <div className="bg-[var(--bg-tertiary)] rounded-xl p-4">
             <div className="grid grid-cols-2 gap-3 text-left">
               <div>
-                <div className="text-2xl font-bold text-white">
+                <div className="text-xl font-semibold text-[var(--text-primary)]">
                   {totalCommits.toLocaleString()}
                 </div>
-                <div className="text-[10px] text-white/70">Commits</div>
+                <div className="text-[10px] text-[var(--text-tertiary)]">Commits</div>
               </div>
               <div>
-                <div className="text-2xl font-bold text-white">
+                <div className="text-xl font-semibold text-[var(--text-primary)]">
                   {longestStreak}
                 </div>
-                <div className="text-[10px] text-white/70">Best Streak</div>
+                <div className="text-[10px] text-[var(--text-tertiary)]">Best Streak</div>
               </div>
               <div>
-                <div className="text-2xl font-bold text-white">
+                <div className="text-xl font-semibold text-[var(--text-primary)]">
                   {totalRepos}
                 </div>
-                <div className="text-[10px] text-white/70">Repositories</div>
+                <div className="text-[10px] text-[var(--text-tertiary)]">Repositories</div>
               </div>
               <div>
-                <div className="text-2xl font-bold text-white">
+                <div className="text-xl font-semibold text-[var(--text-primary)]">
                   {totalStars}
                 </div>
-                <div className="text-[10px] text-white/70">Stars</div>
+                <div className="text-[10px] text-[var(--text-tertiary)]">Stars</div>
               </div>
             </div>
-          </div>
-          <div className="text-sm text-white/80">
-            Share your achievements! 🎉
           </div>
         </div>
       ),
@@ -215,7 +207,7 @@ export function DeveloperWrapped({
 
   const handleShare = (platform) => {
     const url = `${window.location.origin}/github/${username}`;
-    const text = `My ${displayYear} Developer Wrapped! 🎁\n📊 ${totalCommits.toLocaleString()} commits\n🔥 ${longestStreak} day streak\n⭐ ${totalStars} stars\n\n`;
+    const text = `My ${currentYear} Developer Wrapped! 🎁\n📊 ${totalCommits.toLocaleString()} commits\n🔥 ${longestStreak} day streak\n⭐ ${totalStars} stars\n\n`;
 
     switch (platform) {
       case "twitter":
@@ -238,7 +230,7 @@ export function DeveloperWrapped({
       default:
         if (navigator.share) {
           navigator.share({
-            title: `My ${displayYear} Developer Wrapped`,
+            title: `My ${currentYear} Developer Wrapped`,
             text,
             url,
           });
@@ -249,130 +241,125 @@ export function DeveloperWrapped({
 
   return (
     <div
-      className="relative overflow-hidden rounded-2xl sm:rounded-[24px] text-white"
+      className="relative overflow-hidden rounded-xl border border-[var(--border-default)] bg-[var(--bg-elevated)]"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
-      {/* Dynamic gradient background */}
-      <div
-        className={`absolute inset-0 bg-gradient-to-br ${slides[currentSlide].gradient} transition-all duration-700`}
-      />
+      <div className="p-6 sm:p-8">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-2">
+            <div className="w-7 h-7 rounded-md bg-[var(--bg-tertiary)] flex items-center justify-center text-sm">
+              📊
+            </div>
+            <h3 className="text-sm font-semibold text-[var(--text-primary)]">
+              {currentYear} Wrapped
+            </h3>
+          </div>
+          <div className="flex items-center gap-1">
+            {slides.map((s, idx) => (
+              <button
+                key={idx}
+                onClick={() => setCurrentSlide(idx)}
+                className={`text-[10px] px-2 py-0.5 rounded-md font-medium transition-all ${
+                  idx === currentSlide
+                    ? "bg-[var(--text-primary)] text-[var(--bg-primary)]"
+                    : "text-[var(--text-tertiary)] hover:text-[var(--text-secondary)]"
+                }`}
+              >
+                {s.label}
+              </button>
+            ))}
+          </div>
+        </div>
 
-      {/* Subtle background decoration */}
-      <div className="absolute inset-0 opacity-10">
-        <div className="absolute top-0 left-0 w-40 h-40 bg-white rounded-full blur-3xl" />
-        <div className="absolute bottom-0 right-0 w-40 h-40 bg-white rounded-full blur-3xl" />
-      </div>
-
-      <div className="relative z-10 p-6 sm:p-8">
-        <h3 className="text-xl sm:text-2xl font-bold mb-4 text-center">
-          🎁 Your {displayYear} Wrapped
-        </h3>
-
-        {/* Slide container - compact height */}
-        <div className="relative h-64 sm:h-72 mb-4">
+        {/* Slide content */}
+        <div className="relative h-52 sm:h-56 mb-4">
           <AnimatePresence mode="wait">
             <motion.div
               key={currentSlide}
-              initial={{ opacity: 0, x: 40 }}
+              initial={{ opacity: 0, x: 30 }}
               animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -40 }}
-              transition={{ duration: 0.25 }}
-              className="absolute inset-0 flex flex-col items-center justify-center px-4 sm:px-8"
+              exit={{ opacity: 0, x: -30 }}
+              transition={{ duration: 0.2 }}
+              className="absolute inset-0 flex items-center justify-center px-4"
             >
-              <h4 className="text-base sm:text-lg font-semibold mb-4 text-white/90">
-                {slides[currentSlide].title}
-              </h4>
               {slides[currentSlide].content}
             </motion.div>
           </AnimatePresence>
 
-          {/* Nav buttons */}
+          {/* Nav arrows */}
           <button
             onClick={prevSlide}
-            className="absolute left-2 top-1/2 -translate-y-1/2 p-1.5 bg-white/10 hover:bg-white/20 rounded-full transition-all"
+            className="absolute left-0 top-1/2 -translate-y-1/2 p-1.5 text-[var(--text-tertiary)] hover:text-[var(--text-primary)] rounded-lg hover:bg-[var(--surface-hover)] transition-all"
             aria-label="Previous"
           >
-            <ChevronLeft className="w-5 h-5" />
+            <ChevronLeft className="w-4 h-4" />
           </button>
           <button
             onClick={nextSlide}
-            className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 bg-white/10 hover:bg-white/20 rounded-full transition-all"
+            className="absolute right-0 top-1/2 -translate-y-1/2 p-1.5 text-[var(--text-tertiary)] hover:text-[var(--text-primary)] rounded-lg hover:bg-[var(--surface-hover)] transition-all"
             aria-label="Next"
           >
-            <ChevronRight className="w-5 h-5" />
+            <ChevronRight className="w-4 h-4" />
           </button>
         </div>
 
-        {/* Slide indicators */}
-        <div className="flex justify-center gap-1.5 mb-4">
-          {slides.map((_, idx) => (
-            <button
-              key={idx}
-              onClick={() => setCurrentSlide(idx)}
-              className={`h-1.5 rounded-full transition-all ${
-                idx === currentSlide ? "bg-white w-6" : "bg-white/30 w-1.5"
-              }`}
-              aria-label={`Slide ${idx + 1}`}
-            />
-          ))}
-        </div>
-
-        {/* Share button */}
+        {/* Share */}
         <div className="flex justify-center relative" ref={shareMenuRef}>
           <button
             onClick={() => setShowShareMenu(!showShareMenu)}
-            className="bg-white text-purple-900 px-6 py-2 rounded-full text-sm font-semibold hover:scale-105 transition-transform flex items-center gap-2"
+            className="flex items-center gap-1.5 px-4 py-2 text-xs font-medium text-[var(--text-secondary)] bg-[var(--bg-tertiary)] hover:bg-[var(--surface-hover)] rounded-lg border border-[var(--border-default)] transition-colors"
           >
-            <Share2 className="w-4 h-4" />
-            Share Wrapped
+            <Share2 className="w-3.5 h-3.5" />
+            Share
           </button>
 
           <AnimatePresence>
             {showShareMenu && (
               <motion.div
-                initial={{ opacity: 0, y: 8, scale: 0.95 }}
+                initial={{ opacity: 0, y: 6, scale: 0.97 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 8, scale: 0.95 }}
-                className="absolute top-full mt-2 bg-white dark:bg-gray-900 rounded-xl shadow-xl border border-gray-200 dark:border-gray-800 p-3 min-w-[200px] z-50"
+                exit={{ opacity: 0, y: 6, scale: 0.97 }}
+                className="absolute top-full mt-2 bg-[var(--bg-elevated)] rounded-xl shadow-lg border border-[var(--border-default)] p-2 min-w-[180px] z-50"
               >
-                <div className="space-y-1">
+                <div className="space-y-0.5">
                   <button
                     onClick={() => handleShare("copy")}
-                    className="w-full flex items-center gap-2.5 px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors text-gray-900 dark:text-gray-100"
+                    className="w-full flex items-center gap-2 px-3 py-2 hover:bg-[var(--surface-hover)] rounded-lg transition-colors text-[var(--text-primary)]"
                   >
                     {copied ? (
                       <>
-                        <Check className="w-4 h-4 text-green-600" />
+                        <Check className="w-3.5 h-3.5 text-green-500" />
                         <span className="text-xs">Copied!</span>
                       </>
                     ) : (
                       <>
-                        <Copy className="w-4 h-4" />
+                        <Copy className="w-3.5 h-3.5" />
                         <span className="text-xs">Copy Link</span>
                       </>
                     )}
                   </button>
                   <button
                     onClick={() => handleShare("twitter")}
-                    className="w-full flex items-center gap-2.5 px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors text-gray-900 dark:text-gray-100"
+                    className="w-full flex items-center gap-2 px-3 py-2 hover:bg-[var(--surface-hover)] rounded-lg transition-colors text-[var(--text-primary)]"
                   >
-                    <Twitter className="w-4 h-4" />
+                    <Twitter className="w-3.5 h-3.5" />
                     <span className="text-xs">Twitter</span>
                   </button>
                   <button
                     onClick={() => handleShare("linkedin")}
-                    className="w-full flex items-center gap-2.5 px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors text-gray-900 dark:text-gray-100"
+                    className="w-full flex items-center gap-2 px-3 py-2 hover:bg-[var(--surface-hover)] rounded-lg transition-colors text-[var(--text-primary)]"
                   >
-                    <Linkedin className="w-4 h-4" />
+                    <Linkedin className="w-3.5 h-3.5" />
                     <span className="text-xs">LinkedIn</span>
                   </button>
                   {typeof navigator !== "undefined" && navigator.share && (
                     <button
                       onClick={() => handleShare("native")}
-                      className="w-full flex items-center gap-2.5 px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors text-gray-900 dark:text-gray-100"
+                      className="w-full flex items-center gap-2 px-3 py-2 hover:bg-[var(--surface-hover)] rounded-lg transition-colors text-[var(--text-primary)]"
                     >
-                      <Share2 className="w-4 h-4" />
+                      <Share2 className="w-3.5 h-3.5" />
                       <span className="text-xs">More</span>
                     </button>
                   )}

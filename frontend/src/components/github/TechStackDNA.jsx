@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { TrendingUp, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 
 const languageColors = {
   JavaScript: "#f7df1e",
@@ -38,8 +38,6 @@ export function TechStackDNA({ languageStats, repositories }) {
   const fetchForecast = async () => {
     setLoadingForecast(true);
     try {
-      // This would call your backend API for AI forecast
-      // For now, we'll use a simple client-side prediction
       setTimeout(() => {
         const topLang = languageStats[0]?.name;
         setForecast(
@@ -56,11 +54,11 @@ export function TechStackDNA({ languageStats, repositories }) {
 
   if (!languageStats || languageStats.length === 0) {
     return (
-      <div className="bg-white dark:bg-gray-900 rounded-2xl sm:rounded-[20px] border border-gray-200 dark:border-gray-800 p-4 sm:p-6 md:p-10">
-        <h3 className="text-heading-lg font-bold text-gray-900 dark:text-white mb-6">
-          🧪 Tech Stack DNA
+      <div className="rounded-xl border border-[var(--border-default)] bg-[var(--bg-elevated)] p-5 sm:p-7">
+        <h3 className="text-sm font-semibold text-[var(--text-primary)] mb-4">
+          Tech Stack
         </h3>
-        <p className="text-gray-500 dark:text-gray-400">
+        <p className="text-xs text-[var(--text-tertiary)]">
           No language data available
         </p>
       </div>
@@ -77,54 +75,54 @@ export function TechStackDNA({ languageStats, repositories }) {
   );
 
   return (
-    <div className="bg-white dark:bg-gray-900 rounded-2xl sm:rounded-[20px] border border-gray-200 dark:border-gray-800 p-4 sm:p-6 md:p-10">
-      <div className="flex items-center justify-between mb-4 sm:mb-8">
-        <h3 className="text-heading-lg font-bold text-gray-900 dark:text-white">
-          🧪 Tech Stack DNA
+    <div className="rounded-xl border border-[var(--border-default)] bg-[var(--bg-elevated)] p-5 sm:p-7">
+      <div className="flex items-center justify-between mb-5">
+        <h3 className="text-sm font-semibold text-[var(--text-primary)]">
+          Tech Stack
         </h3>
-        <span className="text-sm text-gray-500 dark:text-gray-400">
-          {languageStats.length} languages total
+        <span className="text-[11px] text-[var(--text-tertiary)]">
+          {languageStats.length} languages
         </span>
       </div>
 
       {/* Language Bars */}
-      <div className="space-y-4">
+      <div className="space-y-3.5">
         {sortedLanguages.map((lang, idx) => {
           const count = lang.count || lang.repos || 0;
           const percentage = totalRepos > 0 ? (count / totalRepos) * 100 : 0;
-          const color = languageColors[lang.name] || "#888";
+          const color = languageColors[lang.name] || "#666";
 
           return (
             <motion.div
               key={lang.name}
-              initial={{ opacity: 0, x: -20 }}
+              initial={{ opacity: 0, x: -12 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: idx * 0.08, type: "spring", stiffness: 120 }}
+              transition={{ delay: idx * 0.06 }}
             >
-              <div className="flex items-center justify-between mb-1.5">
-                <div className="flex items-center gap-2.5">
+              <div className="flex items-center justify-between mb-1">
+                <div className="flex items-center gap-2">
                   <div
-                    className="w-4 h-4 rounded-full flex-shrink-0"
+                    className="w-2.5 h-2.5 rounded-full flex-shrink-0"
                     style={{ backgroundColor: color }}
                   />
-                  <span className="font-semibold text-sm text-gray-900 dark:text-gray-100">
+                  <span className="text-xs font-medium text-[var(--text-primary)]">
                     {lang.name}
                   </span>
                 </div>
-                <span className="text-sm font-semibold text-gray-600 dark:text-gray-400">
+                <span className="text-[11px] text-[var(--text-tertiary)] tabular-nums">
                   {percentage.toFixed(1)}%
                 </span>
               </div>
 
-              <div className="h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+              <div className="h-1.5 bg-[var(--bg-tertiary)] rounded-full overflow-hidden">
                 <motion.div
                   className="h-full rounded-full"
-                  style={{ backgroundColor: color }}
+                  style={{ backgroundColor: color, opacity: 0.8 }}
                   initial={{ width: 0 }}
                   animate={{ width: `${percentage}%` }}
                   transition={{
-                    duration: 0.8,
-                    delay: idx * 0.08,
+                    duration: 0.6,
+                    delay: idx * 0.06,
                     ease: "easeOut",
                   }}
                 />
@@ -134,33 +132,30 @@ export function TechStackDNA({ languageStats, repositories }) {
         })}
       </div>
 
-      {/* AI Prediction */}
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.5 }}
-        className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-800"
-      >
-        <div className="flex items-start gap-3 sm:gap-4 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950/30 dark:to-blue-900/20 border border-blue-200 dark:border-blue-800/50 rounded-xl sm:rounded-2xl p-4 sm:p-6">
-          <span className="text-2xl sm:text-[32px] flex-shrink-0">🔮</span>
+      {/* Forecast */}
+      <div className="mt-5 pt-5 border-t border-[var(--border-subtle)]">
+        <div className="flex items-start gap-3 p-4 bg-[var(--bg-secondary)] rounded-lg border border-[var(--border-subtle)]">
+          <div className="w-6 h-6 rounded-md bg-[var(--bg-tertiary)] flex items-center justify-center flex-shrink-0 text-xs">
+            🔮
+          </div>
           <div className="flex-1">
-            <div className="text-base font-semibold text-blue-700 dark:text-blue-300 mb-2">
+            <div className="text-[11px] font-medium text-[var(--text-tertiary)] uppercase tracking-wider mb-1">
               6-Month Forecast
             </div>
             {loadingForecast ? (
-              <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                <Loader2 className="w-4 h-4 animate-spin" />
-                <span>Analyzing trends...</span>
+              <div className="flex items-center gap-1.5 text-xs text-[var(--text-tertiary)]">
+                <Loader2 className="w-3 h-3 animate-spin" />
+                <span>Analyzing...</span>
               </div>
             ) : (
-              <div className="text-sm text-gray-700 dark:text-gray-400">
+              <div className="text-xs text-[var(--text-secondary)] leading-relaxed">
                 {forecast ||
-                  `${sortedLanguages[0]?.name || "Primary language"} remains your dominant stack. Consider exploring complementary technologies for full-stack capabilities.`}
+                  `${sortedLanguages[0]?.name || "Primary language"} remains your dominant stack.`}
               </div>
             )}
           </div>
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 }

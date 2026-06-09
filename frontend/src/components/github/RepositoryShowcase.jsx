@@ -26,62 +26,61 @@ export function RepositoryShowcase({ repositories }) {
   const displayRepos = showAll ? rankedRepos : rankedRepos.slice(0, 6);
 
   return (
-    <div className="bg-white dark:bg-gray-900 rounded-2xl sm:rounded-[20px] border border-gray-200 dark:border-gray-800 p-4 sm:p-6 md:p-10">
-      <div className="flex items-center justify-between mb-4 sm:mb-8">
-        <h3 className="text-heading-lg font-bold text-gray-900 dark:text-white">
-          🏆 Signature Projects
+    <div className="rounded-xl border border-[var(--border-default)] bg-[var(--bg-elevated)] p-5 sm:p-7">
+      <div className="flex items-center justify-between mb-5">
+        <h3 className="text-sm font-semibold text-[var(--text-primary)]">
+          Repositories
         </h3>
-        <span className="text-sm text-gray-500 dark:text-gray-400">
-          {rankedRepos.length} repositories
+        <span className="text-[11px] text-[var(--text-tertiary)]">
+          {rankedRepos.length} projects
         </span>
       </div>
 
-      <div className="space-y-3">
+      <div className="space-y-1">
         {displayRepos.map((repo, idx) => (
           <motion.a
             key={repo.name}
             href={repo.url}
             target="_blank"
             rel="noopener noreferrer"
-            initial={{ opacity: 0, x: -12 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: idx * 0.06 }}
-            whileHover={{ x: 4 }}
-            className="group flex items-center justify-between bg-gray-50 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl px-3 py-3 sm:px-6 sm:py-4 transition-colors"
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: idx * 0.04 }}
+            className="group flex items-center justify-between rounded-lg px-3 py-2.5 hover:bg-[var(--surface-hover)] transition-colors"
           >
-            <div className="flex items-center gap-2 sm:gap-4 min-w-0">
+            <div className="flex items-center gap-2.5 min-w-0">
               {repo.language && (
                 <div
-                  className="w-3 h-3 rounded-full flex-shrink-0"
+                  className="w-2.5 h-2.5 rounded-full flex-shrink-0"
                   style={{ backgroundColor: getLanguageColor(repo.language) }}
                 />
               )}
               <div className="min-w-0">
-                <h4 className="font-semibold text-gray-900 dark:text-gray-100 truncate">
+                <h4 className="text-[13px] font-medium text-[var(--text-primary)] truncate">
                   {repo.name}
                 </h4>
                 {repo.description && (
-                  <p className="text-sm text-gray-500 dark:text-gray-400 truncate mt-0.5">
+                  <p className="text-[11px] text-[var(--text-tertiary)] truncate mt-0.5">
                     {repo.description}
                   </p>
                 )}
               </div>
             </div>
 
-            <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0 ml-2 sm:ml-4">
+            <div className="flex items-center gap-3 flex-shrink-0 ml-3">
               {repo.stars > 0 && (
-                <span className="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400">
-                  <Star className="w-3.5 h-3.5 fill-yellow-500 text-yellow-500" />
+                <span className="flex items-center gap-1 text-[11px] text-[var(--text-tertiary)]">
+                  <Star className="w-3 h-3" />
                   {repo.stars}
                 </span>
               )}
               {repo.forks > 0 && (
-                <span className="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400">
-                  <GitFork className="w-3.5 h-3.5" />
+                <span className="flex items-center gap-1 text-[11px] text-[var(--text-tertiary)]">
+                  <GitFork className="w-3 h-3" />
                   {repo.forks}
                 </span>
               )}
-              <ExternalLink className="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+              <ExternalLink className="w-3 h-3 text-[var(--text-tertiary)] opacity-0 group-hover:opacity-100 transition-opacity" />
             </div>
           </motion.a>
         ))}
@@ -90,9 +89,9 @@ export function RepositoryShowcase({ repositories }) {
       {!showAll && rankedRepos.length > 6 && (
         <button
           onClick={() => setShowAll(true)}
-          className="w-full mt-4 py-3 text-sm font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
+          className="w-full mt-3 py-2.5 text-xs font-medium text-[var(--accent)] hover:text-[var(--text-primary)] transition-colors"
         >
-          Show {rankedRepos.length - 6} more repositories →
+          Show {rankedRepos.length - 6} more →
         </button>
       )}
     </div>
@@ -117,5 +116,5 @@ function getLanguageColor(language) {
     "C++": "#00599c",
     C: "#a8b9cc",
   };
-  return colors[language] || "#888";
+  return colors[language] || "#666";
 }
