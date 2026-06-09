@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, Trophy, Crown } from "lucide-react";
+import { ArrowLeft, Trophy, Crown, BrainCircuit } from "lucide-react";
 import { comparisonAPI } from "../services/api";
 import { BattleArenaSetup } from "../components/comparison/BattleArenaSetup";
 import { StreamingAIVerdict } from "../components/comparison/StreamingAIVerdict";
@@ -276,65 +276,38 @@ export default function GitHubComparison() {
         <AnimatePresence>
           {revealStage >= 1 && (
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
             >
-              <div className="relative overflow-hidden bg-gradient-to-br from-white via-blue-50/30 to-purple-50/30 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900 rounded-2xl sm:rounded-[24px] border border-gray-200/80 dark:border-gray-800 shadow-lg p-5 sm:p-10 md:p-14">
-                {/* Premium background pattern */}
-                <div className="absolute inset-0 opacity-[0.015] dark:opacity-[0.03]">
-                  <div
-                    className="absolute inset-0"
-                    style={{
-                      backgroundImage:
-                        "radial-gradient(circle at 2px 2px, currentColor 1px, transparent 0)",
-                      backgroundSize: "32px 32px",
-                    }}
-                  />
-                </div>
-
+              <div className="relative overflow-hidden bg-[var(--bg-elevated)] rounded-xl border border-[var(--border-default)] p-6 sm:p-10 md:p-12">
                 <div className="relative z-10">
-                  <div className="text-center mb-12">
-                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-gray-200 dark:border-gray-700 mb-4">
-                      <Trophy className="w-4 h-4 text-yellow-500" />
-                      <span className="text-xs font-bold text-gray-600 dark:text-gray-400">
-                        BATTLE RESULTS
-                      </span>
-                    </div>
-                    <h3 className="text-2xl sm:text-4xl md:text-5xl font-black text-gray-900 dark:text-white mb-2">
+                  <div className="text-center mb-8">
+                    <h3 className="text-xl sm:text-2xl font-semibold text-[var(--text-primary)] mb-1 tracking-tight">
                       Overall Score
                     </h3>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                    <p className="text-xs text-[var(--text-tertiary)]">
                       Comprehensive developer performance metrics
                     </p>
                   </div>
 
-                  <div className="flex items-center justify-center gap-4 sm:gap-12 md:gap-24">
+                  <div className="flex items-center justify-center gap-6 sm:gap-16">
                     <ScoreRing
                       username={userA?.username}
                       score={scoreA.total}
                       isWinner={battleResult.winner === "A"}
-                      color="#3b82f6"
+                      color="var(--accent)"
                     />
-                    <div className="relative">
-                      <div className="text-3xl font-black text-gray-300 dark:text-gray-700">
+                    <div className="relative flex-shrink-0">
+                      <div className="text-sm font-semibold text-[var(--text-tertiary)]">
                         VS
                       </div>
-                      <motion.div
-                        animate={{ rotate: 360 }}
-                        transition={{
-                          duration: 20,
-                          repeat: Infinity,
-                          ease: "linear",
-                        }}
-                        className="absolute -inset-4 border border-dashed border-gray-200 dark:border-gray-800 rounded-full opacity-30"
-                      />
                     </div>
                     <ScoreRing
                       username={userB?.username}
                       score={scoreB.total}
                       isWinner={battleResult.winner === "B"}
-                      color="#a855f7"
+                      color="var(--accent)"
                     />
                   </div>
                 </div>
@@ -347,28 +320,22 @@ export default function GitHubComparison() {
         <AnimatePresence>
           {revealStage >= 1 && (
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
             >
-              <div className="bg-white dark:bg-gray-900 rounded-2xl sm:rounded-[24px] border border-gray-200 dark:border-gray-800 shadow-lg p-5 sm:p-8 md:p-10">
-                <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-8 gap-4">
+              <div className="bg-[var(--bg-elevated)] rounded-xl border border-[var(--border-default)] p-5 sm:p-8">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-3">
                   <div>
-                    <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-1">
+                    <h3 className="text-sm font-semibold text-[var(--text-primary)] mb-1">
                       Developer Profiles
                     </h3>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                    <p className="text-xs text-[var(--text-tertiary)]">
                       Key metrics and technical identity
                     </p>
                   </div>
-                  <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
-                    <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
-                    <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
-                      Live Data
-                    </span>
-                  </div>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <QuickStatsCard
                     accent="blue"
                     title={userA?.profile?.name || userA?.username}
@@ -401,17 +368,17 @@ export default function GitHubComparison() {
         <AnimatePresence>
           {revealStage >= 1 && (
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
             >
-              <div className="bg-white dark:bg-gray-900 rounded-2xl sm:rounded-[24px] border border-gray-200 dark:border-gray-800 shadow-lg p-5 sm:p-8 md:p-10">
-                <div className="text-center mb-6 sm:mb-10">
-                  <h3 className="text-xl sm:text-3xl font-black text-gray-900 dark:text-white mb-2">
+              <div className="bg-[var(--bg-elevated)] rounded-xl border border-[var(--border-default)] p-5 sm:p-8">
+                <div className="text-center mb-6 sm:mb-8">
+                  <h3 className="text-sm font-semibold text-[var(--text-primary)] mb-1">
                     Head-to-Head Metrics
                   </h3>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
-                    Direct performance comparison across 8 key indicators
+                  <p className="text-xs text-[var(--text-tertiary)]">
+                    Direct performance comparison across key indicators
                   </p>
                 </div>
                 <div className="space-y-7">
@@ -441,7 +408,7 @@ export default function GitHubComparison() {
                             {/* User A value */}
                             <div className="w-12 sm:w-20 text-right">
                               <span
-                                className={`font-black text-sm sm:text-xl ${winnerSide === "A" ? "text-blue-500" : "text-gray-300 dark:text-gray-600"}`}
+                                className={`font-semibold text-xs sm:text-base ${winnerSide === "A" ? "text-[var(--text-primary)]" : "text-[var(--text-tertiary)]"}`}
                               >
                                 <CountUp
                                   end={m.valueA}
@@ -453,11 +420,12 @@ export default function GitHubComparison() {
 
                             {/* User A bar */}
                             <div className="flex-1 flex justify-end">
-                              <div className="w-full h-2.5 sm:h-4 bg-gradient-to-r from-gray-100 to-gray-50 dark:from-gray-800 dark:to-gray-850 rounded-full overflow-hidden shadow-inner">
+                              <div className="w-full h-1.5 bg-[var(--bg-tertiary)] rounded-full overflow-hidden">
                                 <motion.div
-                                  className="h-full bg-gradient-to-r from-blue-600 to-blue-500 rounded-full float-right shadow-lg"
+                                  className="h-full bg-[var(--text-primary)] rounded-full float-right"
                                   initial={{ width: 0 }}
                                   animate={{ width: `${pctA}%` }}
+                                  style={{ opacity: 0.8 }}
                                   transition={{
                                     duration: 1,
                                     delay: 0.7 + i * 0.08,
@@ -469,7 +437,7 @@ export default function GitHubComparison() {
 
                             {/* Center divider with winner indicator */}
                             <div className="relative w-6 sm:w-8 flex items-center justify-center">
-                              <div className="w-0.5 h-6 sm:h-8 bg-gray-200 dark:bg-gray-700" />
+                              <div className="w-px h-5 bg-[var(--border-default)]" />
                               {winnerSide && (
                                 <motion.div
                                   initial={{ scale: 0 }}
@@ -478,11 +446,7 @@ export default function GitHubComparison() {
                                     delay: 0.9 + i * 0.08,
                                     type: "spring",
                                   }}
-                                  className={`absolute w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center text-[10px] sm:text-xs font-bold ${
-                                    winnerSide === "A"
-                                      ? "bg-blue-500 text-white"
-                                      : "bg-purple-500 text-white"
-                                  }`}
+                                  className="absolute w-4.5 h-4.5 rounded-full bg-[var(--text-primary)] text-[var(--bg-primary)] flex items-center justify-center text-[9px] font-bold"
                                 >
                                   ✓
                                 </motion.div>
@@ -491,11 +455,12 @@ export default function GitHubComparison() {
 
                             {/* User B bar */}
                             <div className="flex-1">
-                              <div className="w-full h-2.5 sm:h-4 bg-gradient-to-l from-gray-100 to-gray-50 dark:from-gray-800 dark:to-gray-850 rounded-full overflow-hidden shadow-inner">
+                              <div className="w-full h-1.5 bg-[var(--bg-tertiary)] rounded-full overflow-hidden">
                                 <motion.div
-                                  className="h-full bg-gradient-to-l from-purple-600 to-purple-500 rounded-full shadow-lg"
+                                  className="h-full bg-[var(--text-primary)] rounded-full"
                                   initial={{ width: 0 }}
                                   animate={{ width: `${pctB}%` }}
+                                  style={{ opacity: 0.8 }}
                                   transition={{
                                     duration: 1,
                                     delay: 0.7 + i * 0.08,
@@ -508,7 +473,7 @@ export default function GitHubComparison() {
                             {/* User B value */}
                             <div className="w-12 sm:w-20 text-left">
                               <span
-                                className={`font-black text-sm sm:text-xl ${winnerSide === "B" ? "text-purple-500" : "text-gray-300 dark:text-gray-600"}`}
+                                className={`font-semibold text-xs sm:text-base ${winnerSide === "B" ? "text-[var(--text-primary)]" : "text-[var(--text-tertiary)]"}`}
                               >
                                 <CountUp
                                   end={m.valueB}
@@ -523,19 +488,17 @@ export default function GitHubComparison() {
                     );
                   })}
 
-                  {/* Enhanced Legend */}
-                  <div className="flex justify-between items-center pt-6 mt-4 border-t border-gray-200 dark:border-gray-800">
-                    <div className="flex items-center gap-3 px-4 py-2 rounded-xl bg-blue-50 dark:bg-blue-900/20">
-                      <span className="w-4 h-4 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full shadow-lg shadow-blue-500/30" />
-                      <span className="text-sm font-bold text-gray-700 dark:text-gray-300">
+                  {/* Legend */}
+                  <div className="flex justify-between items-center pt-5 mt-4 border-t border-[var(--border-subtle)]">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-semibold text-[var(--text-primary)]">
                         @{userA?.username}
                       </span>
                     </div>
-                    <div className="flex items-center gap-3 px-4 py-2 rounded-xl bg-purple-50 dark:bg-purple-900/20">
-                      <span className="text-sm font-bold text-gray-700 dark:text-gray-300">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-semibold text-[var(--text-primary)]">
                         @{userB?.username}
                       </span>
-                      <span className="w-4 h-4 bg-gradient-to-br from-purple-500 to-purple-600 rounded-full shadow-lg shadow-purple-500/30" />
                     </div>
                   </div>
                 </div>
@@ -548,27 +511,26 @@ export default function GitHubComparison() {
         <AnimatePresence>
           {revealStage >= 1 && (
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
             >
-              <div className="bg-white dark:bg-gray-900 rounded-2xl sm:rounded-[24px] border border-gray-200 dark:border-gray-800 shadow-lg p-5 sm:p-8 md:p-10">
+              <div className="bg-[var(--bg-elevated)] rounded-xl border border-[var(--border-default)] p-5 sm:p-8">
                 {/* Header */}
-                <div className="flex items-center gap-3 mb-6">
-                  <span className="text-3xl">🧑‍⚖️</span>
-                  <div className="flex-1">
-                    <h3 className="text-2xl font-black text-gray-900 dark:text-white">
+                <div className="flex items-center gap-2.5 mb-5">
+                  <div className="w-7 h-7 rounded-md bg-[var(--bg-tertiary)] flex items-center justify-center">
+                    <BrainCircuit className="w-4 h-4 text-[var(--text-tertiary)]" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-semibold text-[var(--text-primary)]">
                       AI Analysis
                     </h3>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
-                      Powered by Llama
-                    </p>
                   </div>
                 </div>
 
                 {/* AI Verdict Text */}
-                <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-6 mb-6">
-                  <div className="text-gray-700 dark:text-gray-300 leading-relaxed text-[15px]">
+                <div className="bg-[var(--bg-secondary)] border border-[var(--border-subtle)] rounded-lg p-5 mb-5">
+                  <div className="text-[var(--text-secondary)] leading-relaxed text-xs sm:text-sm">
                     {aiComparison?.verdict ? (
                       <StreamingAIVerdict
                         text={aiComparison.verdict}
@@ -577,7 +539,7 @@ export default function GitHubComparison() {
                         }
                       />
                     ) : (
-                      <p className="text-gray-400 dark:text-gray-500 italic">
+                      <p className="text-[var(--text-tertiary)] italic">
                         AI analysis unavailable for this comparison.
                       </p>
                     )}
@@ -586,20 +548,17 @@ export default function GitHubComparison() {
 
                 {/* Winner Declaration */}
                 {aiComparison?.winner && (
-                  <div className="bg-gradient-to-r from-yellow-50 to-amber-50 dark:from-yellow-900/20 dark:to-amber-900/20 rounded-xl p-6 border border-yellow-200 dark:border-yellow-800/40">
-                    <div className="flex items-start gap-4">
-                      <div className="flex-shrink-0 w-10 h-10 rounded-full bg-yellow-500 flex items-center justify-center">
-                        <span className="text-white text-xl">🏆</span>
-                      </div>
+                  <div className="bg-[var(--bg-secondary)] rounded-lg p-4 border border-[var(--border-subtle)]">
+                    <div className="flex items-start gap-3">
                       <div className="flex-1">
-                        <div className="text-xs font-bold text-yellow-700 dark:text-yellow-400 uppercase tracking-wider mb-1">
+                        <div className="text-[10px] font-medium text-[var(--text-tertiary)] uppercase tracking-wider mb-1">
                           Winner
                         </div>
-                        <div className="text-xl font-black text-gray-900 dark:text-white mb-2">
+                        <div className="text-sm font-semibold text-[var(--text-primary)] mb-1">
                           {aiWinnerName}
                         </div>
                         {aiComparison?.winReason && (
-                          <p className="text-sm text-gray-600 dark:text-gray-400">
+                          <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
                             {aiComparison.winReason}
                           </p>
                         )}
@@ -616,101 +575,95 @@ export default function GitHubComparison() {
         <AnimatePresence>
           {revealStage >= 1 && (langsA.size > 0 || langsB.size > 0) && (
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
             >
-              <div className="bg-gradient-to-br from-white via-indigo-50/20 to-purple-50/20 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900 rounded-2xl sm:rounded-[24px] border border-gray-200 dark:border-gray-800 shadow-lg p-5 sm:p-8 md:p-10">
-                <div className="text-center mb-10">
-                  <h3 className="text-3xl font-black text-gray-900 dark:text-white mb-2">
+              <div className="bg-[var(--bg-elevated)] rounded-xl border border-[var(--border-default)] p-5 sm:p-8">
+                <div className="text-center mb-6">
+                  <h3 className="text-sm font-semibold text-[var(--text-primary)] mb-1">
                     Technology Overlap
                   </h3>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                  <p className="text-xs text-[var(--text-tertiary)]">
                     Analyzing shared and unique technical stacks
                   </p>
                 </div>
 
-                <div className="flex items-center justify-center gap-0 relative h-48 sm:h-64">
-                  {/* Circle A - Enhanced */}
+                <div className="flex items-center justify-center gap-0 relative h-36">
+                  {/* Circle A */}
                   <motion.div
-                    initial={{ x: 60, opacity: 0, scale: 0.8 }}
+                    initial={{ x: 30, opacity: 0, scale: 0.95 }}
                     animate={{ x: 0, opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.8, type: "spring" }}
-                    className="w-36 h-36 sm:w-52 sm:h-52 rounded-full bg-gradient-to-br from-blue-500/20 via-blue-400/15 to-blue-500/20 dark:from-blue-500/15 dark:via-blue-400/10 dark:to-blue-500/15 border-2 border-blue-400/40 dark:border-blue-400/30 flex items-center justify-center relative -mr-10 sm:-mr-16 shadow-xl shadow-blue-500/10"
+                    transition={{ duration: 0.6, type: "spring" }}
+                    className="w-24 h-24 rounded-full bg-[var(--bg-secondary)] border border-[var(--border-default)] flex items-center justify-center relative -mr-6"
                   >
-                    <div className="text-center pr-10">
-                      <div className="text-4xl font-black text-blue-500 mb-1">
+                    <div className="text-center pr-4">
+                      <div className="text-lg font-semibold text-[var(--text-primary)]">
                         {uniqueA.length}
                       </div>
-                      <div className="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider">
+                      <div className="text-[9px] text-[var(--text-tertiary)] uppercase tracking-wider">
                         Unique
                       </div>
                     </div>
                   </motion.div>
 
-                  {/* Shared count - Premium design */}
+                  {/* Shared count */}
                   <motion.div
-                    initial={{ scale: 0, rotate: -180 }}
-                    animate={{ scale: 1, rotate: 0 }}
-                    transition={{ delay: 0.5, type: "spring", bounce: 0.5 }}
-                    className="absolute z-10 bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 border-2 border-gray-300 dark:border-gray-600 rounded-2xl w-20 h-20 flex flex-col items-center justify-center shadow-2xl"
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ delay: 0.3, type: "spring" }}
+                    className="absolute z-15 bg-[var(--bg-tertiary)] border border-[var(--border-default)] rounded-xl w-14 h-14 flex flex-col items-center justify-center"
                   >
-                    <div className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-br from-blue-500 to-purple-500">
+                    <div className="text-lg font-semibold text-[var(--text-primary)]">
                       {shared.length}
                     </div>
-                    <div className="text-[10px] font-bold text-gray-600 dark:text-gray-400 uppercase">
+                    <div className="text-[9px] text-[var(--text-tertiary)] uppercase">
                       Shared
                     </div>
                   </motion.div>
 
-                  {/* Circle B - Enhanced */}
+                  {/* Circle B */}
                   <motion.div
-                    initial={{ x: -60, opacity: 0, scale: 0.8 }}
+                    initial={{ x: -30, opacity: 0, scale: 0.95 }}
                     animate={{ x: 0, opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.8, type: "spring" }}
-                    className="w-36 h-36 sm:w-52 sm:h-52 rounded-full bg-gradient-to-bl from-purple-500/20 via-purple-400/15 to-purple-500/20 dark:from-purple-500/15 dark:via-purple-400/10 dark:to-purple-500/15 border-2 border-purple-400/40 dark:border-purple-400/30 flex items-center justify-center relative -ml-10 sm:-ml-16 shadow-xl shadow-purple-500/10"
+                    transition={{ duration: 0.6, type: "spring" }}
+                    className="w-24 h-24 rounded-full bg-[var(--bg-secondary)] border border-[var(--border-default)] flex items-center justify-center relative -ml-6"
                   >
-                    <div className="text-center pl-10">
-                      <div className="text-4xl font-black text-purple-500 mb-1">
+                    <div className="text-center pl-4">
+                      <div className="text-lg font-semibold text-[var(--text-primary)]">
                         {uniqueB.length}
                       </div>
-                      <div className="text-xs font-bold text-purple-600 dark:text-purple-400 uppercase tracking-wider">
+                      <div className="text-[9px] text-[var(--text-tertiary)] uppercase tracking-wider">
                         Unique
                       </div>
                     </div>
                   </motion.div>
                 </div>
 
-                {/* Enhanced Labels */}
-                <div className="flex justify-between items-center mt-6 sm:mt-8 px-4 sm:px-12">
-                  <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-100 dark:bg-blue-900/30">
-                    <span className="w-3 h-3 bg-blue-500 rounded-full" />
-                    <span className="text-sm font-bold text-blue-700 dark:text-blue-300">
-                      @{userA?.username}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-purple-100 dark:bg-purple-900/30">
-                    <span className="text-sm font-bold text-purple-700 dark:text-purple-300">
-                      @{userB?.username}
-                    </span>
-                    <span className="w-3 h-3 bg-purple-500 rounded-full" />
-                  </div>
+                {/* Labels */}
+                <div className="flex justify-between items-center mt-5 px-4">
+                  <span className="text-xs font-semibold text-[var(--text-primary)]">
+                    @{userA?.username}
+                  </span>
+                  <span className="text-xs font-semibold text-[var(--text-primary)]">
+                    @{userB?.username}
+                  </span>
                 </div>
 
-                {/* Shared languages list - Enhanced */}
+                {/* Shared languages list */}
                 {shared.length > 0 && (
                   <motion.div
-                    initial={{ opacity: 0, y: 10 }}
+                    initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.8 }}
-                    className="mt-8 text-center"
+                    transition={{ delay: 0.5 }}
+                    className="mt-6 text-center"
                   >
-                    <div className="inline-block px-6 py-3 rounded-2xl bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 dark:from-blue-900/20 dark:via-indigo-900/20 dark:to-purple-900/20 border border-gray-200 dark:border-gray-700">
-                      <p className="text-xs font-bold text-gray-400 dark:text-gray-500 mb-2 uppercase tracking-wider">
+                    <div className="inline-block px-4 py-2 rounded-lg bg-[var(--bg-secondary)] border border-[var(--border-subtle)]">
+                      <p className="text-[10px] font-medium text-[var(--text-tertiary)] mb-1 uppercase tracking-wider">
                         Common Technologies
                       </p>
-                      <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                        {shared.join(" • ")}
+                      <p className="text-xs font-medium text-[var(--text-primary)]">
+                        {shared.join(" · ")}
                       </p>
                     </div>
                   </motion.div>
@@ -724,61 +677,30 @@ export default function GitHubComparison() {
         <AnimatePresence>
           {revealStage >= 2 && (
             <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 30 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              transition={{ type: "spring", bounce: 0.4, delay: 0.2 }}
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
             >
-              <div className="relative overflow-hidden bg-gradient-to-br from-amber-50 via-yellow-50/50 to-orange-50 dark:from-yellow-900/10 dark:via-amber-900/5 dark:to-orange-900/10 rounded-2xl sm:rounded-[24px] border-2 border-yellow-200/60 dark:border-yellow-800/40 shadow-xl p-5 sm:p-8 md:p-10">
-                {/* Subtle shine effect */}
-                <motion.div
-                  animate={{
-                    x: ["-100%", "100%"],
-                  }}
-                  transition={{
-                    duration: 3,
-                    repeat: Infinity,
-                    repeatDelay: 2,
-                    ease: "easeInOut",
-                  }}
-                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
-                  style={{ transform: "skewX(-20deg)" }}
-                />
-
+              <div className="bg-[var(--bg-elevated)] rounded-xl border border-[var(--border-default)] p-5 sm:p-8">
                 <div className="relative z-10">
                   {/* Check AI winner first, fallback to battleResult */}
                   {aiWinner === "TIE" ||
                   (!aiWinner && battleResult.winner === "TIE") ? (
-                    <div className="text-center">
-                      <motion.span
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        transition={{ type: "spring", delay: 0.3 }}
-                        className="text-5xl mb-4 block"
-                      >
-                        🤝
-                      </motion.span>
-                      <h2 className="text-3xl font-black text-gray-900 dark:text-white mb-3">
+                    <div className="text-center py-4">
+                      <h2 className="text-lg font-semibold text-[var(--text-primary)] mb-1">
                         Perfect Draw!
                       </h2>
-                      <p className="text-sm text-gray-600 dark:text-gray-400 max-w-md mx-auto">
-                        Both developers demonstrate exceptional and equivalent
-                        skills
+                      <p className="text-xs text-[var(--text-tertiary)] max-w-sm mx-auto">
+                        Both developers demonstrate exceptional and equivalent skills
                       </p>
                     </div>
                   ) : (
                     <div>
                       <div className="flex flex-col items-center">
-                        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/80 dark:bg-gray-900/60 backdrop-blur-sm border border-yellow-300/30 dark:border-yellow-700/30 mb-4">
-                          <Trophy className="w-3.5 h-3.5 text-yellow-600 dark:text-yellow-500" />
-                          <span className="text-xs font-bold text-yellow-700 dark:text-yellow-400 uppercase tracking-wider">
-                            Final Verdict
-                          </span>
-                        </div>
-
                         <motion.img
-                          initial={{ scale: 0.8, opacity: 0 }}
+                          initial={{ scale: 0.95, opacity: 0 }}
                           animate={{ scale: 1, opacity: 1 }}
-                          transition={{ delay: 0.4, type: "spring" }}
+                          transition={{ delay: 0.3 }}
                           src={`https://github.com/${
                             aiWinner && aiWinner !== "TIE"
                               ? aiWinner === "A"
@@ -789,10 +711,14 @@ export default function GitHubComparison() {
                                 : userB?.username
                           }.png`}
                           alt="Winner"
-                          className="w-20 h-20 rounded-full mb-4 border-3 border-white dark:border-gray-800 shadow-xl ring-2 ring-yellow-400/40"
+                          className="w-16 h-16 rounded-full mb-3 border border-[var(--border-default)]"
                         />
 
-                        <h2 className="text-2xl sm:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-600 via-amber-600 to-orange-600 dark:from-yellow-400 dark:via-amber-400 dark:to-orange-400 mb-2 sm:mb-3">
+                        <div className="text-[10px] font-medium text-[var(--text-tertiary)] uppercase tracking-wider mb-1">
+                          Final Winner
+                        </div>
+
+                        <h2 className="text-lg font-semibold text-[var(--text-primary)] mb-2">
                           {aiWinner && aiWinner !== "TIE"
                             ? aiWinnerName
                             : battleResult.winner === "A"
@@ -800,61 +726,9 @@ export default function GitHubComparison() {
                               : userB?.profile?.name || userB?.username}
                         </h2>
 
-                        <p className="text-sm text-gray-700 dark:text-gray-300 font-medium max-w-xl text-center mb-6">
+                        <p className="text-xs text-[var(--text-tertiary)] max-w-sm text-center">
                           {aiComparison?.winReason || battleResult.description}
                         </p>
-
-                        {/* Score Display */}
-                        <div className="inline-flex items-center gap-4 sm:gap-6 bg-white/80 dark:bg-gray-900/60 backdrop-blur-sm px-5 sm:px-8 py-3 sm:py-4 rounded-xl shadow-lg border border-gray-200/50 dark:border-gray-700/50 mb-4 sm:mb-6">
-                          <div className="text-center">
-                            <div className="text-[10px] font-bold text-gray-400 dark:text-gray-500 mb-1 uppercase tracking-wider">
-                              Winner
-                            </div>
-                            <span className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 to-amber-600">
-                              {(aiWinner && aiWinner !== "TIE"
-                                ? aiWinner
-                                : battleResult.winner) === "A"
-                                ? scoreA.total
-                                : scoreB.total}
-                            </span>
-                          </div>
-
-                          <div className="w-px h-10 bg-gray-300 dark:bg-gray-700" />
-
-                          <div className="text-center">
-                            <div className="text-[10px] font-bold text-gray-400 dark:text-gray-500 mb-1 uppercase tracking-wider">
-                              Runner-up
-                            </div>
-                            <span className="text-2xl font-black text-gray-400 dark:text-gray-600">
-                              {(aiWinner && aiWinner !== "TIE"
-                                ? aiWinner
-                                : battleResult.winner) === "A"
-                                ? scoreB.total
-                                : scoreA.total}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Fighter Cards */}
-                      <div className="flex items-center justify-center gap-3">
-                        <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/60 dark:bg-gray-900/40 backdrop-blur-sm border border-blue-200/50 dark:border-blue-800/30">
-                          <span className="w-3 h-3 rounded-full bg-blue-500 shadow-lg shadow-blue-500/50" />
-                          <span className="text-xs font-bold text-gray-700 dark:text-gray-300">
-                            @{userA?.username}
-                          </span>
-                        </div>
-
-                        <div className="text-xl font-black text-gray-400 dark:text-gray-600">
-                          ⚔️
-                        </div>
-
-                        <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/60 dark:bg-gray-900/40 backdrop-blur-sm border border-purple-200/50 dark:border-purple-800/30">
-                          <span className="w-3 h-3 rounded-full bg-purple-500 shadow-lg shadow-purple-500/50" />
-                          <span className="text-xs font-bold text-gray-700 dark:text-gray-300">
-                            @{userB?.username}
-                          </span>
-                        </div>
                       </div>
                     </div>
                   )}
@@ -962,64 +836,28 @@ function getTopLanguage(user) {
 }
 
 function QuickStatsCard({ accent, title, username, avatar, stats }) {
-  const accentClasses =
-    accent === "purple"
-      ? "border-purple-300/60 dark:border-purple-700/50 bg-gradient-to-br from-purple-50/80 via-white to-purple-50/50 dark:from-purple-900/20 dark:via-gray-800 dark:to-purple-900/10"
-      : "border-blue-300/60 dark:border-blue-700/50 bg-gradient-to-br from-blue-50/80 via-white to-blue-50/50 dark:from-blue-900/20 dark:via-gray-800 dark:to-blue-900/10";
-
-  const dotClass =
-    accent === "purple"
-      ? "bg-purple-500 shadow-lg shadow-purple-500/40"
-      : "bg-blue-500 shadow-lg shadow-blue-500/40";
-  const glowClass =
-    accent === "purple" ? "shadow-purple-500/20" : "shadow-blue-500/20";
-
   return (
-    <div
-      className={`rounded-2xl border-2 ${accentClasses} p-4 sm:p-6 relative overflow-hidden shadow-xl ${glowClass}`}
-    >
-      {/* Subtle pattern overlay */}
-      <div className="absolute inset-0 opacity-[0.03]">
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage:
-              "radial-gradient(circle at 2px 2px, currentColor 1px, transparent 0)",
-            backgroundSize: "24px 24px",
-          }}
-        />
-      </div>
-
+    <div className="rounded-xl border border-[var(--border-default)] bg-[var(--bg-secondary)] p-4 sm:p-5 relative overflow-hidden">
       <div className="relative z-10">
-        <div className="flex items-center gap-3 sm:gap-4 mb-4 sm:mb-6 pb-4 sm:pb-5 border-b border-gray-200 dark:border-gray-700">
-          <div className="relative">
-            <img
-              src={avatar}
-              alt={username}
-              className="w-10 h-10 sm:w-14 sm:h-14 rounded-full border-2 border-white dark:border-gray-800 shadow-lg"
-            />
-            <span
-              className={`absolute -bottom-1 -right-1 w-3 h-3 sm:w-4 sm:h-4 rounded-full ${dotClass} border-2 border-white dark:border-gray-800`}
-            />
-          </div>
+        <div className="flex items-center gap-3 mb-4 pb-4 border-b border-[var(--border-subtle)]">
+          <img
+            src={avatar}
+            alt={username}
+            className="w-10 h-10 rounded-full border border-[var(--border-default)]"
+          />
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-0.5">
-              <span className="font-black text-gray-900 dark:text-white text-base sm:text-lg truncate">
-                {title}
-              </span>
-            </div>
-            <div className="text-[10px] sm:text-xs font-medium text-gray-500 dark:text-gray-400">
+            <span className="font-semibold text-[var(--text-primary)] text-sm sm:text-base truncate block">
+              {title}
+            </span>
+            <div className="text-[10px] text-[var(--text-tertiary)]">
               @{username}
             </div>
           </div>
-          <span
-            className={`w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full ${dotClass} animate-pulse`}
-          />
         </div>
 
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-2.5">
           {stats.map((stat) => (
-            <StatItem key={stat.label} stat={stat} accent={accent} />
+            <StatItem key={stat.label} stat={stat} />
           ))}
         </div>
       </div>
@@ -1027,20 +865,13 @@ function QuickStatsCard({ accent, title, username, avatar, stats }) {
   );
 }
 
-function StatItem({ stat, accent }) {
-  const hoverClass =
-    accent === "purple"
-      ? "hover:border-purple-300 dark:hover:border-purple-700"
-      : "hover:border-blue-300 dark:hover:border-blue-700";
-
+function StatItem({ stat }) {
   return (
-    <div
-      className={`bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3.5 transition-all duration-200 ${hoverClass} group`}
-    >
-      <div className="text-[11px] font-bold text-gray-400 dark:text-gray-500 mb-1.5 uppercase tracking-wide">
+    <div className="bg-[var(--bg-elevated)] border border-[var(--border-subtle)] rounded-lg px-3 py-2.5">
+      <div className="text-[10px] font-medium text-[var(--text-tertiary)] mb-1 uppercase tracking-wider">
         {stat.label}
       </div>
-      <div className="text-base font-black text-gray-900 dark:text-white group-hover:scale-105 transition-transform">
+      <div className="text-sm font-semibold text-[var(--text-primary)] truncate">
         <StatValue value={stat.value} isNumber={stat.isNumber} />
       </div>
     </div>
