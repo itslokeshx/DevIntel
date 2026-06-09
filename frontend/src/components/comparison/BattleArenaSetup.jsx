@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { User, Loader2, Swords } from "lucide-react";
+import { User, Loader2, Swords, ArrowRight } from "lucide-react";
 
 export function BattleArenaSetup({ onBattleStart, loading: externalLoading }) {
   const [fighterA, setFighterA] = useState("");
@@ -31,114 +31,98 @@ export function BattleArenaSetup({ onBattleStart, loading: externalLoading }) {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-950 pt-[72px] flex flex-col items-center justify-center p-4 sm:p-6 relative overflow-hidden">
-      {/* Floating decorative orbs */}
+    <div className="min-h-screen bg-[var(--bg-primary)] pt-14 flex flex-col items-center justify-center p-4 sm:p-6 relative">
+      {/* Subtle ambient */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-32 left-10 w-72 h-72 bg-blue-500/5 dark:bg-blue-500/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-purple-500/5 dark:bg-purple-500/10 rounded-full blur-3xl" />
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-[var(--accent)] opacity-[0.02] blur-[100px] rounded-full" />
       </div>
 
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
-        className="max-w-3xl w-full relative z-10"
+        className="max-w-xl w-full relative z-10"
       >
         {/* Header */}
-        <div className="text-center mb-6 sm:mb-12">
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ type: "spring", bounce: 0.5 }}
-            className="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl sm:rounded-2xl mb-4 sm:mb-6 shadow-blue"
-          >
-            <Swords className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
-          </motion.div>
-          <h1 className="text-3xl sm:text-5xl md:text-6xl font-black text-gray-900 dark:text-white mb-3 sm:mb-4 tracking-tight">
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center justify-center w-10 h-10 bg-[var(--bg-tertiary)] rounded-xl mb-4 border border-[var(--border-default)]">
+            <Swords className="w-5 h-5 text-[var(--text-secondary)]" />
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-semibold text-[var(--text-primary)] mb-2 tracking-[-0.02em]">
             Developer Battle
           </h1>
-          <p className="text-gray-500 dark:text-gray-400 text-sm sm:text-lg max-w-xl mx-auto">
-            Compare coding styles, contribution patterns, and tech stacks
-            head-to-head.
+          <p className="text-sm text-[var(--text-tertiary)] max-w-md mx-auto">
+            Compare coding styles, contributions, and tech stacks head-to-head
           </p>
         </div>
 
         {/* Battle Card */}
-        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-[20px] p-5 sm:p-8 md:p-10 shadow-lg">
-          <div className="flex flex-col md:flex-row items-center gap-4 md:gap-6">
-            {/* Fighter A */}
+        <div className="rounded-xl border border-[var(--border-default)] bg-[var(--bg-elevated)] p-5 sm:p-7">
+          <div className="flex flex-col md:flex-row items-center gap-4 md:gap-5">
             <div className="flex-1 w-full">
               <FighterInput
                 value={fighterA}
                 onChange={setFighterA}
                 onKeyPress={handleKeyPress}
-                placeholder="Fighter One"
+                placeholder="Username A"
                 disabled={loading}
               />
             </div>
 
-            {/* VS */}
-            <motion.div
-              animate={{ scale: [1, 1.1, 1] }}
-              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-              className="w-14 h-14 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center text-white font-black text-sm flex-shrink-0 shadow-blue"
-            >
+            <div className="w-10 h-10 rounded-lg bg-[var(--bg-tertiary)] flex items-center justify-center text-[var(--text-tertiary)] text-xs font-semibold flex-shrink-0 border border-[var(--border-subtle)]">
               VS
-            </motion.div>
+            </div>
 
-            {/* Fighter B */}
             <div className="flex-1 w-full">
               <FighterInput
                 value={fighterB}
                 onChange={setFighterB}
                 onKeyPress={handleKeyPress}
-                placeholder="Fighter Two"
+                placeholder="Username B"
                 disabled={loading}
               />
             </div>
           </div>
 
-          {/* Error */}
           <AnimatePresence>
             {error && (
               <motion.p
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
-                className="text-red-500 dark:text-red-400 text-sm text-center mt-4"
+                className="text-red-500 text-xs text-center mt-3"
               >
                 {error}
               </motion.p>
             )}
           </AnimatePresence>
 
-          {/* Start Battle */}
           <button
             onClick={handleStartBattle}
             disabled={loading || !fighterA || !fighterB}
-            className="w-full mt-5 sm:mt-8 px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-xl sm:rounded-2xl font-bold text-base sm:text-lg disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-3 shadow-blue"
+            className="w-full mt-5 px-5 py-2.5 bg-[var(--text-primary)] text-[var(--bg-primary)] rounded-lg text-sm font-medium disabled:opacity-30 disabled:cursor-not-allowed transition-all hover:opacity-90 flex items-center justify-center gap-2"
           >
             {loading ? (
               <>
-                <Loader2 className="w-5 h-5 animate-spin" />
+                <Loader2 className="w-4 h-4 animate-spin" />
                 Analyzing...
               </>
             ) : (
               <>
-                <Swords className="w-5 h-5" />
                 Start Battle
+                <ArrowRight className="w-3.5 h-3.5" />
               </>
             )}
           </button>
 
-          <p className="text-center text-gray-400 dark:text-gray-500 text-xs mt-4">
-            Press Enter to begin • Data from GitHub API
+          <p className="text-center text-[var(--text-tertiary)] text-[10px] mt-3">
+            Press Enter to begin · Data from GitHub API
           </p>
         </div>
 
         {/* Quick picks */}
-        <div className="mt-8 text-center">
-          <p className="text-gray-400 dark:text-gray-500 text-sm mb-3">Try:</p>
-          <div className="flex flex-wrap justify-center gap-2">
+        <div className="mt-6 text-center">
+          <p className="text-[var(--text-tertiary)] text-xs mb-2.5">Try:</p>
+          <div className="flex flex-wrap justify-center gap-1.5">
             {["torvalds", "gvanrossum", "tj", "sindresorhus"].map((name) => (
               <button
                 key={name}
@@ -146,7 +130,7 @@ export function BattleArenaSetup({ onBattleStart, loading: externalLoading }) {
                   !fighterA ? setFighterA(name) : setFighterB(name)
                 }
                 disabled={loading}
-                className="px-3 py-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10 rounded-lg transition-colors disabled:opacity-50"
+                className="px-2.5 py-1 text-xs text-[var(--text-tertiary)] hover:text-[var(--text-primary)] bg-[var(--bg-tertiary)] hover:bg-[var(--surface-hover)] rounded-md border border-[var(--border-subtle)] transition-colors disabled:opacity-50"
               >
                 {name}
               </button>
@@ -160,8 +144,8 @@ export function BattleArenaSetup({ onBattleStart, loading: externalLoading }) {
 
 function FighterInput({ value, onChange, onKeyPress, placeholder, disabled }) {
   return (
-    <div className="space-y-2 sm:space-y-3 text-center">
-      <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto rounded-xl sm:rounded-2xl overflow-hidden bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+    <div className="space-y-2 text-center">
+      <div className="w-14 h-14 mx-auto rounded-xl overflow-hidden bg-[var(--bg-tertiary)] border border-[var(--border-default)]">
         {value ? (
           <img
             src={`https://github.com/${value}.png`}
@@ -172,8 +156,8 @@ function FighterInput({ value, onChange, onKeyPress, placeholder, disabled }) {
             }}
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-gray-300 dark:text-gray-500">
-            <User className="w-8 h-8" />
+          <div className="w-full h-full flex items-center justify-center text-[var(--text-tertiary)]">
+            <User className="w-6 h-6" />
           </div>
         )}
       </div>
@@ -184,10 +168,10 @@ function FighterInput({ value, onChange, onKeyPress, placeholder, disabled }) {
         onKeyPress={onKeyPress}
         disabled={disabled}
         placeholder={placeholder}
-        className="w-full text-center bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 rounded-xl px-4 py-3 text-lg font-semibold focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 transition-colors"
+        className="w-full text-center bg-[var(--bg-secondary)] border border-[var(--border-default)] text-[var(--text-primary)] placeholder-[var(--text-tertiary)] rounded-lg px-3 py-2.5 text-sm font-medium focus:outline-none focus:border-[var(--accent)] focus:shadow-[0_0_0_3px_var(--accent-muted)] transition-all"
       />
       {value && (
-        <p className="text-xs text-gray-400 dark:text-gray-500">@{value}</p>
+        <p className="text-[10px] text-[var(--text-tertiary)]">@{value}</p>
       )}
     </div>
   );
